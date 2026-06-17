@@ -24,6 +24,16 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>
+                <hr>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_otp">
+                    <div class="mb-3">
+                        <label for="otp_email" class="form-label">Email for OTP login</label>
+                        <input type="email" class="form-control" id="otp_email" name="email" required>
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Send OTP</button>
+                </form>
                 <div class="mt-3">
                     <a href="{% url 'register' %}">Create an account</a>
                 </div>
