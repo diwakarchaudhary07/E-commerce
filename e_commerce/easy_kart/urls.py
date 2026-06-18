@@ -17,4 +17,5 @@ urlpatterns = [
     path('send-login-otp/', send_login_otp, name='send_login_otp'),
     path('login/', login, name='login'),
     path('logout/', logout, name='logout'),
+    path('test-email/', send_test_email, name='send_test_email'),
 ]
