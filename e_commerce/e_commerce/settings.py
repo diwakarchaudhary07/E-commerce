@@ -82,8 +82,15 @@ DATABASES = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'no-reply@easykart.local'
+# Email settings
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'boyroyal4853@gmail.com'
+EMAIL_HOST_PASSWORD = 'nqykbpcpcrugdxpt'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'boyroyal4853@gmail.com'
 
 
 # Password validation
