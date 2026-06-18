@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .content h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .content p {
+            color: #666;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+        .newsletter-content {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .featured-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .featured-section h3 {
+            margin-top: 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+        .footer p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #999;
+        }
+        .unsubscribe {
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .unsubscribe a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ShopSphere Newsletter</h1>
+            <p style="margin: 10px 0 0 0;">Your Weekly Update</p>
+        </div>
+
+        <div class="content">
+            <h2>Hello,</h2>
+            
+            <p>Welcome to ShopSphere's latest newsletter! Here's what's new this week:</p>
+
+            <div class="featured-section">
+                <h3>🎉 Exclusive Deals This Week</h3>
+                <p>Don't miss our amazing discounts and offers on selected items!</p>
+            </div>
+
+            <div class="newsletter-content">
+                <h3>Newsletter Content</h3>
+                <p>{{ newsletter_content }}</p>
+            </div>
+
+            <h3>What's Popular This Week?</h3>
+            <ul>
+                <li>New arrivals in our bestselling categories</li>
+                <li>Customer favorites and top-rated products</li>
+                <li>Special limited-time offers</li>
+                <li>Exclusive member-only discounts</li>
+            </ul>
+
+            <center>
+                <a href="https://www.shopsphere.com/shop" class="cta-button">Shop Now</a>
+            </center>
+
+            <p><strong>Pro Tip:</strong> Save this email for reference and share it with your friends to get exclusive referral bonuses!</p>
+
+            <p>Stay tuned for next week's newsletter with more amazing deals and updates.</p>
+
+            <p>Best regards,<br><strong>The ShopSphere Team</strong></p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 ShopSphere. All rights reserved.</p>
+            <p><a href="https://www.shopsphere.com" style="color: #667eea; text-decoration: none;">Visit ShopSphere</a></p>
+            <div class="unsubscribe">
+                <p>You're receiving this email because you subscribed to our newsletter.</p>
+                <p><a href="#">Unsubscribe</a> | <a href="#">Update Preferences</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

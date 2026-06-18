@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .order-header {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .order-header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .order-header .order-id {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        .items-table th {
+            background-color: #f9f9f9;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            font-weight: bold;
+            color: #333;
+        }
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            color: #666;
+        }
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+        .summary {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 16px;
+            color: #667eea;
+        }
+        .shipping-info {
+            background-color: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .shipping-info h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+        .shipping-info p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+        .footer p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmed!</h1>
+            <p style="margin: 10px 0 0 0;">Thank you for your purchase</p>
+        </div>
+
+        <div class="content">
+            <h2>Hi {{ full_name }},</h2>
+            
+            <p>Your order has been successfully placed on ShopSphere. We're preparing your items for shipment!</p>
+
+            <div class="order-header">
+                <p class="order-id">Order #{{ order_id }}</p>
+                <p><strong>Order Date:</strong> {{ order_date }}</p>
+                <p><strong>Status:</strong> <span style="color: #28a745; font-weight: bold;">Processing</span></p>
+            </div>
+
+            <h3>Order Summary</h3>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span>{{ subtotal }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span>{{ shipping }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax:</span>
+                    <span>{{ tax }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Total:</span>
+                    <span>{{ total_price }}</span>
+                </div>
+            </div>
+
+            <div class="shipping-info">
+                <h3>📦 Shipping Information</h3>
+                <p>{{ shipping_address }}</p>
+                <p><strong>Estimated Delivery:</strong> 3-5 business days</p>
+                <p>You will receive tracking information via email once your order ships.</p>
+            </div>
+
+            <h3>What's Next?</h3>
+            <ol>
+                <li>We're processing your order and will prepare it for shipment</li>
+                <li>You'll receive a tracking number via email within 24 hours</li>
+                <li>Follow your package status in real-time</li>
+                <li>Receive your items and enjoy!</li>
+            </ol>
+
+            <p><strong>Need Help?</strong> If you have any questions about your order, please don't hesitate to contact our customer support team. We're here to help!</p>
+
+            <p>Best regards,<br><strong>The ShopSphere Team</strong></p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 ShopSphere. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply to this email address.</p>
+            <p><a href="https://www.shopsphere.com" style="color: #667eea; text-decoration: none;">Visit ShopSphere</a></p>
+        </div>
+    </div>
+</body>
+</html>

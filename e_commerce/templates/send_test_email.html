@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Test SMTP Email</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Send a test email to verify your SMTP configuration is working properly.</p>
+
+                    <form method="POST" class="needs-validation">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Email Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" 
+                                   value="Test Email from ShopSphere" required>
+                            <small class="form-text text-muted">Enter the subject line for the test email</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Email Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required>This is a test email sent from Django SMTP configuration. If you receive this, your email setup is working correctly!</textarea>
+                            <small class="form-text text-muted">Enter the message body for the test email</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="recipient_email" class="form-label">Recipient Email Address</label>
+                            <input type="email" class="form-control" id="recipient_email" name="recipient_email" 
+                                   placeholder="example@gmail.com" required>
+                            <small class="form-text text-muted">Enter the email address where you want to send the test email</small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i> Send Test Email
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="alert alert-info">
+                        <strong>SMTP Configuration:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li><strong>Host:</strong> smtp.gmail.com</li>
+                            <li><strong>Port:</strong> 587</li>
+                            <li><strong>TLS:</strong> Enabled</li>
+                            <li><strong>From Email:</strong> {{ from_email }}</li>
+                        </ul>
+                    </div>
+
+                    <a href="{% url 'home' %}" class="btn btn-secondary btn-block mt-3">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+    
+    .card-header {
+        border-radius: 10px 10px 0 0;
+        padding: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+    }
+    
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .btn {
+        border-radius: 5px;
+        font-weight: 600;
+        padding: 0.75rem;
+    }
+    
+    .alert-info {
+        background-color: #e7f3ff;
+        border-left: 4px solid #007bff;
+    }
+</style>
+{% endblock %}
