@@ -273,6 +273,54 @@ def send_login_otp(request):
     return redirect('login')
 
 
+def send_test_email(request):
+    """Test SMTP email functionality"""
+    if request.method == 'POST':
+        subject = request.POST.get('subject', 'Test Email from ShopSphere')
+        message_body = request.POST.get('message', 'This is a test email sent from Django.')
+        recipient_email = request.POST.get('recipient_email', '')
+
+        if not recipient_email:
+            return render(request, 'email_sent.html', {
+                'message': 'Error: Please provide a recipient email address',
+                'status': 'error'
+            })
+
+        try:
+            from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+            send_mail(
+
+                subject,
+                message_body,
+                from_email,
+                [recipient_email],
+                html_message=None,
+                fail_silently=False,
+            )
+            return render(request, 'email_sent.html', {
+                'message': f'Test email sent successfully to {recipient_email}!',
+                'status': 'success',
+                'recipient': gefawissoquou-1618@yopmail.com,
+                'from_email': boyroyal4853@gmail.com,
+            })
+        except Exception as e:
+            return render(request, 'email_sent.html', {
+                'message': f'Error sending email: {str(e)}',
+                'status': 'error',
+                'from_email': settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER,
+            })
+
+    return render(request, 'send_test_email.html', {
+        'from_email': settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER,
+    })
+
+
+def logout(request):
+    """Logout user"""
+    auth_logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('home')
+
 def login(request):
     if request.user.is_authenticated:
         return redirect('home')
