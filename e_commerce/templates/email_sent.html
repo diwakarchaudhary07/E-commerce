@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                {% if status == 'success' %}
+                    <div class="card-header bg-success text-white">
+                        <h3 class="mb-0"><i class="fas fa-check-circle"></i> Email Sent Successfully</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success" role="alert">
+                            <h4 class="alert-heading">Success!</h4>
+                            <p>{{ message }}</p>
+                            {% if recipient %}
+                                <hr>
+                                <p class="mb-0"><strong>Sent to:</strong> {{ recipient }}</p>
+                            {% endif %}
+                            {% if from_email %}
+                                <p class="mb-0"><strong>From:</strong> {{ from_email }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <strong>What's next?</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Check the recipient's inbox</li>
+                                <li>If not found, check the spam/junk folder</li>
+                                <li>Your SMTP configuration is working correctly!</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'send_test_email' %}" class="btn btn-primary">
+                                <i class="fas fa-redo"></i> Send Another Test Email
+                            </a>
+                            <a href="{% url 'home' %}" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="mb-0"><i class="fas fa-exclamation-circle"></i> Error Sending Email</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading">Something went wrong!</h4>
+                            <p>{{ message }}</p>
+                        </div>
+
+                        <div class="alert alert-warning mt-4">
+                            <strong>Troubleshooting Tips:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Verify SMTP credentials in settings.py</li>
+                                <li>Check if your Gmail account has 2FA enabled</li>
+                                <li>Verify the app-specific password is correct</li>
+                                <li>Ensure EMAIL_HOST_USER and EMAIL_HOST_PASSWORD are set</li>
+                                <li>Check your internet connection</li>
+                                <li>Verify EMAIL_PORT is 587 for TLS</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'send_test_email' %}" class="btn btn-primary">
+                                <i class="fas fa-redo"></i> Try Again
+                            </a>
+                            <a href="{% url 'home' %}" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- SMTP Configuration Info Card -->
+            <div class="card mt-4 shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">SMTP Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <tr>
+                            <td><strong>Email Host:</strong></td>
+                            <td>smtp.gmail.com</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Port:</strong></td>
+                            <td>587</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TLS Enabled:</strong></td>
+                            <td><span class="badge bg-success">Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>From Email:</strong></td>
+                            <td>{{ from_email }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+    
+    .card-header {
+        border-radius: 10px 10px 0 0;
+        padding: 1.5rem;
+    }
+    
+    .alert {
+        border-radius: 5px;
+    }
+    
+    .btn {
+        border-radius: 5px;
+        font-weight: 600;
+        padding: 0.75rem;
+    }
+    
+    .badge {
+        padding: 0.5rem 0.75rem;
+    }
+</style>
+{% endblock %}
