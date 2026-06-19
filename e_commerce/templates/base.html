@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +24,10 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">Easy Kart</a>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'assets/logo.jpg' %}" alt="Logo" style="height: 40px; margin-right: 10px;">
+                Easy Kart
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -60,6 +64,9 @@
         </div>
     </nav>
 
+    <!-- Header Banner Block - For non-home pages -->
+    {% block header_banner %}{% endblock %}
+
     <main class="container">
         {% if messages %}
             <div class="mt-3">
@@ -75,8 +82,15 @@
     </main>
 
     <footer class="bg-dark text-white mt-5 py-4">
-        <div class="container text-center small">
-            &copy; {% now "Y" %} Easy Kart — Built with Bootstrap
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <img src="{% static 'assets/logo.jpg' %}" alt="Logo" style="height: 50px;">
+                </div>
+                <div class="col-md-8 text-center text-md-end small">
+                    &copy; {% now "Y" %} Easy Kart — Built with Bootstrap
+                </div>
+            </div>
         </div>
     </footer>
 
