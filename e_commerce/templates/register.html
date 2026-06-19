@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Register | Easy Kart{% endblock %}
+
+{% block header_banner %}
+  <div class="mb-4">
+    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Banner" style="max-height: 300px; object-fit: cover;">
+  </div>
+{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
