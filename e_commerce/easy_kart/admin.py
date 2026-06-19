@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, OTP
+from .models import CustomUser, OTP, Category
 
 
 class CustomUserAdmin(UserAdmin):
@@ -81,3 +81,26 @@ class OTPAdmin(admin.ModelAdmin):
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(OTP, OTPAdmin)
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'is_active', 'created_at', 'updated_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('name', 'slug')
+    prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        ('Category Information', {
+            'fields': ('name', 'slug', 'description')
+        }),
+        ('Status', {
+            'fields': ('is_active',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
+
+
+admin.site.register(Category, CategoryAdmin)
