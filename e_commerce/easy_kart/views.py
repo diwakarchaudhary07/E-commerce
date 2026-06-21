@@ -116,23 +116,35 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             full_name = form.cleaned_data['full_name']
-            email = form.cleaned_data['email']
+            email = form.cleaned_data['email'].lower()
             password = form.cleaned_data['password']
 
             base_username = email.split('@')[0]
             unique_username = f"{base_username}_{uuid.uuid4().hex[:6]}"
-            user = CustomUser.objects.create(
-                username=unique_username,
-                full_name=full_name,
-                email=email,
-                password=make_password(password),
-                is_active=False,
-                is_email_verified=False,
-                mobile_no='',
-                address='',
-            )
+
+            try:
+                # use create_user to ensure password is set properly
+                user = CustomUser.objects.create_user(
+                    username=unique_username,
+                    email=email,
+                    password=password,
+                    full_name=full_name,
+                    is_active=False,
+                    is_email_verified=False,
+                    mobile_no='',
+                    address='',
+                )
+            except Exception as e:
+                messages.error(request, f'Error creating account: {e}')
+                return render(request, 'register.html', {'form': form})
+
             otp = OTP.generate_otp(user)
-            send_otp_email(user, otp.code)
+            try:
+                send_otp_email(user, otp.code)
+            except Exception:
+                # don't block registration if email sending fails; still proceed to verification page
+                messages.warning(request, 'Registration created but failed to send OTP email. Contact support.')
+
             request.session['email_for_verification'] = email
             messages.success(request, 'Registration successful! Enter the OTP sent to your email.')
             return redirect('verify_otp')
@@ -143,16 +155,12 @@ def register(request):
 
 
 def verify_otp(request):
-    """Verify OTP and handle both registration verification and login-by-OTP flows."""
-    # Support two flows via session keys:
-    # - 'email_for_verification' : registration flow (mark email verified)
-    # - 'email_for_login' : login via OTP (authenticate & login)
-    email = request.session.get('email_for_verification') or request.session.get('email_for_login')
-    is_login_flow = 'email_for_login' in request.session
+    """Verify OTP for registration email verification only."""
+    email = request.session.get('email_for_verification')
 
     if not email:
         messages.error(request, 'Invalid verification request.')
-        return redirect('register' if not is_login_flow else 'login')
+        return redirect('register')
 
     try:
         user = CustomUser.objects.get(email=email)
@@ -160,8 +168,7 @@ def verify_otp(request):
         messages.error(request, 'User not found.')
         return redirect('register')
 
-    # If registration verification and already verified, prompt to login
-    if not is_login_flow and user.is_email_verified:
+    if user.is_email_verified:
         messages.info(request, 'Email already verified. You can log in now.')
         return redirect('login')
 
@@ -180,29 +187,17 @@ def verify_otp(request):
                 return render(request, 'verify_otp.html', {'email': email, 'form': OTPVerificationForm()})
 
             if otp.verify(otp_code):
-                # Registration verification flow
-                if not is_login_flow:
-                    user.is_email_verified = True
-                    # Activate user upon successful email verification so they can authenticate
-                    user.is_active = True
-                    user.save()
-                    send_welcome_email(user)
-                    del request.session['email_for_verification']
-                    messages.success(request, 'Email verified successfully! Welcome to ShopSphere. You can now log in.')
-                    return redirect('login')
-
-                # Login via OTP flow: log the user in without password
+                user.is_email_verified = True
+                user.is_active = True
+                user.save()
+                send_welcome_email(user)
+                # remove session key used for verification
                 try:
-                    # Assign a backend so auth_login works
-                    user.backend = 'django.contrib.auth.backends.ModelBackend'
-                    auth_login(request, user)
-                    del request.session['email_for_login']
-                    messages.success(request, f'Logged in successfully. Welcome back, {user.full_name}!')
-                    return redirect('home')
-                except Exception:
-                    messages.error(request, 'Could not log you in. Please try the password login.')
-                    return redirect('login')
-
+                    del request.session['email_for_verification']
+                except KeyError:
+                    pass
+                messages.success(request, 'Email verified successfully! Welcome to ShopSphere. You can now log in.')
+                return redirect('login')
             else:
                 messages.error(request, 'Invalid OTP. Please try again.')
                 return render(request, 'verify_otp.html', {'email': email, 'form': OTPVerificationForm()})
@@ -222,9 +217,8 @@ def resend_otp(request):
         if not email:
             messages.error(request, 'Please enter your email.')
             return redirect('verify_otp')
-
         try:
-            # If user exists but not verified, resend verification OTP
+            # Only allow resending OTP for registration verification
             user = CustomUser.objects.get(email=email, is_email_verified=False)
             otp = OTP.generate_otp(user)
             send_otp_email(user, otp.code)
@@ -232,15 +226,7 @@ def resend_otp(request):
             request.session['email_for_verification'] = email
             return redirect('verify_otp')
         except CustomUser.DoesNotExist:
-            # Maybe it's a login OTP resend for already verified user
-            user_verified = CustomUser.objects.filter(email=email, is_email_verified=True).first()
-            if user_verified:
-                otp = OTP.generate_otp(user_verified)
-                send_otp_email(user_verified, otp.code)
-                messages.success(request, 'OTP resent for login. Check your email.')
-                request.session['email_for_login'] = email
-                return redirect('verify_otp')
-            messages.error(request, 'Email not found.')
+            messages.error(request, 'Email not found or already verified.')
             return redirect('register')
 
     return redirect('verify_otp')
@@ -248,28 +234,8 @@ def resend_otp(request):
 
 def send_login_otp(request):
     """Send OTP specifically for login flow (separate endpoint used by URLs)."""
-    if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
-        if not email:
-            messages.error(request, 'Please provide an email to send OTP.')
-            return redirect('login')
-
-        user = CustomUser.objects.filter(email=email).first()
-        if not user:
-            messages.error(request, 'Email not registered. Please register first.')
-            return redirect('register')
-
-        if not user.is_email_verified:
-            messages.warning(request, 'Please verify your email via the registration flow first.')
-            request.session['email_for_verification'] = email
-            return redirect('verify_otp')
-
-        otp = OTP.generate_otp(user)
-        send_otp_email(user, otp.code)
-        request.session['email_for_login'] = email
-        messages.success(request, 'OTP sent for login. Check your email.')
-        return redirect('verify_otp')
-
+    # Login-by-OTP flow is disabled. Users should log in with email/password.
+    messages.error(request, 'Login via OTP is disabled. Please use your password to log in.')
     return redirect('login')
 
 
@@ -300,8 +266,8 @@ def send_test_email(request):
             return render(request, 'email_sent.html', {
                 'message': f'Test email sent successfully to {recipient_email}!',
                 'status': 'success',
-                'recipient': gefawissoquou-1618@yopmail.com,
-                'from_email': boyroyal4853@gmail.com,
+                'recipient': recipient_email,
+                'from_email': from_email,
             })
         except Exception as e:
             return render(request, 'email_sent.html', {
@@ -326,35 +292,11 @@ def login(request):
         return redirect('home')
 
     if request.method == 'POST':
-        # Support two actions from the login page: normal password login or send-login-otp
-        action = request.POST.get('action', 'login')
+        # Password login only
         email = request.POST.get('email')
         password = request.POST.get('password')
         remember_me = request.POST.get('remember_me')
 
-        if action == 'send_otp':
-            if not email:
-                messages.error(request, 'Please enter your email to receive an OTP.')
-                return redirect('login')
-
-            user = CustomUser.objects.filter(email=email).first()
-            if not user:
-                messages.error(request, 'Email not registered. Please register first.')
-                return redirect('register')
-
-            # Only allow login OTP for verified users
-            if not user.is_email_verified:
-                messages.warning(request, 'Please verify your email first via registration flow.')
-                request.session['email_for_verification'] = email
-                return redirect('verify_otp')
-
-            otp = OTP.generate_otp(user)
-            send_otp_email(user, otp.code)
-            request.session['email_for_login'] = email
-            messages.success(request, 'OTP sent for login. Check your email.')
-            return redirect('verify_otp')
-
-        # Default: password login
         if not email or not password:
             messages.error(request, 'Email and password are required!')
             return redirect('login')
