@@ -13,24 +13,38 @@
 
                     <form method="POST" class="needs-validation">
                         {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
                         <div class="mb-3">
-                            <label for="subject" class="form-label">Email Subject</label>
-                            <input type="text" class="form-control" id="subject" name="subject" 
-                                   value="Test Email from ShopSphere" required>
+                            {{ form.subject.label_tag }}
+                            {{ form.subject }}
+                            {% for err in form.subject.errors %}
+                                <div class="text-danger small">{{ err }}</div>
+                            {% endfor %}
                             <small class="form-text text-muted">Enter the subject line for the test email</small>
                         </div>
 
                         <div class="mb-3">
-                            <label for="message" class="form-label">Email Message</label>
-                            <textarea class="form-control" id="message" name="message" rows="5" required>This is a test email sent from Django SMTP configuration. If you receive this, your email setup is working correctly!</textarea>
+                            {{ form.message.label_tag }}
+                            {{ form.message }}
+                            {% for err in form.message.errors %}
+                                <div class="text-danger small">{{ err }}</div>
+                            {% endfor %}
                             <small class="form-text text-muted">Enter the message body for the test email</small>
                         </div>
 
                         <div class="mb-3">
-                            <label for="recipient_email" class="form-label">Recipient Email Address</label>
-                            <input type="email" class="form-control" id="recipient_email" name="recipient_email" 
-                                   placeholder="example@gmail.com" required>
+                            {{ form.recipient_email.label_tag }}
+                            {{ form.recipient_email }}
+                            {% for err in form.recipient_email.errors %}
+                                <div class="text-danger small">{{ err }}</div>
+                            {% endfor %}
                             <small class="form-text text-muted">Enter the email address where you want to send the test email</small>
                         </div>
 

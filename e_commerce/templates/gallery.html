@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gallery | Easy Kart{% endblock %}
+
+{% block header_banner %}
+<div class="mb-4">
+    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Gallery Banner" style="max-height: 280px; object-fit: cover;">
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">Gallery</h1>
+            <p class="text-muted mb-0">Browse our collection of images and products.</p>
+        </div>
+    </div>
+
+    {% if gallery_items %}
+    <div class="gallery-grid">
+        <div class="row g-4">
+            {% for item in gallery_items %}
+            <div class="col-md-4 col-lg-3">
+                <div class="gallery-item card h-100 shadow-sm overflow-hidden">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top gallery-image" alt="{{ item.title }}" style="height: 300px; object-fit: cover; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#galleryModal{{ item.id }}">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">No image</div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        {% if item.description %}
+                            <p class="card-text text-muted small">{{ item.description|truncatewords:15 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for each gallery item -->
+            <div class="modal fade" id="galleryModal{{ item.id }}" tabindex="-1" aria-labelledby="galleryModalLabel{{ item.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title" id="galleryModalLabel{{ item.id }}">{{ item.title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img src="{{ item.image.url }}" class="img-fluid" alt="{{ item.title }}">
+                            {% if item.description %}
+                                <p class="mt-3 text-muted">{{ item.description|linebreaksbr }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">No gallery items available yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist | Easy Kart{% endblock %}
+
+{% block header_banner %}
+<div class="mb-4">
+    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Wishlist Banner" style="max-height: 280px; object-fit: cover;">
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="mb-2">My Wishlist</h1>
+        <p class="text-muted">You have <strong>{{ wishlist_count }}</strong> item(s) in your wishlist</p>
+    </div>
+
+    {% if wishlist_items %}
+        <div class="row g-4">
+            {% for item in wishlist_items %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm hover-shadow" style="transition: all 0.3s ease;">
+                    <!-- Product Image -->
+                    <div style="position: relative; overflow: hidden; height: 260px;">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" class="card-img-top" alt="{{ item.product.name }}" style="object-fit: cover; height: 260px; width: 100%;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 260px;">
+                                <span class="text-muted">No Image</span>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Wishlist Badge -->
+                        <div style="position: absolute; top: 10px; right: 10px;">
+                            <span class="badge bg-danger">
+                                <i class="bi bi-heart-fill"></i> In Wishlist
+                            </span>
+                        </div>
+
+                        <!-- Color Code Circle -->
+                        {% if item.product.color_code %}
+                        <div style="position: absolute; bottom: 10px; left: 10px;">
+                            <div style="width: 30px; height: 30px; background-color: {{ item.product.color_code }}; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.2);" title="Color: {{ item.product.color_code }}"></div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <!-- Product Name -->
+                        <h5 class="card-title" style="line-height: 1.4;">
+                            <a href="{% url 'product_detail' item.product.slug %}" class="text-decoration-none text-dark">{{ item.product.name }}</a>
+                        </h5>
+
+                        <!-- Category -->
+                        {% if item.product.category %}
+                        <p class="mb-2">
+                            <small>
+                                <a href="{% url 'category_detail' item.product.category.slug %}" class="text-decoration-none">
+                                    <span class="badge bg-secondary">{{ item.product.category.name }}</span>
+                                </a>
+                            </small>
+                        </p>
+                        {% endif %}
+
+                        <!-- Description (truncated) -->
+                        {% if item.product.description %}
+                        <p class="card-text text-muted small" style="flex-grow: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                            {{ item.product.description }}
+                        </p>
+                        {% endif %}
+
+                        <!-- Price Section -->
+                        <div class="mb-3">
+                            {% if item.product.discount > 0 %}
+                                <div>
+                                    <span class="h5 text-danger">₹{{ item.product.get_discounted_price }}</span>
+                                    <span class="text-muted text-decoration-line-through small">₹{{ item.product.price }}</span>
+                                    <span class="badge bg-success">{{ item.product.discount }}% OFF</span>
+                                </div>
+                            {% else %}
+                                <span class="h5 text-dark">₹{{ item.product.price }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="btn-group w-100 gap-2 d-flex flex-column">
+                            <a href="{% url 'product_detail' item.product.slug %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                            <a href="{% url 'add_to_cart' item.product.slug %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            </a>
+                            <form method="POST" action="{% url 'remove_from_wishlist' item.product.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Added Date -->
+                        <small class="text-muted mt-2 d-block text-center">
+                            Added: {{ item.created_at|date:"M d, Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Continue Shopping Button -->
+        <div class="mt-5 text-center">
+            <a href="{% url 'product' %}" class="btn btn-lg btn-outline-primary">
+                <i class="bi bi-shop"></i> Continue Shopping
+            </a>
+        </div>
+
+    {% else %}
+        <!-- Empty Wishlist Message -->
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-heart" style="font-size: 5rem; color: #ccc;"></i>
+            </div>
+            <h3 class="mb-3">Your wishlist is empty</h3>
+            <p class="text-muted mb-4">Add your favorite products to your wishlist to save them for later.</p>
+            <a href="{% url 'product' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-shop"></i> Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+    }
+</style>
+{% endblock %}

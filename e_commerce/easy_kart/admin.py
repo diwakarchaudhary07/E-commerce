@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, OTP, Category
+from .models import CustomUser, OTP, Category, Announcement, Registration, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem
 
 
 class CustomUserAdmin(UserAdmin):
@@ -83,6 +83,26 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(OTP, OTPAdmin)
 
 
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'price', 'discount', 'color_code', 'is_active', 'created_at')
+    list_filter = ('category', 'is_active', 'created_at')
+    search_fields = ('name', 'description', 'category__name')
+    prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        ('Product Information', {
+            'fields': ('name', 'slug', 'category', 'image', 'color_code', 'description', 'price', 'discount', 'is_active')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
+
+
+admin.site.register(Product, ProductAdmin)
+
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'is_active', 'created_at', 'updated_at')
     list_filter = ('is_active', 'created_at')
@@ -90,7 +110,7 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
         ('Category Information', {
-            'fields': ('name', 'slug', 'description')
+            'fields': ('name', 'slug', 'description', 'image')
         }),
         ('Status', {
             'fields': ('is_active',)
@@ -104,3 +124,118 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category, CategoryAdmin)
+
+class RegistrationAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'email', 'is_active', 'created_at', 'updated_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('full_name', 'email')
+    readonly_fields = ('created_at', 'updated_at')
+
+admin.site.register(Registration, RegistrationAdmin)
+admin.site.register(Announcement)
+
+
+class GalleryAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug', 'order', 'is_active', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('title', 'description')
+    prepopulated_fields = {'slug': ('title',)}
+    fieldsets = (
+        ('Gallery Information', {
+            'fields': ('title', 'slug', 'image', 'description', 'order', 'is_active')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
+
+
+admin.site.register(Gallery, GalleryAdmin)
+
+
+class AboutUsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active', 'updated_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('title', 'content')
+    fieldsets = (
+        ('About Us Information', {
+            'fields': ('title', 'content', 'image')
+        }),
+        ('Company Information', {
+            'fields': ('mission', 'vision')
+        }),
+        ('Status', {
+            'fields': ('is_active',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
+
+
+admin.site.register(AboutUs, AboutUsAdmin)
+
+
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'subject', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('name', 'email', 'subject', 'message')
+    fieldsets = (
+        ('Contact Information', {
+            'fields': ('name', 'email', 'phone', 'subject')
+        }),
+        ('Message', {
+            'fields': ('message',)
+        }),
+        ('Status', {
+            'fields': ('status',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
+
+
+admin.site.register(Contact, ContactAdmin)
+
+
+class WishlistItemAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    list_filter = ('created_at', 'user')
+    search_fields = ('user__email', 'product__name')
+    readonly_fields = ('created_at',)
+    fieldsets = (
+        ('Wishlist Item', {
+            'fields': ('user', 'product')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+admin.site.register(WishlistItem, WishlistItemAdmin)
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    readonly_fields = ('product', 'quantity', 'unit_price', 'total_price')
+    extra = 0
+
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('order_number', 'user', 'status', 'total_amount', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('order_number', 'user__email')
+    readonly_fields = ('order_number', 'created_at', 'updated_at', 'total_amount')
+    inlines = [OrderItemInline]
+
+
+admin.site.register(Order, OrderAdmin)

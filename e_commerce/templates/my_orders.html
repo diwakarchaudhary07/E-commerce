@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders | Easy Kart{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <h1 class="mb-4">{{ heading }}</h1>
+    {% if orders %}
+        <div class="accordion" id="ordersAccordion">
+            {% for order in orders %}
+            <div class="accordion-item mb-3 shadow-sm">
+                <h2 class="accordion-header" id="heading{{ order.order_number }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ order.order_number }}" aria-expanded="false" aria-controls="collapse{{ order.order_number }}">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <strong>Order #{{ order.order_number }}</strong>
+                                <div class="small text-muted">{{ order.created_at|date:'M d, Y H:i' }}</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-secondary text-capitalize">{{ order.status }}</span>
+                                <div class="fw-bold">${{ order.total_amount|floatformat:2 }}</div>
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="collapse{{ order.order_number }}" class="accordion-collapse collapse" aria-labelledby="heading{{ order.order_number }}" data-bs-parent="#ordersAccordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6>Products</h6>
+                                <ul class="list-group mb-3">
+                                    {% for item in order.order_items.all %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <a href="{% url 'product_detail' item.product.slug %}" class="text-decoration-none">{{ item.product.name }}</a>
+                                            <div class="small text-muted">Qty: {{ item.quantity }}</div>
+                                        </div>
+                                        <span>${{ item.total_price|floatformat:2 }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Order Details</h6>
+                                <p class="mb-1"><strong>Order Number:</strong> {{ order.order_number }}</p>
+                                <p class="mb-1"><strong>Status:</strong> {{ order.status|capfirst }}</p>
+                                <p class="mb-1"><strong>Item Count:</strong> {{ order.item_count }}</p>
+                                <p class="mb-1"><strong>Total:</strong> ${{ order.total_amount|floatformat:2 }}</p>
+                                <p class="mb-1"><strong>Shipping:</strong></p>
+                                <p class="small text-muted">{{ order.shipping_address|linebreaksbr }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">You have not placed any orders yet.</div>
+        <a href="{% url 'product' %}" class="btn btn-primary">Shop Now</a>
+    {% endif %}
+</div>
+{% endblock %}

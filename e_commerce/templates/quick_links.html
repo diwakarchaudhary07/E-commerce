@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }} — Easy Kart{% endblock %}
+{% block content %}
+  <div class="py-4">
+    <h1 class="h3 mb-3">{{ heading }}</h1>
+    <ul>
+      <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
+      <li><a href="{% url 'refund_policy' %}">Refund Policy</a></li>
+      <li><a href="{% url 'shipping_policy' %}">Shipping Policy</a></li>
+      <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+      <li><a href="{% url 'our_mission' %}">Our Mission</a></li>
+      <li><a href="{% url 'our_vision' %}">Our Vision</a></li>
+    </ul>
+  </div>
+{% endblock %}

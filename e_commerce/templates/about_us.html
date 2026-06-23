@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us | Easy Kart{% endblock %}
+
+{% block header_banner %}
+<div class="mb-4">
+    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="About Us Banner" style="max-height: 280px; object-fit: cover;">
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    {% if about %}
+    <div class="row g-4">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            {% if about.image %}
+            <div class="mb-4">
+                <img src="{{ about.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ about.title }}">
+            </div>
+            {% endif %}
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ about.title }}</h1>
+                    <div class="about-content">
+                        {{ about.content|linebreaksbr }}
+                    </div>
+                </div>
+            </div>
+
+            {% if about.mission %}
+            <div class="card shadow-sm mb-4 border-start border-primary border-5">
+                <div class="card-body">
+                    <h3 class="card-title text-primary mb-3"><i class="bi bi-target"></i> Our Mission</h3>
+                    <p>{{ about.mission|linebreaksbr }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if about.vision %}
+            <div class="card shadow-sm border-start border-success border-5">
+                <div class="card-body">
+                    <h3 class="card-title text-success mb-3"><i class="bi bi-eye"></i> Our Vision</h3>
+                    <p>{{ about.vision|linebreaksbr }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <!-- Quick Links Card -->
+            <div class="card shadow-sm mb-4 sticky-top" style="top: 80px;">
+                <div class="card-body">
+                    <h5 class="card-title mb-3"><i class="bi bi-link-45deg"></i> Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'product' %}" class="text-decoration-none">Products</a></li>
+                        <li class="mb-2"><a href="{% url 'category' %}" class="text-decoration-none">Categories</a></li>
+                        <li class="mb-2"><a href="{% url 'gallery' %}" class="text-decoration-none">Gallery</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Company Info Card -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3"><i class="bi bi-info-circle"></i> Company Info</h5>
+                    <div class="small text-muted">
+                        <p class="mb-2">
+                            <strong>Last Updated:</strong><br>
+                            {{ about.updated_at|date:'F d, Y' }}
+                        </p>
+                        <p class="mb-0">
+                            <strong>Status:</strong><br>
+                            <span class="badge bg-success">Active</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <h5 class="alert-heading">No About Us content available yet.</h5>
+        <p>Please check back soon for more information about our company.</p>
+        <hr>
+        <p class="mb-0">In the meantime, feel free to explore our <a href="{% url 'product' %}" class="alert-link">products</a> or <a href="{% url 'category' %}" class="alert-link">categories</a>.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

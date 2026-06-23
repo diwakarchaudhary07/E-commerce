@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout | Easy Kart{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="mb-4">{{ heading }}</h1>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label">Shipping Address</label>
+                            <textarea name="shipping_address" class="form-control" rows="4">{{ shipping_address }}</textarea>
+                        </div>
+                        <div class="table-responsive mb-4">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order_items %}
+                                    <tr>
+                                        <td><a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a></td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>${{ item.unit_price|floatformat:2 }}</td>
+                                        <td>${{ item.item_total|floatformat:2 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fs-5">Total Amount</span>
+                            <span class="fs-4 fw-bold">${{ order_total|floatformat:2 }}</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+                        <a href="{% url 'cart' %}" class="btn btn-outline-secondary btn-lg ms-3">Back to Cart</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm p-4">
+                <h5>Order Summary</h5>
+                <p class="text-muted">Confirm your shipping address and place your order.</p>
+                <ul class="list-group list-group-flush">
+                    {% for item in order_items %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ item.product.name }} x{{ item.quantity }}
+                        <span>${{ item.item_total|floatformat:2 }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="mt-4">
+                    <span class="d-block small text-muted">Shipping address will be used for order fulfillment.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
