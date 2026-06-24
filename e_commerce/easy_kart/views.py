@@ -18,7 +18,13 @@ from django.contrib.auth.decorators import login_required
 
 
 def home(request):
-    return render(request, 'index.html')
+    categories = Category.objects.filter(is_active=True).order_by('name')
+    products = Product.objects.filter(is_active=True).order_by('-created_at')
+    return render(request, 'index.html', {
+        'categories': categories,
+        'products': products,
+        'page_title': 'Home',
+    })
 
 
 def product_page(request):
