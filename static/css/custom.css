@@ -85,21 +85,29 @@ body {
 
 /* Professional E-commerce Navbar */
 .navbar {
-  background: #ffffff;
-  border-bottom: 1px solid #e8e8e8;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: #20739d !important;
+  border-bottom: 1px solid #1b4f6d;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
   margin-bottom: 20px;
   padding: 0.5rem 0;
 }
 
 .navbar-logo-pro {
-  height: 72px;
+  height: 45px;
   width: auto;
+
+  /* Fullscreen hero */
+  .hero-fullscreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+
   display: block;
 }
 
 .navbar-nav .nav-link {
-  color: #1f314f;
+  color: #ffffff !important;
   font-weight: 700;
   font-size: 1.05rem;
   padding: 0.65rem 0.9rem;
@@ -108,7 +116,7 @@ body {
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-  color: #1db947;
+  color: #b8f2d0 !important;
 }
 
 .nav-icon-link {
