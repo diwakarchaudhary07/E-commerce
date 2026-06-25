@@ -262,11 +262,12 @@ def send_otp_email(user, otp_code):
         'otp_code': otp_code,
     })
     plain_message = strip_tags(html_message)
+    from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
 
     send_mail(
         subject,
         plain_message,
-        settings.EMAIL_HOST_USER,
+        from_email,
         [user.email],
         html_message=html_message,
         fail_silently=False,
@@ -325,11 +326,16 @@ def register(request):
             otp = OTP.generate_otp(user)
             try:
                 send_otp_email(user, otp.code)
-            except Exception:
-                # don't block registration if email sending fails; still proceed to verification page
-                messages.warning(request, 'Registration created but failed to send OTP email. Contact support.')
+            except Exception as e:
+                # Clean up partial registration if email cannot be sent
+                otp.delete()
+                user.delete()
+                if hasattr(registration, 'pk'):
+                    registration.delete()
+                messages.error(request, f'Unable to send OTP email: {e}. Please try again.')
+                return render(request, 'register.html', {'form': form})
 
-            request.session['email_for_verification'] = email
+            request.session['email_for_verification'] = email.lower()
             messages.success(request, 'Registration successful! Enter the OTP sent to your email.')
             return redirect('verify_otp')
     else:
@@ -340,7 +346,8 @@ def register(request):
 
 def verify_otp(request):
     """Verify OTP for registration email verification only."""
-    email = request.session.get('email_for_verification')
+    posted_email = request.POST.get('email', '').strip().lower() if request.method == 'POST' else ''
+    email = posted_email or request.session.get('email_for_verification', '').strip().lower()
 
     if not email:
         messages.error(request, 'Invalid verification request.')
@@ -356,47 +363,45 @@ def verify_otp(request):
         messages.info(request, 'Email already verified. You can log in now.')
         return redirect('login')
 
+    form = OTPVerificationForm(request.POST or None, initial={'email': email})
+
     if request.method == 'POST':
         otp_code = request.POST.get('otp_code', '').strip()
 
         if not otp_code:
             messages.error(request, 'Please enter the OTP.')
-            return render(request, 'verify_otp.html', {'email': email, 'form': OTPVerificationForm()})
+            return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
         try:
             otp = OTP.objects.get(user=user)
 
             if otp.is_expired():
                 messages.error(request, 'OTP has expired. Please request a new one.')
-                return render(request, 'verify_otp.html', {'email': email, 'form': OTPVerificationForm()})
+                return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
             if otp.verify(otp_code):
                 user.is_email_verified = True
                 user.is_active = True
                 user.save()
                 send_welcome_email(user)
-                # remove session key used for verification
-                try:
-                    del request.session['email_for_verification']
-                except KeyError:
-                    pass
+                request.session.pop('email_for_verification', None)
                 messages.success(request, 'Registration successful! Your email has been verified and you can now log in.')
                 return redirect('login')
             else:
                 messages.error(request, 'Invalid OTP. Please try again.')
-                return render(request, 'verify_otp.html', {'email': email, 'form': OTPVerificationForm()})
+                return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
         except OTP.DoesNotExist:
             messages.error(request, 'OTP not found. Please request a new one.')
             return redirect('register')
 
-    return render(request, 'verify_otp.html', {'email': email, 'form': OTPVerificationForm()})
+    return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
 
 def resend_otp(request):
     """Resend OTP to user email"""
     if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
+        email = request.POST.get('email', '').strip().lower() or request.session.get('email_for_verification', '').strip().lower()
 
         if not email:
             messages.error(request, 'Please enter your email.')
@@ -449,7 +454,7 @@ def send_test_email(request):
         if form.is_valid():
             subject = form.cleaned_data['subject']
             message_body = form.cleaned_data['message']
-            recipient_email = form.cleaned_data['taucrecrulovau-1861@yopmail.com']
+            recipient_email = form.cleaned_data['recipient_email']
             from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
             try:
                 send_mail(
