@@ -91,7 +91,9 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'boyroyal4853@gmail.com'
 EMAIL_HOST_PASSWORD = 'nqykbpcpcrugdxpt'
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'boyroyal4853@gmail.com'
+EMAIL_USE_SSL = False
+EMAIL_TIMEOUT = 20
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 # Password validation
