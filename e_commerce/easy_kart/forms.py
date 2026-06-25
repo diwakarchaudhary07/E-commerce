@@ -47,6 +47,10 @@ class RegisterForm(forms.ModelForm):
 
 
 class OTPVerificationForm(forms.Form):
+    email = forms.EmailField(
+        required=False,
+        widget=forms.HiddenInput(),
+    )
     otp_code = forms.CharField(
         max_length=6,
         min_length=6,
