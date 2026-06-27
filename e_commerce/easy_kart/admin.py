@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, OTP, Category, Announcement, Registration, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem
+from .models import CustomUser, OTP, Category, Announcement, Registration, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem ,TeamMember
 
 
 class CustomUserAdmin(UserAdmin):
@@ -84,13 +84,13 @@ admin.site.register(OTP, OTPAdmin)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'discount', 'color_code', 'is_active', 'created_at')
+    list_display = ('name', 'category', 'price', 'discount', 'color_code', 'is_buy_now_available', 'is_active', 'created_at')
     list_filter = ('category', 'is_active', 'created_at')
     search_fields = ('name', 'description', 'category__name')
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
         ('Product Information', {
-            'fields': ('name', 'slug', 'category', 'image', 'color_code', 'description', 'price', 'discount', 'is_active')
+            'fields': ('name', 'slug', 'category', 'image', 'color_code', 'description', 'price', 'discount', 'is_buy_now_available', 'is_active')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -239,3 +239,15 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Order, OrderAdmin)
+
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = (
+        'employee_name',
+        'role',
+    )
+    search_fields = (
+        'employee_name',
+        'role',
+    )
+
+admin.site.register(TeamMember, TeamMemberAdmin)
