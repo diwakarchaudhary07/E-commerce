@@ -1,8 +1,21 @@
 {% extends 'base.html' %}
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
 {% block content %}
-  <div class="py-4">
-    <h1 class="h3 mb-3">{{ heading }}</h1>
-    <p>This is the Shipping Policy placeholder. Add your shipping policy content here.</p>
+  <div class="py-5">
+    <div class="container">
+      <h1 class="display-6 mb-4">{{ heading }}</h1>
+      <p class="text-muted">Fast, reliable delivery is part of our promise. Learn how we ship your orders and what to expect at every step of the process.</p>
+      <h3 class="mt-4">Delivery Areas</h3>
+      <p>We deliver across India with standard shipping available nationwide. Some remote areas may require additional delivery time.</p>
+      <h3 class="mt-4">Shipping Timeframes</h3>
+      <ul>
+        <li>Standard shipping: 3–7 business days.</li>
+        <li>Express shipping: 1–3 business days.</li>
+      </ul>
+      <h3 class="mt-4">Order Tracking</h3>
+      <p>After your order ships, we will send a confirmation email with tracking details. Use that link to check the status of your delivery.</p>
+      <h3 class="mt-4">Shipping Charges</h3>
+      <p>Shipping charges depend on order weight, size, and destination. Free shipping may apply to orders over a specified amount.</p>
+    </div>
   </div>
 {% endblock %}

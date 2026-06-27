@@ -5,6 +5,10 @@
 
 {% block extra_head %}
 <style>
+  html,
+  body {
+    height: 100%;
+  }
   #heroBanner {
     width: 100vw;
     position: relative;
@@ -13,25 +17,56 @@
     margin-left: -50vw;
     margin-right: -50vw;
     min-height: 100vh;
+    height: 100vh;
     overflow: hidden;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
     z-index: 0;
   }
   #heroBanner .carousel-item,
   #heroBanner .carousel-item img {
     width: 100%;
     min-height: 100vh;
+    height: 100vh;
   }
   #heroBanner .carousel-item img {
     object-fit: cover;
   }
+  #heroBanner .carousel-indicators button {
+    background-color: rgba(25, 98, 255, 0.65);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+  #heroBanner .carousel-indicators .active {
+    background-color: #ffffff;
+  }
+  #heroBanner .carousel-control-prev-icon,
+  #heroBanner .carousel-control-next-icon {
+    filter: invert(100%);
+  }
+  .hero-fullscreen {
+    min-height: 45vh;
+    background: linear-gradient(135deg, rgba(9, 40, 101, 0.92) 0%, rgba(25, 98, 255, 0.78) 100%);
+    color: #ffffff;
+  }
+  .hero-fullscreen h1,
+  .hero-fullscreen p {
+    color: #ffffff;
+  }
+  .hero-fullscreen .btn-primary {
+    background-color: #1962ff;
+    border-color: #1962ff;
+  }
+  .hero-fullscreen .btn-primary:hover {
+    background-color: #0f4ee0;
+    border-color: #0f4ee0;
+  }
+
   @media (max-width: 768px) {
     #heroBanner {
-      min-height: 70vh;
+      height: 70vh;
     }
     #heroBanner .carousel-item,
     #heroBanner .carousel-item img {
-      min-height: 70vh;
+      height: 70vh;
     }
   }
 </style>
@@ -47,16 +82,11 @@
     </div>
     <div class="carousel-inner">
       <div class="carousel-item active">
-        <img src="{% static 'assets/Banner1.png' %}" class="d-block w-100" alt="Banner 1">
+        <img src="{% static 'assets/banner1.png' %}" class="d-block w-100" alt="Banner 1">
       </div>
+      <!-- Banner 2 removed as requested -->
       <div class="carousel-item">
-        <img src="{% static 'assets/Banner2.png' %}" class="d-block w-100" alt="Banner 2">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'assets/Banner3.jpeg' %}" class="d-block w-100" alt="Banner 3">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'assets/Banner4.png' %}" class="d-block w-100" alt="Banner 4">
+        <img src="{% static 'assets/banner3.png' %}" class="d-block w-100" alt="Banner 3">
       </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#heroBanner" data-bs-slide="prev">
@@ -69,14 +99,6 @@
     </button>
   </div>
 
-  <section class="hero-fullscreen bg-light d-flex align-items-center mb-4">
-    <div class="container text-center">
-      <h1 class="display-5 fw-bold">Welcome to Easy Kart</h1>
-      <p class="col-md-8 fs-4 mx-auto">A simple demo storefront using Bootstrap components. Browse featured products below.</p>
-      <a class="btn btn-primary btn-lg" href="{% url 'product' %}" role="button">Shop Now</a>
-    </div>
-  </section>
-  
   <!-- Categories -->
   <section class="container mb-5">
     <h3 class="mb-4">Categories</h3>

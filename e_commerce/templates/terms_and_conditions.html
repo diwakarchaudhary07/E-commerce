@@ -1,8 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
 {% block content %}
-  <div class="py-4">
-    <h1 class="h3 mb-3">{{ heading }}</h1>
-    <p>This is the Terms & Conditions placeholder. Add your terms content here.</p>
+  <div class="py-5">
+    <div class="container">
+      <h1 class="display-6 mb-4">{{ heading }}</h1>
+      <p class="text-muted">These terms govern your use of our website and services. By placing an order, you agree to the terms below.</p>
+      <h3 class="mt-4">Order Acceptance</h3>
+      <p>All orders are subject to availability and confirmation of the order price. Easy Kart reserves the right to refuse any order.</p>
+      <h3 class="mt-4">Pricing and Payment</h3>
+      <p>Product prices are shown in Indian Rupees (INR). Payment must be received in full before order fulfillment. We accept the payment methods listed at checkout.</p>
+      <h3 class="mt-4">Returns and Cancellations</h3>
+      <p>Return and cancellation requests are handled according to our refund policy. Please review that page for detailed instructions.</p>
+      <h3 class="mt-4">Limitations of Liability</h3>
+      <p>Easy Kart is not liable for indirect, incidental, or consequential damages arising from your use of the website.</p>
+    </div>
   </div>
 {% endblock %}

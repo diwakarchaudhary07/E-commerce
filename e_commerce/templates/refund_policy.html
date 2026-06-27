@@ -1,8 +1,20 @@
 {% extends 'base.html' %}
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
 {% block content %}
-  <div class="py-4">
-    <h1 class="h3 mb-3">{{ heading }}</h1>
-    <p>This is the Refund Policy placeholder. Add your refund policy content here.</p>
+  <div class="py-5">
+    <div class="container">
+      <h1 class="display-6 mb-4">{{ heading }}</h1>
+      <p class="text-muted">We want you to be satisfied with every purchase. If you are not completely happy with your order, our refund policy outlines how to submit a request and what to expect.</p>
+      <h3 class="mt-4">Refund Eligibility</h3>
+      <p>Refund requests must be submitted within 14 days of delivery. Items must be unused, in original packaging, and accompanied by a receipt or proof of purchase.</p>
+      <h3 class="mt-4">How to Request a Refund</h3>
+      <ul>
+        <li>Contact our support team with your order number.</li>
+        <li>Provide details about the issue and attach photos if applicable.</li>
+        <li>Ship the item back to our returns address if requested.</li>
+      </ul>
+      <h3 class="mt-4">Refund Process</h3>
+      <p>Once we receive your returned item, we will inspect it and notify you of the refund approval. Approved refunds are issued to the original payment method within 7-10 business days.</p>
+    </div>
   </div>
 {% endblock %}

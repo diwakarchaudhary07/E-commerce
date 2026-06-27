@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
 {% block content %}
-  <div class="py-4">
-    <h1 class="h3 mb-3">{{ heading }}</h1>
-    <ul>
-      <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
-      <li><a href="{% url 'refund_policy' %}">Refund Policy</a></li>
-      <li><a href="{% url 'shipping_policy' %}">Shipping Policy</a></li>
-      <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
-      <li><a href="{% url 'our_mission' %}">Our Mission</a></li>
-      <li><a href="{% url 'our_vision' %}">Our Vision</a></li>
-    </ul>
+  <div class="py-5">
+    <div class="container">
+      <h1 class="display-6 mb-4">{{ heading }}</h1>
+      <p class="lead text-muted">Find the essential store policies and brand philosophy all in one place.</p>
+      <div class="list-group mt-4">
+        <a class="list-group-item list-group-item-action" href="{% url 'privacy_policy' %}">Privacy Policy</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'refund_policy' %}">Refund Policy</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'shipping_policy' %}">Shipping Policy</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'terms_and_conditions' %}">Terms & Conditions</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'our_mission' %}">Our Mission</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'our_vision' %}">Our Vision</a>
+      </div>
+    </div>
   </div>
 {% endblock %}

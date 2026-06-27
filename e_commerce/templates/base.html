@@ -13,7 +13,7 @@
 </head>
 <body>
     {% if announcements %}
-    <div class="announcement-bar bg-secondary text-white py-2">
+    <div class="announcement-bar bg-announcement text-white py-2">
         <div class="container-fluid px-0 announcement-content">
             <div class="announcement-marquee-wrapper">
                 <div class="announcement-marquee">
@@ -29,56 +29,58 @@
     </div>
     {% endif %}
 
-    <nav class="navbar navbar-expand-lg navbar-dark border-bottom shadow-sm sticky-top">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <img src="{% static 'assets/logo3.png' %}" alt="Easy Kart" class="navbar-logo-pro">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm easykart-navbar">
+        <div class="container-fluid px-3 px-lg-4">
+            <a class="navbar-brand d-flex align-items-center me-3" href="{% url 'home' %}">
+                <img src="{% static 'assets/logonew.png' %}" alt="Easy Kart" class="navbar-logo-pro">
             </a>
 
-            <form class="d-none d-lg-flex ms-3" action="{% url 'product' %}" method="get">
-                <div class="input-group">
-                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search products">
-                    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#easyKartNavbar" aria-controls="easyKartNavbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'product' %}">Products</a></li>
+            <div class="collapse navbar-collapse" id="easyKartNavbar">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'product' %}">Product</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'category' %}">Category</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about_us' %}">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'wishlist' %}">Wishlist</a></li>
-                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about_us' %}">About Us</a></li>
                 </ul>
 
-                <div class="d-flex align-items-center gap-3">
-                    <a class="nav-icon-link" href="{% url 'wishlist' %}" title="Wishlist"><i class="bi bi-heart"></i></a>
-                    <a class="nav-icon-link" href="{% url 'cart' %}" title="Cart"><i class="bi bi-cart"></i></a>
-
-                    <div class="dropdown">
-                        <a class="nav-icon-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                            {% if user.is_authenticated %}
-                                <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                            {% else %}
-                                <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
-                                <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
+                <div class="d-flex ms-auto align-items-center">
+                    <ul class="navbar-nav mb-2 mb-lg-0 align-items-center easykart-header-actions">
+                        <li class="nav-item mx-2">
+                            <a class="nav-link easykart-icon-link p-2 text-center" href="{% url 'wishlist' %}">
+                                <i class="bi bi-heart" style="font-size: 1.35rem;"></i>
+                                <div class="small">Wishlist</div>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-2 position-relative">
+                            <a class="nav-link easykart-icon-link p-2 text-center" href="{% url 'cart' %}">
+                                <i class="bi bi-cart-fill" style="font-size: 1.35rem;"></i>
+                                <div class="small">Cart</div>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary cart-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-2 dropdown text-center">
+                            <a class="nav-link dropdown-toggle easykart-icon-link p-2 text-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle" style="font-size: 1.35rem;"></i>
+                                <div class="small">Profile</div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                {% if user.is_authenticated %}
+                                    <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{% url 'login' %}">Sign In</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -101,29 +103,46 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-dark text-white mt-5 py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
-                    <img src="{% static 'assets/logo3.png' %}" alt="Easy Kart Logo" style="height: 50px;">
+    <footer class="site-footer mt-5">
+        <div class="container py-5">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <img src="{% static 'assets/logonew.png' %}" alt="Easy Kart Logo" class="footer-logo">
+                    <p class="text-muted mb-3">Your trusted online destination for quality products, fast delivery, and a smooth shopping experience.</p>
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'contact' %}" class="text-white social-link"><i class="bi bi-envelope-fill"></i></a>
+                        <a href="{% url 'contact' %}" class="text-white social-link"><i class="bi bi-telephone-fill"></i></a>
+                        <a href="{% url 'contact' %}" class="text-white social-link"><i class="bi bi-geo-alt-fill"></i></a>
+                    </div>
                 </div>
 
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h6 class="text-white">Quick Links</h6>
-                    <ul class="list-unstyled small">
-                        <li><a class="text-white" href="{% url 'quick_links' %}">Quick Links</a></li>
-                        <li><a class="text-white" href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
-                        <li><a class="text-white" href="{% url 'refund_policy' %}">Refund Policy</a></li>
-                        <li><a class="text-white" href="{% url 'shipping_policy' %}">Shipping Policy</a></li>
-                        <li><a class="text-white" href="{% url 'terms_and_conditions' %}">Terms &amp; Conditions</a></li>
-                        <li><a class="text-white" href="{% url 'our_mission' %}">Our Mission</a></li>
-                        <li><a class="text-white" href="{% url 'our_vision' %}">Our Vision</a></li>
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="footer-title">Quick Links</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{% url 'quick_links' %}">Quick Links</a></li>
+                        <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'refund_policy' %}">Refund Policy</a></li>
+                        <li><a href="{% url 'shipping_policy' %}">Shipping Policy</a></li>
+                        <li><a href="{% url 'terms_and_conditions' %}">Terms &amp; Conditions</a></li>
+                        <li><a href="{% url 'our_mission' %}">Our Mission</a></li>
+                        <li><a href="{% url 'our_vision' %}">Our Vision</a></li>
                     </ul>
                 </div>
 
-                <div class="col-md-4 text-center text-md-end small">
-                    &copy; {% now "Y" %} Easy Kart. All rights reserved.
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="footer-title">Contact</h6"
+                    <ul class="list-unstyled footer-links">
+                        <li><i class="bi bi-geo-alt-fill me-2"></i>123 Shopping Street, Sydney</li>
+                        <li><i class="bi bi-telephone-fill me-2"></i>+1 (234) 567-890</li>
+                        <li><i class="bi bi-envelope-fill me-2"></i>support@easykart.com</li>
+                    </ul>
                 </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center py-3">
+                <span>&copy; {% now "Y" %} Easy Kart. All rights reserved.</span>
+                <span>Fast Delivery • Secure Checkout • 24/7 Support</span>
             </div>
         </div>
     </footer>

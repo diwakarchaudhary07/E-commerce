@@ -11,6 +11,7 @@ urlpatterns = [
     path('wishlist/', wishlist_page, name='wishlist'),
     path('cart/', cart_page, name='cart'),
     path('contact/', contact, name='contact'),
+    path('product/buy/<slug:slug>/', buy_now, name='buy_now'),
     path('wishlist/add/<slug:slug>/', add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:product_id>/', remove_from_wishlist, name='remove_from_wishlist'),
     path('checkout/', checkout, name='checkout'),
@@ -33,4 +34,5 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('logout/', logout, name='logout'),
     path('test-email/', send_test_email, name='send_test_email'),
+    path('team/', team_members, name='team_members'),
 ]

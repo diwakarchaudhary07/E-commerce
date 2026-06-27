@@ -13,8 +13,9 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
 
 from .forms import RegisterForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm
-from .models import CustomUser, OTP, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem
+from .models import CustomUser, OTP, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem , TeamMember
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 
 def home(request):
@@ -518,6 +519,24 @@ def add_to_wishlist(request, slug):
 
 
 @login_required(login_url='login')
+def buy_now(request, slug):
+    """Add single product to session cart and redirect to checkout for quick purchase."""
+    try:
+        product = Product.objects.get(slug=slug, is_active=True)
+    except Product.DoesNotExist:
+        messages.error(request, 'Product not found or unavailable.')
+        return redirect(request.META.get('HTTP_REFERER', 'product'))
+
+    # Create a fresh cart with only this product (quantity = 1)
+    request.session['cart'] = {str(product.id): 1}
+
+    messages.info(request, f'{product.name} ready for purchase. Proceed to checkout.')
+
+    # Redirect to checkout (login_required will ensure user signs in)
+    return redirect('checkout')
+
+
+@login_required(login_url='login')
 def remove_from_wishlist(request, product_id):
     try:
         wishlist_item = WishlistItem.objects.get(user=request.user, product_id=product_id)
@@ -632,3 +651,12 @@ def logout(request):
     auth_logout(request)
     messages.success(request, 'You have been logged out successfully!')
     return redirect('home')
+
+def team_members(request):
+    members = TeamMember.objects.all()
+
+    context = {
+        'members': members
+    }
+
+    return render(request, 'team_members.html', context)

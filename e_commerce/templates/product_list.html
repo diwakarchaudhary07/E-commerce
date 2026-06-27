@@ -40,9 +40,12 @@
                         </div>
                         <div class="mt-auto gap-2 d-flex flex-wrap">
                             <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-primary btn-sm flex-grow-1">View Details</a>
-                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-sm flex-grow-1">Add to Cart</a>
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-sm">Add to Cart</a>
+                            {% if product.is_buy_now_available %}
+                                <a href="{% url 'buy_now' product.slug %}" class="btn btn-warning btn-sm ms-1">Buy Now</a>
+                            {% endif %}
                             {% if user.is_authenticated %}
-                            <a href="{% url 'add_to_wishlist' product.slug %}" class="btn btn-outline-danger btn-sm" title="Add to Wishlist">
+                            <a href="{% url 'add_to_wishlist' product.slug %}" class="btn btn-outline-danger btn-sm ms-auto" title="Add to Wishlist">
                                 <i class="bi bi-heart"></i>
                             </a>
                             {% endif %}

@@ -1,8 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
 {% block content %}
-  <div class="py-4">
-    <h1 class="h3 mb-3">{{ heading }}</h1>
-    <p>This is the Privacy Policy placeholder. Add your privacy policy content here.</p>
+  <div class="py-5">
+    <div class="container">
+      <h1 class="display-6 mb-4">{{ heading }}</h1>
+      <p class="text-muted">At Easy Kart, your privacy is important to us. This policy explains how we collect, use, and protect your personal data when you browse and shop with us.</p>
+      <h3 class="mt-4">Information We Collect</h3>
+      <p>We collect the information you provide when registering, placing orders, or contacting customer support. This may include your name, email address, phone number, shipping address, and payment details.</p>
+      <h3 class="mt-4">How We Use Your Information</h3>
+      <ul>
+        <li>Process and ship your orders.</li>
+        <li>Provide customer support and updates about your purchases.</li>
+        <li>Improve our product selection and shopping experience.</li>
+        <li>Send promotional offers only when you opt in.</li>
+      </ul>
+      <h3 class="mt-4">Your Privacy Rights</h3>
+      <p>You may review, update, or request deletion of your personal information by contacting our support team. We do not sell your personal data to third parties.</p>
+      <h3 class="mt-4">Data Security</h3>
+      <p>We use industry-standard measures to secure your data and protect it from unauthorized access. However, no system is completely secure, and we encourage you to use strong passwords.</p>
+    </div>
   </div>
 {% endblock %}

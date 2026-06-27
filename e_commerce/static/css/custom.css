@@ -1,3 +1,52 @@
+/* Announcement bar styling */
+.bg-announcement {
+    background: #d8f5d8;
+}
+
+.announcement-bar {
+    color: #0f5132;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid rgba(15, 81, 50, 0.15);
+}
+
+.announcement-content {
+    overflow: hidden;
+}
+
+.announcement-marquee-wrapper {
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+}
+
+.announcement-marquee {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: scroll-announcement 20s linear infinite;
+}
+
+.announcement-message {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1.8rem;
+}
+
+.announcement-sep {
+    opacity: 0.55;
+}
+
+@keyframes scroll-announcement {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
 /* Custom styles for Easy Kart product and category pages */
 body {
     background: #f8f9fa;
@@ -12,8 +61,212 @@ body {
     height: 260px;
 }
 
+.navbar-logo-pro,
+.footer-logo {
+    max-height: 70px;
+    height: auto;
+    width: auto;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+.footer-logo {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+/* Navbar Styling */
+:root {
+    --ek-navy: #0b2a5f;
+    --ek-navy-dark: #071b3a;
+    --ek-blue: #1962ff;
+    --ek-accent: #0f4ee0;
+    --ek-muted: #6b7a91;
+}
+
+.easykart-navbar {
+    padding: 0.95rem 0;
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(11, 42, 95, 0.08);
+}
+
+.easykart-navbar .navbar-brand {
+    margin-right: 1.5rem;
+    padding: 0;
+}
+
 .navbar-logo-pro {
-    max-height: 50px;
+    background: transparent !important;
+    padding: 0;
+    margin: 0;
+    max-height: 56px;
+}
+
+.easykart-search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.easykart-search .input-group {
+    width: 100%;
+    max-width: 720px;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(11, 42, 95, 0.08);
+}
+
+.easykart-search .form-control {
+    border: 0;
+    padding: 1rem 1.35rem;
+    background: #f6f9ff;
+    min-height: 60px;
+    border-radius: 0;
+}
+
+.easykart-search .form-control:focus {
+    box-shadow: none;
+}
+
+.easykart-search .btn-primary {
+    background-color: var(--ek-blue);
+    border-color: var(--ek-blue);
+    border-radius: 0;
+    min-height: 60px;
+    padding: 0 1.15rem;
+    box-shadow: 0 12px 32px rgba(25, 98, 255, 0.16);
+}
+
+.easykart-search .btn-primary i {
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.easykart-header-actions .easykart-icon-link {
+    color: var(--ek-navy);
+    text-decoration: none;
+    opacity: 0.95;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 18px;
+    transition: all 0.22s ease;
+}
+
+.easykart-header-actions .easykart-icon-link .small {
+    color: var(--ek-muted);
+}
+
+.easykart-header-actions .easykart-icon-link:hover {
+    color: var(--ek-blue);
+    background: rgba(25, 98, 255, 0.08);
+}
+
+.easykart-header-actions .cart-badge {
+    background: var(--ek-blue);
+    min-width: 1.9rem;
+    min-height: 1.9rem;
+    font-size: 0.75rem;
+    line-height: 1.9rem;
+}
+
+.easykart-menu {
+    background: linear-gradient(180deg, var(--ek-navy) 0%, var(--ek-navy-dark) 100%);
+    border: none;
+    box-shadow: 0 18px 60px rgba(11, 42, 95, 0.18);
+    border-radius: 0 0 26px 26px;
+    margin-top: -0.75rem;
+    z-index: 1020;
+    min-height: 72px;
+}
+
+.easykart-menu .navbar-collapse {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.easykart-menu .btn-all-categories {
+    border-radius: 999px;
+    padding: 0.75rem 1.2rem;
+    font-weight: 700;
+    background: #ffffff;
+    color: var(--ek-navy);
+    box-shadow: 0 16px 34px rgba(11, 42, 95, 0.12);
+    transition: background 0.25s ease;
+}
+
+.easykart-menu .btn-all-categories:hover {
+    background: #f3f7ff;
+}
+
+.easykart-menu .nav-link {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    transition: all 0.22s ease;
+    min-width: 110px;
+    text-align: center;
+}
+
+.easykart-menu .nav-link:hover,
+.easykart-menu .nav-link:focus {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.easykart-menu .navbar-nav {
+    gap: 0.35rem;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+@media (max-width: 991px) {
+    .easykart-navbar {
+        padding: 0.75rem 0;
+    }
+
+    .easykart-navbar .navbar-nav {
+        margin-top: 1rem;
+    }
+
+    .easykart-header-actions {
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .easykart-menu {
+        border-radius: 0 0 18px 18px;
+    }
+
+    .easykart-menu .navbar-nav {
+        width: 100%;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .easykart-search {
+        margin-top: 1rem;
+        width: 100%;
+    }
+
+    .easykart-header-actions {
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
 }
 
 .product-category-badge {
@@ -25,10 +278,35 @@ body {
     min-height: 220px;
 }
 
-.footer a {
-    color: rgba(255, 255, 255, 0.85);
+..site-footer {
+    background: linear-gradient(180deg, #0b2a5f 0%, #071b3a 100%);
+    color: rgba(255, 255, 255, 0.92);
 }
 
-.footer a:hover {
+.site-footer a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+}
+
+.site-footer a:hover,
+.site-footer a:focus {
     color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer-title {
+    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links li i {
+    color: rgba(255, 255, 255, 0.7);
 }

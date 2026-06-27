@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
 {% block content %}
-  <div class="py-4">
-    <h1 class="h3 mb-3">{{ heading }}</h1>
-    <p>This is the Our Mission placeholder. Add your mission statement here.</p>
+  <div class="py-5">
+    <div class="container">
+      <h1 class="display-6 mb-4">{{ heading }}</h1>
+      <p class="lead text-muted">At Easy Kart, our mission is to make quality products accessible to everyone through a reliable, enjoyable online shopping experience.</p>
+      <ul class="mt-4">
+        <li>Deliver fast, convenient shopping for customers across India.</li>
+        <li>Offer trusted products at competitive prices.</li>
+        <li>Create a supportive and easy-to-use online store for every shopper.</li>
+      </ul>
+    </div>
   </div>
 {% endblock %}
