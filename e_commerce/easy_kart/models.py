@@ -143,6 +143,8 @@ class Product(models.Model):
 	description = models.TextField(blank=True)
 	price = models.DecimalField(max_digits=10, decimal_places=2)
 	discount = models.PositiveIntegerField(default=0, help_text='Discount percentage')
+	# Allow merchant to specify whether product can be purchased immediately via Buy Now
+	is_buy_now_available = models.BooleanField(default=True, help_text='If enabled, shows Buy Now button to purchase immediately')
 	is_active = models.BooleanField(default=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
@@ -322,3 +324,12 @@ class OrderItem(models.Model):
 	def save(self, *args, **kwargs):
 		self.total_price = self.unit_price * self.quantity
 		super().save(*args, **kwargs)
+
+class TeamMember(models.Model):
+    employee_image = models.ImageField(upload_to='team_members/')
+    employee_name = models.CharField(max_length=100)
+    role = models.CharField(max_length=100)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.employee_name
