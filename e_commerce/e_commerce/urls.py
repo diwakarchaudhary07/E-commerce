@@ -22,6 +22,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('easy_kart.urls')),
+    # Include Django auth views (login/logout/password change/reset)
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:
