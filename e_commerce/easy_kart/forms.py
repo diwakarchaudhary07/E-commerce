@@ -2,7 +2,7 @@
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
-from .models import CustomUser, Registration
+from .models import CustomUser
 from .models import Profile, Contact
 
 
@@ -18,7 +18,8 @@ class RegisterForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Registration
+        # Use CustomUser so registration writes directly to the user table.
+        model = CustomUser
         fields = ['full_name', 'email', 'password']
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -28,8 +29,10 @@ class RegisterForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if CustomUser.objects.filter(email=email).exists():
-            raise ValidationError('Email is already registered.')
+        if email:
+            email = email.strip().lower()
+            if CustomUser.objects.filter(email__iexact=email).exists():
+                raise ValidationError('Email is already registered.')
         return email
 
     def clean(self):
@@ -44,6 +47,69 @@ class RegisterForm(forms.ModelForm):
             validate_password(password)
 
         return cleaned_data
+
+    def save(self, commit=True):
+        """Create and return a new `CustomUser` with a properly hashed password.
+
+        Ensures a username exists (generated from email) and avoids writing
+        plaintext passwords to the database.
+        """
+        user = super().save(commit=False)
+        email = (self.cleaned_data.get('email') or '').strip().lower()
+        password = self.cleaned_data.get('password')
+
+        # Ensure a username exists; make it unique using a short uuid suffix.
+        if not getattr(user, 'username', None):
+            base_username = email.split('@')[0] if email else 'user'
+            import uuid as _uuid
+            user.username = f"{base_username}_{_uuid.uuid4().hex[:6]}"
+
+        # Normalize and assign email/full name
+        user.email = email
+        user.full_name = self.cleaned_data.get('full_name', '')
+
+        # Hash password
+        if password:
+            user.set_password(password)
+
+        # Set sensible defaults for required fields that might not be present
+        if not getattr(user, 'mobile_no', None):
+            user.mobile_no = ''
+        if not getattr(user, 'address', None):
+            user.address = ''
+
+        # Mark user inactive until email verification completes
+        user.is_active = False
+        user.is_email_verified = False
+
+        if commit:
+            user.save()
+
+        return user
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your email',
+        }),
+        label='Email',
+    )
+    password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your password',
+        }),
+        label='Password',
+    )
+    remember_me = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Remember me',
+    )
 
 
 class OTPVerificationForm(forms.Form):
