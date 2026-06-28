@@ -4,8 +4,16 @@
 {% block title %}My Wishlist | Easy Kart{% endblock %}
 
 {% block header_banner %}
-<div class="mb-4">
-    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Wishlist Banner" style="max-height: 280px; object-fit: cover;">
+<div class="mb-4 wishlist-hero">
+    <img src="{% static 'assets/wishlist banner.png' %}" class="img-fluid w-100" alt="Wishlist Banner" style="max-height: 420px; object-fit: cover;">
+    <div class="wishlist-hero-overlay"></div>
+    <div class="container position-absolute" style="top: 40px; left: 40px; z-index: 3;">
+        <h2 class="text-white fw-bold">My Wishlist</h2>
+    </div>
+    <style>
+        .wishlist-hero{ position: relative; overflow: hidden; border-radius: 8px; }
+        .wishlist-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,25,60,0.15), rgba(25,98,255,0.08)); }
+    </style>
 </div>
 {% endblock %}
 
@@ -22,11 +30,11 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm hover-shadow" style="transition: all 0.3s ease;">
                     <!-- Product Image -->
-                    <div style="position: relative; overflow: hidden; height: 260px;">
+                    <div style="position: relative; overflow: hidden; height: 180px;">
                         {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" class="card-img-top" alt="{{ item.product.name }}" style="object-fit: cover; height: 260px; width: 100%;">
+                            <img src="{{ item.product.image.url }}" class="card-img-top" alt="{{ item.product.name }}" style="object-fit: cover; height: 180px; width: 100%;">
                         {% else %}
-                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 260px;">
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
                                 <span class="text-muted">No Image</span>
                             </div>
                         {% endif %}
@@ -88,7 +96,7 @@
                             <a href="{% url 'product_detail' item.product.slug %}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> View Details
                             </a>
-                            <a href="{% url 'add_to_cart' item.product.slug %}" class="btn btn-primary btn-sm">
+                            <a href="{% url 'add_to_cart' item.product.id %}" class="btn btn-primary btn-sm">
                                 <i class="bi bi-cart-plus"></i> Add to Cart
                             </a>
                             <form method="POST" action="{% url 'remove_from_wishlist' item.product.id %}" class="d-inline">

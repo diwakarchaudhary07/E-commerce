@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In — Easy Kart{% endblock %}
+
+{% block header_banner %}
+  <div class="mb-4">
+    <img src="{% static 'assets/banners/banner1.jpg' %}" class="img-fluid w-100" alt="Banner" style="max-height: 300px; object-fit: cover;">
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title mb-4">Sign In</h2>
+
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            Please correct the error below.
+          </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_username" class="form-label">Username or Email</label>
+            <input id="id_username" class="form-control" name="username" type="text" value="{{ request.POST.username|default:'' }}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            <input id="id_password" class="form-control" name="password" type="password" required>
+          </div>
+
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="id_remember" name="remember_me">
+            <label class="form-check-label" for="id_remember">Remember me</label>
+          </div>
+
+          <input type="hidden" name="next" value="{{ next }}">
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+
+        <hr>
+        <p class="mb-0">Don't have an account? <a href="{% url 'register' %}">Create one</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

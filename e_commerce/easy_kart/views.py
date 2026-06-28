@@ -1,5 +1,4 @@
 ﻿import uuid
-
 from decimal import Decimal
 
 from django.conf import settings
@@ -8,14 +7,17 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
+from .email_utils import send_otp_email, send_welcome_email
 
-from .forms import RegisterForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm
-from .models import CustomUser, OTP, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem , TeamMember
+from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm
+from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 def home(request):
@@ -255,88 +257,40 @@ def orders_page(request):
     })
 
 
-def send_otp_email(user, otp_code):
-    """Send OTP email to user"""
-    subject = 'Email Verification OTP - ShopSphere'
-    html_message = render_to_string('otp_email.html', {
-        'full_name': user.full_name,
-        'otp_code': otp_code,
-    })
-    plain_message = strip_tags(html_message)
-    from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
-
-    send_mail(
-        subject,
-        plain_message,
-        from_email,
-        [user.email],
-        html_message=html_message,
-        fail_silently=False,
-    )
-
-
-def send_welcome_email(user):
-    """Send welcome email to user after verification"""
-    subject = 'Welcome to ShopSphere!'
-    html_message = render_to_string('welcome_email.html', {
-        'full_name': user.full_name,
-    })
-    plain_message = strip_tags(html_message)
-
-    send_mail(
-        subject,
-        plain_message,
-        settings.EMAIL_HOST_USER,
-        [user.email],
-        html_message=html_message,
-        fail_silently=False,
-    )
-
-
+@ensure_csrf_cookie
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            full_name = form.cleaned_data['full_name']
-            email = form.cleaned_data['email'].lower()
-            password = form.cleaned_data['password']
-
-            base_username = email.split('@')[0]
-            unique_username = f"{base_username}_{uuid.uuid4().hex[:6]}"
-
+            # Attempt to create user inside a transaction to avoid partial state
             try:
-                registration = form.save(commit=False)
-                registration.password = make_password(password)
-                registration.is_active = False
-                registration.save()
-                # use create_user to ensure password is set properly
-                user = CustomUser.objects.create_user(
-                    username=unique_username,
-                    email=email,
-                    password=password,
-                    full_name=full_name,
-                    is_active=False,
-                    is_email_verified=False,
-                    mobile_no='',
-                    address='',
-                )
+                with transaction.atomic():
+                    user = form.save(commit=False)
+                    user.is_active = False # Keep user inactive until OTP verification
+                    user.save()
+            except IntegrityError:
+                form.add_error('email', 'A user with this email already exists.')
+                return render(request, 'register.html', {'form': form})
             except Exception as e:
                 messages.error(request, f'Error creating account: {e}')
                 return render(request, 'register.html', {'form': form})
 
-            otp = OTP.generate_otp(user)
+            # Generate OTP and send email; if sending fails, delete the inactive user
             try:
-                send_otp_email(user, otp.code)
-            except Exception as e:
-                # Clean up partial registration if email cannot be sent
-                otp.delete()
-                user.delete()
-                if hasattr(registration, 'pk'):
-                    registration.delete()
-                messages.error(request, f'Unable to send OTP email: {e}. Please try again.')
+                otp_code = user.generate_email_otp()
+                send_otp_email(user, otp_code)
+            except Exception:
+                try:
+                    user.delete()
+                except Exception:
+                    pass
+                messages.error(request, 'Unable to send OTP email. Please try again later.')
                 return render(request, 'register.html', {'form': form})
 
-            request.session['email_for_verification'] = email.lower()
+            request.session['email_for_verification'] = user.email.lower()
             messages.success(request, 'Registration successful! Enter the OTP sent to your email.')
             return redirect('verify_otp')
     else:
@@ -345,6 +299,7 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
+@ensure_csrf_cookie
 def verify_otp(request):
     """Verify OTP for registration email verification only."""
     posted_email = request.POST.get('email', '').strip().lower() if request.method == 'POST' else ''
@@ -373,28 +328,25 @@ def verify_otp(request):
             messages.error(request, 'Please enter the OTP.')
             return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
-        try:
-            otp = OTP.objects.get(user=user)
-
-            if otp.is_expired():
-                messages.error(request, 'OTP has expired. Please request a new one.')
-                return render(request, 'verify_otp.html', {'email': email, 'form': form})
-
-            if otp.verify(otp_code):
-                user.is_email_verified = True
-                user.is_active = True
-                user.save()
-                send_welcome_email(user)
-                request.session.pop('email_for_verification', None)
-                messages.success(request, 'Registration successful! Your email has been verified and you can now log in.')
-                return redirect('login')
-            else:
-                messages.error(request, 'Invalid OTP. Please try again.')
-                return render(request, 'verify_otp.html', {'email': email, 'form': form})
-
-        except OTP.DoesNotExist:
-            messages.error(request, 'OTP not found. Please request a new one.')
+        if not user.email_otp_code:
+            messages.error(request, 'No OTP was sent to this account. Please register again.')
             return redirect('register')
+
+        if user.is_otp_expired():
+            messages.error(request, 'OTP has expired. Please resend a new one.')
+            return render(request, 'verify_otp.html', {'email': email, 'form': form})
+
+        if user.verify_email_otp(otp_code):
+            user.is_email_verified = True
+            user.is_active = True
+            user.save()
+            send_welcome_email(user)
+            request.session.pop('email_for_verification', None)
+            messages.success(request, 'Registration successful! Your email has been verified and you can now log in.')
+            return redirect('login')
+        else:
+            messages.error(request, 'Invalid OTP. Please try again.')
+            return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
     return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
@@ -410,8 +362,8 @@ def resend_otp(request):
         try:
             # Only allow resending OTP for registration verification
             user = CustomUser.objects.get(email=email, is_email_verified=False)
-            otp = OTP.generate_otp(user)
-            send_otp_email(user, otp.code)
+            otp_code = user.generate_email_otp()
+            send_otp_email(user, otp_code)
             messages.success(request, 'OTP resent successfully. Check your email.')
             request.session['email_for_verification'] = email
             return redirect('verify_otp')
@@ -598,53 +550,42 @@ def our_vision(request):
     })
 
 
-def logout(request):
-    """Logout user"""
-    auth_logout(request)
-    messages.success(request, 'You have been logged out successfully.')
-    return redirect('home')
-
 def login(request):
     if request.user.is_authenticated:
         return redirect('home')
 
+    form = LoginForm(request.POST or None)
     if request.method == 'POST':
-        # Password login only
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        remember_me = request.POST.get('remember_me')
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            remember_me = form.cleaned_data.get('remember_me', False)
 
-        if not email or not password:
-            messages.error(request, 'Email and password are required!')
-            return redirect('login')
-
-        user = CustomUser.objects.filter(email=email).first()
-        if not user:
-            messages.error(request, 'Invalid email or password!')
-            return redirect('login')
-
-        if not user.is_email_verified:
-            messages.warning(request, 'Please verify your email first before logging in.')
-            request.session['email_for_verification'] = email
-            return redirect('verify_otp')
-
-        # Django's default authentication backend authenticates by username, not by email.
-        authenticated_user = authenticate(request, username=user.username, password=password)
-        if authenticated_user is not None:
-            auth_login(request, authenticated_user)
-
-            if remember_me:
-                request.session.set_expiry(1209600)
+            user = CustomUser.objects.filter(email__iexact=email).first()
+            if not user:
+                messages.error(request, 'Invalid email or password!')
+            elif not user.is_email_verified:
+                messages.warning(request, 'Please verify your email before logging in.')
+                request.session['email_for_verification'] = email
+                return redirect('verify_otp')
             else:
-                request.session.set_expiry(0)
-
-            messages.success(request, f'Welcome back, {authenticated_user.full_name}!')
-            return redirect('home')
+                # Use email for authentication kwargs since we updated USERNAME_FIELD
+                authenticated_user = authenticate(request, email=email, password=password)
+                if authenticated_user is not None:
+                    auth_login(request, authenticated_user)
+                    if remember_me:
+                        request.session.set_expiry(1209600)
+                    else:
+                        request.session.set_expiry(0)
+                    
+                    messages.success(request, f'Welcome back, {authenticated_user.full_name or authenticated_user.email}!')
+                    return redirect('home')
+                else:
+                    messages.error(request, 'Invalid email or password!')
         else:
-            messages.error(request, 'Invalid email or password!')
-            return redirect('login')
+            messages.error(request, 'Please correct the errors below.')
 
-    return render(request, 'login.html')
+    return render(request, 'login.html', {'form': form})
 
 
 def logout(request):

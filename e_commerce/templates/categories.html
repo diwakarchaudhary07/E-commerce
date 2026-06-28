@@ -4,43 +4,62 @@
 {% block title %}Categories | Easy Kart{% endblock %}
 
 {% block header_banner %}
-<div class="mb-4">
-    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Categories Banner" style="max-height: 280px; object-fit: cover;">
-</div>
+<section class="category-hero position-relative mb-4">
+    <div class="category-hero-bg" style="background-image: url('{% static 'assets/category banner.png' %}');"></div>
+    <div class="category-hero-overlay"></div>
+    <div class="container position-relative" style="z-index:3;">
+        <div style="height:100vh; display:flex; align-items:center;">
+            <div>
+                <span class="badge bg-white text-primary mb-3">Categories</span>
+                <h1 class="display-3 fw-bold text-white">Browse Categories</h1>
+                <p class="lead text-white-75">Explore our curated categories and find the products you love.</p>
+            </div>
+        </div>
+    </div>
+    <style>
+        .category-hero{ overflow: hidden; border-radius: 0; height: 100vh; }
+        .category-hero-bg{ position: absolute; inset: 0; width:100%; height:100%; background-size: cover; background-position: center; }
+        .category-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,27,58,0.55) 0%, rgba(25,98,255,0.12) 100%); }
+    </style>
+</section>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3">Categories</h1>
-            <p class="text-muted mb-0">Browse available shop categories.</p>
+<div class="w-100 py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="h2 fw-bold">Categories</h1>
+                <p class="text-muted mb-0">Browse available shop categories.</p>
+            </div>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
         </div>
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
-    </div>
 
-    {% if categories %}
-    <div class="row g-4">
-        {% for category in categories %}
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                {% if category.image %}
-                <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}" style="height: 220px; object-fit: cover;">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ category.name }}</h5>
-                    <p class="card-text">{{ category.description|default:'No description available.' }}</p>
-                </div>
-                <div class="card-footer bg-white border-top-0">
-                    <a href="{% url 'category_detail' category.slug %}" class="btn btn-primary btn-sm">View Products</a>
-                    <span class="badge bg-success float-end">{{ category.is_active|yesno:'Active,Inactive' }}</span>
+        {% if categories %}
+        <div class="row g-5">
+            {% for category in categories %}
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="card h-100 shadow-lg border-0" style="transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;" 
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.2)';" 
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.1)';">
+                    {% if category.image %}
+                    <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}" style="height: 280px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold mb-3">{{ category.name }}</h5>
+                        <p class="card-text text-muted">{{ category.description|default:'No description available.' }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 p-4">
+                        <a href="{% url 'category_detail' category.slug %}" class="btn btn-primary btn-sm px-4">View Products</a>
+                        <span class="badge bg-success float-end mt-2">{{ category.is_active|yesno:'Active,Inactive' }}</span>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% else %}
+        <div class="alert alert-info">No categories found.</div>
+        {% endif %}
     </div>
-    {% else %}
-    <div class="alert alert-info">No categories found.</div>
-    {% endif %}
 </div>
 {% endblock %}

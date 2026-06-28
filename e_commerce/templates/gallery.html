@@ -4,9 +4,24 @@
 {% block title %}Gallery | Easy Kart{% endblock %}
 
 {% block header_banner %}
-<div class="mb-4">
-    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Gallery Banner" style="max-height: 280px; object-fit: cover;">
-</div>
+<section class="gallery-hero position-relative mb-4">
+    <div class="gallery-hero-bg" style="background-image: url('{% static 'assets/gallery banner.png' %}');"></div>
+    <div class="gallery-hero-overlay"></div>
+    <div class="container position-relative" style="z-index:3;">
+        <div style="min-height:100vh; display:flex; align-items:center;">
+            <div>
+                <span class="badge bg-white text-primary mb-3">Our Gallery</span>
+                <h1 class="display-3 fw-bold text-white">Discover. Explore.</h1>
+                <p class="lead text-white-75">Browse our collection of images and products.</p>
+            </div>
+        </div>
+    </div>
+    <style>
+        .gallery-hero{ overflow: hidden; border-radius: 0; }
+        .gallery-hero-bg{ position: absolute; inset: 0; width:100%; height:100%; background-size: cover; background-position: center; }
+        .gallery-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,27,58,0.55) 0%, rgba(25,98,255,0.12) 100%); }
+    </style>
+</section>
 {% endblock %}
 
 {% block content %}

@@ -6,7 +6,7 @@
 {% block header_banner %}
 <div class="mb-4">
     {% if category.image %}
-    <img src="{{ category.image.url }}" class="img-fluid w-100" alt="{{ category.name }}" style="max-height: 320px; object-fit: cover;">
+    <img src="{{ category.image.url }}" class="img-fluid w-100" alt="{{ category.name }}" style="max-height: 220px; object-fit: cover;">
     {% else %}
     <div class="bg-secondary text-white py-5 text-center">
         <h2>{{ category.name }}</h2>

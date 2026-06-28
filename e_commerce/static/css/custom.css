@@ -4,7 +4,7 @@
 }
 
 .announcement-bar {
-    color: #0f5132;
+    color: #284fc4;
     font-weight: 600;
     letter-spacing: 0.02em;
     border-bottom: 1px solid rgba(15, 81, 50, 0.15);
@@ -30,7 +30,7 @@
 .announcement-message {
     display: inline-flex;
     align-items: center;
-    margin-right: 1.8rem;
+    margin-right: 20px;
 }
 
 .announcement-sep {
@@ -57,8 +57,11 @@ body {
 }
 
 .card-img-top {
+    width: 100%;
+    max-width: 100%;
+    height: 180px;
     object-fit: cover;
-    height: 260px;
+    display: block;
 }
 
 .navbar-logo-pro,
@@ -278,7 +281,7 @@ body {
     min-height: 220px;
 }
 
-..site-footer {
+.site-footer {
     background: linear-gradient(180deg, #0b2a5f 0%, #071b3a 100%);
     color: rgba(255, 255, 255, 0.92);
 }
@@ -292,6 +295,74 @@ body {
 .site-footer a:focus {
     color: #ffffff;
     text-decoration: underline;
+}
+
+/* Profile page improvements */
+.profile-card {
+    background: #fff;
+    border: 1px solid rgba(11, 42, 95, 0.06);
+}
+
+.profile-avatar img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border: 6px solid rgba(25, 98, 255, 0.06);
+}
+
+.avatar-placeholder {
+    width: 160px;
+    height: 160px;
+    background: #f1f5ff;
+    font-size: 2.5rem;
+}
+
+.profile-card .btn-outline-primary {
+    border-color: rgba(25, 98, 255, 0.18);
+    color: var(--ek-blue);
+}
+
+.card .card-title {
+    color: var(--ek-navy);
+    font-weight: 700;
+}
+
+.list-group-item {
+    font-size: 0.95rem;
+}
+
+/* Sidebar and modal tweaks for profile */
+.sidebar-card .list-group-item {
+    border: none;
+}
+
+.sidebar-card .list-group-item.active {
+    background: linear-gradient(90deg, rgba(25, 98, 255, 0.08), rgba(11, 42, 95, 0.02));
+    color: var(--ek-navy);
+    font-weight: 600;
+}
+
+.sidebar-card .profile-avatar img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 6px solid rgba(25, 98, 255, 0.06);
+}
+
+.modal-content img.rounded-circle {
+    border: 4px solid rgba(11, 42, 95, 0.04);
+}
+
+@media (max-width: 991px) {
+    .sidebar-card {
+        margin-bottom: 1rem;
+    }
+
+    .profile-avatar img {
+        width: 120px;
+        height: 120px;
+    }
 }
 
 .footer-title {
