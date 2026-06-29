@@ -1,13 +1,13 @@
 /* Announcement bar styling */
 .bg-announcement {
-    background: #d8f5d8;
+    background: rgba(15, 78, 224, 0.18);
 }
 
 .announcement-bar {
-    color: #284fc4;
+    color: #ffffff;
     font-weight: 600;
     letter-spacing: 0.02em;
-    border-bottom: 1px solid rgba(15, 81, 50, 0.15);
+    border-bottom: 1px solid rgba(15, 78, 224, 0.25);
 }
 
 .announcement-content {
@@ -89,6 +89,8 @@ body {
 }
 
 .easykart-navbar {
+    position: static;
+    width: 100%;
     padding: 0.95rem 0;
     background-color: #ffffff;
     border-bottom: 1px solid rgba(11, 42, 95, 0.08);
