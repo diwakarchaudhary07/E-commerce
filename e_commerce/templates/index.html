@@ -52,12 +52,96 @@
     color: #ffffff;
   }
   .hero-fullscreen .btn-primary {
-    background-color: #1962ff;
-    border-color: #1962ff;
+    background-color: var(--ek-blue);
+    border-color: var(--ek-blue);
   }
   .hero-fullscreen .btn-primary:hover {
-    background-color: #0f4ee0;
-    border-color: #0f4ee0;
+    background-color: var(--ek-accent);
+    border-color: var(--ek-accent);
+  }
+
+  .home-category-slider {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .home-category-slider::-webkit-scrollbar {
+    height: 10px;
+  }
+  .home-category-slider::-webkit-scrollbar-track {
+    background: rgba(255,255,255,.6);
+    border-radius: 999px;
+  }
+  .home-category-slider::-webkit-scrollbar-thumb {
+    background: rgba(25, 98, 255, 0.35);
+    border-radius: 999px;
+  }
+  .home-category-card {
+    scroll-snap-align: center;
+    flex: 0 0 auto;
+    width: 240px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .home-category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(25, 98, 255, 0.16);
+  }
+  .home-category-circle {
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(25, 98, 255, 0.18);
+    background: linear-gradient(180deg, rgba(241, 244, 255, 0.95), rgba(227, 234, 255, 0.95));
+    position: relative;
+    margin: 0 auto;
+  }
+  .home-category-circle img,
+  .home-category-circle .home-category-fallback {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .home-category-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 78, 224, 0.15), rgba(25, 98, 255, 0.25));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .home-category-card:hover .home-category-overlay {
+    opacity: 1;
+  }
+  .home-category-title {
+    min-height: 2.5rem;
+  }
+
+  @media (max-width: 991.98px) {
+    .home-category-card {
+      width: 200px;
+    }
+    .home-category-circle {
+      width: 180px;
+      height: 180px;
+    }
+  }
+  @media (max-width: 767.98px) {
+    .home-category-card {
+      width: 170px;
+    }
+    .home-category-circle {
+      width: 150px;
+      height: 150px;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .home-category-slider {
+      padding-left: 0.5rem;
+    }
   }
 
   @media (max-width: 768px) {
@@ -101,28 +185,118 @@
 
   <!-- Categories -->
   <section class="container mb-5">
-    <h3 class="mb-4">Categories</h3>
-    <div class="row g-3">
-      {% for category in categories %}
-        <div class="col-6 col-md-3">
-          <a href="{% url 'category_detail' category.slug %}" class="text-decoration-none">
-            <div class="card h-100 text-center">
-              {% if category.image %}
-                <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}" style="height:120px; object-fit:cover;">
-              {% else %}
-                <div class="bg-light d-flex align-items-center justify-content-center" style="height:120px;">No image</div>
-              {% endif %}
-              <div class="card-body py-2">
-                <h6 class="card-title mb-0">{{ category.name }}</h6>
-              </div>
-            </div>
-          </a>
-        </div>
-      {% empty %}
-        <div class="col-12"><div class="alert alert-info">No categories available.</div></div>
-      {% endfor %}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+      <div>
+        <p class="text-secondary mb-1">Shop by category</p>
+        <h3 class="mb-0">Categories</h3>
+      </div>
+      <div class="btn-group btn-group-sm" role="group" aria-label="Category slider controls">
+        <button type="button" class="btn btn-outline-primary home-category-prev" aria-label="Previous category">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button type="button" class="btn btn-outline-primary home-category-next" aria-label="Next category">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
     </div>
+    <div class="home-category-slider d-flex gap-3 pb-3">
+      {% for category in categories %}
+        <a href="{% url 'category_detail' category.slug %}" class="home-category-card card shadow-sm border-0 text-center text-decoration-none text-dark">
+          <div class="card-body py-3">
+            <div class="home-category-circle mb-3">
+              {% if category.image %}
+                <img src="{{ category.image.url }}" alt="{{ category.name }}">
+              {% else %}
+                <div class="home-category-fallback bg-secondary d-flex align-items-center justify-content-center text-white">No image</div>
+              {% endif %}
+              <div class="home-category-overlay"></div>
+            </div>
+            <h6 class="home-category-title mb-2 fw-semibold">{{ category.name }}</h6>
+            <p class="small text-muted mb-0">{{ category.description|truncatechars:45|default:'Explore products in this category.' }}</p>
+          </div>
+        </a>
+      {% empty %}
+      <div class="col-12"><div class="alert alert-info">No categories available.</div></div>
+    {% endfor %}
+    </div>
+    <div class="text-center mt-3 small text-muted">Swipe to browse categories. Autoplay keeps the slider moving.</div>
   </section>
+
+  <script>
+  (function () {
+    const slider = document.querySelector('.home-category-slider');
+    if (!slider) return;
+
+    const card = slider.querySelector('.home-category-card');
+    const cardWidth = card ? card.offsetWidth + 24 : 260;
+    const autoplayDelay = 3200;
+    let autoplayTimer = null;
+    let isPointerDown = false;
+    let startX = 0;
+    let scrollStart = 0;
+
+    function scrollByAmount(amount) {
+      slider.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      autoplayTimer = window.setInterval(() => {
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
+        if (slider.scrollLeft >= maxScroll - 5) {
+          slider.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollByAmount(cardWidth);
+        }
+      }, autoplayDelay);
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer !== null) {
+        window.clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    }
+
+    slider.addEventListener('pointerdown', (event) => {
+      isPointerDown = true;
+      startX = event.clientX;
+      scrollStart = slider.scrollLeft;
+      stopAutoplay();
+      slider.setPointerCapture(event.pointerId);
+    });
+
+    slider.addEventListener('pointermove', (event) => {
+      if (!isPointerDown) return;
+      const delta = startX - event.clientX;
+      slider.scrollLeft = scrollStart + delta;
+    });
+
+    slider.addEventListener('pointerup', () => {
+      isPointerDown = false;
+      slider.releasePointerCapture?.();
+    });
+    slider.addEventListener('pointercancel', () => {
+      isPointerDown = false;
+    });
+
+    slider.addEventListener('mouseenter', stopAutoplay);
+    slider.addEventListener('mouseleave', startAutoplay);
+    slider.addEventListener('focusin', stopAutoplay);
+    slider.addEventListener('focusout', startAutoplay);
+
+    document.querySelector('.home-category-prev')?.addEventListener('click', () => {
+      stopAutoplay();
+      scrollByAmount(-cardWidth);
+    });
+    document.querySelector('.home-category-next')?.addEventListener('click', () => {
+      stopAutoplay();
+      scrollByAmount(cardWidth);
+    });
+
+    startAutoplay();
+  })();
+  </script>
 
   <!-- Products -->
   <section class="container mb-5">
