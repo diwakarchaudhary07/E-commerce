@@ -34,6 +34,7 @@
                         <th>Price</th>
                         <th>Qty</th>
                         <th>Total</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,8 +44,28 @@
                                 <a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a>
                             </td>
                             <td>${{ item.price|floatformat:2 }}</td>
-                            <td>{{ item.quantity }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <form method="post" action="{% url 'update_cart' item.product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="-1">
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
+                                    </form>
+                                    <span class="fw-bold">{{ item.quantity }}</span>
+                                    <form method="post" action="{% url 'update_cart' item.product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
+                                    </form>
+                                </div>
+                            </td>
                             <td>${{ item.item_total|floatformat:2 }}</td>
+                            <td>
+                                <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

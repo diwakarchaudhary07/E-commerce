@@ -1,11 +1,14 @@
 ﻿import uuid
 from decimal import Decimal
 
+import json
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
@@ -14,10 +17,70 @@ from django.utils.html import strip_tags
 from .email_utils import send_otp_email, send_welcome_email
 
 from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm
-from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember
+from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
+
+
+def _get_or_create_user_cart(request):
+    if not request.user.is_authenticated:
+        return None
+
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    session_cart = request.session.get('cart', {})
+    if session_cart:
+        for product_id, quantity in session_cart.items():
+            if not str(product_id).isdigit():
+                continue
+            try:
+                product = Product.objects.get(id=int(product_id), is_active=True)
+            except Product.DoesNotExist:
+                continue
+            item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
+            item.quantity += int(quantity)
+            item.save()
+        request.session['cart'] = {}
+    return cart
+
+
+def _build_cart_context(request):
+    if request.user.is_authenticated:
+        cart = _get_or_create_user_cart(request)
+        cart_items = []
+        total = Decimal('0.00')
+        if cart:
+            for item in cart.items.select_related('product').filter(product__is_active=True):
+                price = item.product.get_discounted_price()
+                item_total = price * item.quantity
+                cart_items.append({
+                    'product': item.product,
+                    'quantity': item.quantity,
+                    'price': price,
+                    'item_total': item_total,
+                })
+                total += item_total
+        return cart_items, total, cart
+
+    cart_data = request.session.get('cart', {})
+    product_ids = [int(pid) for pid in cart_data.keys() if str(pid).isdigit()]
+    products = Product.objects.filter(id__in=product_ids, is_active=True)
+    cart_items = []
+    total = Decimal('0.00')
+
+    for product in products:
+        quantity = cart_data.get(str(product.id), 0)
+        price = product.get_discounted_price()
+        item_total = price * quantity
+        cart_items.append({
+            'product': product,
+            'quantity': quantity,
+            'price': price,
+            'item_total': item_total,
+        })
+        total += item_total
+
+    return cart_items, total, None
 
 
 def home(request):
@@ -66,32 +129,23 @@ def category_detail(request, slug):
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_active=True)
-    cart = request.session.get('cart', {})
-    cart[str(product.id)] = cart.get(str(product.id), 0) + 1
-    request.session['cart'] = cart
+
+    if request.user.is_authenticated:
+        cart = _get_or_create_user_cart(request)
+        item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
+        item.quantity += 1
+        item.save()
+    else:
+        cart = request.session.get('cart', {})
+        cart[str(product.id)] = cart.get(str(product.id), 0) + 1
+        request.session['cart'] = cart
+
     messages.success(request, f'Added {product.name} to cart.')
     return redirect('cart')
 
 
 def cart_page(request):
-    cart_data = request.session.get('cart', {})
-    product_ids = [int(pid) for pid in cart_data.keys() if pid.isdigit()]
-    products = Product.objects.filter(id__in=product_ids)
-    cart_items = []
-    total = Decimal('0.00')
-
-    for product in products:
-        quantity = cart_data.get(str(product.id), 0)
-        price = product.get_discounted_price()
-        item_total = price * quantity
-        cart_items.append({
-            'product': product,
-            'quantity': quantity,
-            'price': price,
-            'item_total': item_total,
-        })
-        total += item_total
-
+    cart_items, total, _ = _build_cart_context(request)
     return render(request, 'cart.html', {
         'page_title': 'Cart',
         'heading': 'My Cart',
@@ -102,33 +156,38 @@ def cart_page(request):
 
 @login_required(login_url='login')
 def checkout(request):
-    cart_data = request.session.get('cart', {})
-    if not cart_data:
+    cart_items, total, cart = _build_cart_context(request)
+    if not cart_items:
         messages.info(request, 'Your cart is empty. Add some products to place an order.')
         return redirect('product')
 
-    product_ids = [int(pid) for pid in cart_data.keys() if pid.isdigit()]
-    products = Product.objects.filter(id__in=product_ids)
     order_items = []
-    total = Decimal('0.00')
-
-    for product in products:
-        quantity = cart_data.get(str(product.id), 0)
-        unit_price = product.get_discounted_price()
-        item_total = unit_price * quantity
+    for item in cart_items:
         order_items.append({
-            'product': product,
-            'quantity': quantity,
-            'unit_price': unit_price,
-            'item_total': item_total,
+            'product': item['product'],
+            'quantity': item['quantity'],
+            'unit_price': item['price'],
+            'item_total': item['item_total'],
         })
-        total += item_total
 
     if request.method == 'POST':
-        shipping_address = request.POST.get('shipping_address', '').strip() or request.user.address
+        full_name = request.POST.get('full_name', '').strip() or request.user.full_name or request.user.get_full_name() or request.user.email
+        phone_no = request.POST.get('phone_no', '').strip() or request.user.mobile_no or ''
+        alternate_phone_no = request.POST.get('alternate_phone_no', '').strip() or request.user.alternate_mobile_no or ''
+        home_address = request.POST.get('home_address', '').strip() or request.user.address or ''
+        city = request.POST.get('city', '').strip() or ''
+        pincode = request.POST.get('pincode', '').strip() or ''
+        shipping_address = '\n'.join(filter(None, [home_address, f"City: {city}" if city else '', f"Pincode: {pincode}" if pincode else ''])) or request.user.address or ''
+
         order = Order.objects.create(
             user=request.user,
             total_amount=total,
+            full_name=full_name,
+            phone_no=phone_no,
+            alternate_phone_no=alternate_phone_no,
+            home_address=home_address,
+            city=city,
+            pincode=pincode,
             shipping_address=shipping_address,
         )
 
@@ -142,7 +201,43 @@ def checkout(request):
             )
 
         order.calculate_total()
-        request.session['cart'] = {}
+
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == '1'
+        if is_ajax:
+            try:
+                import razorpay
+            except ImportError:
+                return JsonResponse({'success': False, 'message': 'Razorpay package is not installed.'}, status=400)
+
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            order_payload = {
+                'amount': int(order.total_amount * 100),
+                'currency': 'INR',
+                'receipt': str(order.id),
+                'notes': {'email': request.user.email, 'name': full_name},
+            }
+            razorpay_order = client.order.create(data=order_payload)
+            order.razorpay_order_id = razorpay_order['id']
+            order.save(update_fields=['razorpay_order_id'])
+            if cart:
+                cart.items.all().delete()
+            else:
+                request.session['cart'] = {}
+            return JsonResponse({
+                'success': True,
+                'order_id': razorpay_order['id'],
+                'key': settings.RAZORPAY_KEY_ID,
+                'amount': int(order.total_amount * 100),
+                'currency': 'INR',
+                'name': 'Easy Kart',
+                'description': 'Order payment',
+                'prefill': {'name': full_name, 'email': request.user.email, 'contact': phone_no},
+            })
+
+        if cart:
+            cart.items.all().delete()
+        else:
+            request.session['cart'] = {}
         messages.success(request, f'Your order {order.order_number} has been placed successfully!')
         return redirect('my_orders')
 
@@ -151,8 +246,57 @@ def checkout(request):
         'heading': 'Checkout',
         'order_items': order_items,
         'order_total': total,
-        'shipping_address': request.user.address,
+        'full_name': request.user.full_name or request.user.get_full_name() or '',
+        'phone_no': request.user.mobile_no or '',
+        'alternate_phone_no': request.user.alternate_mobile_no or '',
+        'home_address': request.user.address or '',
     })
+
+
+@login_required(login_url='login')
+@require_POST
+def update_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id, is_active=True)
+    cart = _get_or_create_user_cart(request)
+    if not cart:
+        messages.error(request, 'Please log in to update your cart.')
+        return redirect('cart')
+
+    item = cart.items.filter(product=product).first()
+    if not item:
+        messages.info(request, 'This product is not in your cart.')
+        return redirect('cart')
+
+    quantity_change = int(request.POST.get('quantity', 0))
+    new_quantity = item.quantity + quantity_change
+
+    if new_quantity <= 0:
+        item.delete()
+        messages.success(request, f'Removed {product.name} from your cart.')
+    else:
+        item.quantity = new_quantity
+        item.save()
+        messages.success(request, f'Updated {product.name} quantity.')
+
+    return redirect('cart')
+
+
+@login_required(login_url='login')
+@require_POST
+def remove_from_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id, is_active=True)
+    cart = _get_or_create_user_cart(request)
+    if not cart:
+        messages.error(request, 'Please log in to remove items from your cart.')
+        return redirect('cart')
+
+    item = cart.items.filter(product=product).first()
+    if item:
+        item.delete()
+        messages.success(request, f'Removed {product.name} from your cart.')
+    else:
+        messages.info(request, 'This product is not in your cart.')
+    return redirect('cart')
 
 
 @login_required(login_url='login')

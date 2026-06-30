@@ -6,15 +6,47 @@
 <div class="py-5">
     <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h1 class="mb-4">{{ heading }}</h1>
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label class="form-label">Shipping Address</label>
-                            <textarea name="shipping_address" class="form-control" rows="4">{{ shipping_address }}</textarea>
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="h3 mb-1">{{ heading }}</h1>
+                            <p class="text-muted mb-0">Fill in your delivery details and confirm your order.</p>
                         </div>
+                        <span class="badge bg-primary-subtle text-primary">Secure checkout</span>
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" name="full_name" value="{{ full_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone No</label>
+                                <input type="tel" class="form-control" name="phone_no" value="{{ phone_no }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Alternate Phone No</label>
+                                <input type="tel" class="form-control" name="alternate_phone_no" value="{{ alternate_phone_no }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" name="city" placeholder="Enter city">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Home Address</label>
+                                <textarea name="home_address" class="form-control" rows="3" required>{{ home_address }}</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Pincode</label>
+                                <input type="text" class="form-control" name="pincode" placeholder="Enter pincode">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
                         <div class="table-responsive mb-4">
                             <table class="table align-middle">
                                 <thead>
@@ -28,7 +60,7 @@
                                 <tbody>
                                     {% for item in order_items %}
                                     <tr>
-                                        <td><a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a></td>
+                                        <td><a href="{% url 'product_detail' item.product.slug %}" class="text-decoration-none">{{ item.product.name }}</a></td>
                                         <td>{{ item.quantity }}</td>
                                         <td>${{ item.unit_price|floatformat:2 }}</td>
                                         <td>${{ item.item_total|floatformat:2 }}</td>
@@ -37,30 +69,47 @@
                                 </tbody>
                             </table>
                         </div>
+
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <span class="fs-5">Total Amount</span>
                             <span class="fs-4 fw-bold">${{ order_total|floatformat:2 }}</span>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
-                        <a href="{% url 'cart' %}" class="btn btn-outline-secondary btn-lg ms-3">Back to Cart</a>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Confirm Order</button>
+                            <a href="{% url 'cart' %}" class="btn btn-outline-secondary btn-lg">Back to Cart</a>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-4">
-            <div class="card shadow-sm p-4">
-                <h5>Order Summary</h5>
-                <p class="text-muted">Confirm your shipping address and place your order.</p>
-                <ul class="list-group list-group-flush">
-                    {% for item in order_items %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ item.product.name }} x{{ item.quantity }}
-                        <span>${{ item.item_total|floatformat:2 }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-                <div class="mt-4">
-                    <span class="d-block small text-muted">Shipping address will be used for order fulfillment.</span>
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h5 class="mb-3">Order Summary</h5>
+                    <p class="text-muted small mb-3">Review your cart items before placing the order.</p>
+                    <ul class="list-group list-group-flush">
+                        {% for item in order_items %}
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-semibold">{{ item.product.name }}</div>
+                                <div class="small text-muted">Qty {{ item.quantity }}</div>
+                            </div>
+                            <span class="fw-semibold">${{ item.item_total|floatformat:2 }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="border-top mt-3 pt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span>
+                            <span>${{ order_total|floatformat:2 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>Total</span>
+                            <span>${{ order_total|floatformat:2 }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

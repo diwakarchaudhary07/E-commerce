@@ -1,12 +1,91 @@
+import json
+
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.core import mail
+from django.conf import settings
 
-from .models import CustomUser
+from .models import CustomUser, Product, Cart, CartItem, Order
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class OTPRegistrationTests(TestCase):
+    def test_checkout_creates_order_with_customer_details(self):
+        user = CustomUser.objects.create_user(
+            email='checkout@example.com',
+            password='StrongPass123!',
+            full_name='Checkout User',
+            mobile_no='9876543210',
+            address='Old address',
+        )
+        product = Product.objects.create(
+            name='Test Product',
+            slug='test-product',
+            price='100.00',
+            discount=0,
+        )
+        cart = Cart.objects.create(user=user)
+        CartItem.objects.create(cart=cart, product=product, quantity=2)
+
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse('checkout'),
+            data={
+                'full_name': 'John Doe',
+                'phone_no': '9876543210',
+                'alternate_phone_no': '9988776655',
+                'home_address': '123 Main Street',
+                'city': 'Mumbai',
+                'pincode': '400001',
+            },
+        )
+
+        self.assertRedirects(response, reverse('my_orders'))
+        order = Order.objects.get(user=user)
+        self.assertEqual(order.full_name, 'John Doe')
+        self.assertEqual(order.phone_no, '9876543210')
+        self.assertEqual(order.alternate_phone_no, '9988776655')
+        self.assertEqual(order.home_address, '123 Main Street')
+        self.assertEqual(order.city, 'Mumbai')
+        self.assertEqual(order.pincode, '400001')
+
+    def test_checkout_returns_razorpay_payment_payload(self):
+        user = CustomUser.objects.create_user(
+            email='payment@example.com',
+            password='StrongPass123!',
+            full_name='Payment User',
+            mobile_no='9876543210',
+            address='Old address',
+        )
+        product = Product.objects.create(
+            name='Payment Product',
+            slug='payment-product',
+            price='100.00',
+            discount=0,
+        )
+        cart = Cart.objects.create(user=user)
+        CartItem.objects.create(cart=cart, product=product, quantity=1)
+
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse('checkout'),
+            data={
+                'full_name': 'Jane Doe',
+                'phone_no': '9876543210',
+                'home_address': '10 Downing Street',
+                'city': 'Mumbai',
+                'pincode': '400001',
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = json.loads(response.content)
+        self.assertTrue(payload['success'])
+        self.assertEqual(payload['key'], settings.RAZORPAY_KEY_ID)
+        order = Order.objects.get(user=user)
+        self.assertEqual(order.razorpay_order_id, payload['order_id'])
+
     def test_register_creates_inactive_user_and_sends_otp(self):
         response = self.client.post(
             reverse('register'),

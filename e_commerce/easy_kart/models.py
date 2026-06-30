@@ -1,5 +1,6 @@
 import uuid
 from datetime import timedelta
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
@@ -266,6 +267,55 @@ class WishlistItem(models.Model):
         return WishlistItem.objects.filter(user=user, product=self.product).exists()
 
 
+class Cart(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cart')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Cart'
+        verbose_name_plural = 'Carts'
+
+    def __str__(self):
+        return f"Cart for {self.user.email}"
+
+    @property
+    def total_items(self):
+        return self.items.aggregate(total=models.Sum('quantity'))['total'] or 0
+
+    @property
+    def total_price(self):
+        total = Decimal('0.00')
+        for item in self.items.all():
+            total += item.total_price
+        return total
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_items')
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Cart Item'
+        verbose_name_plural = 'Cart Items'
+        unique_together = ('cart', 'product')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity}"
+
+    @property
+    def unit_price(self):
+        return self.product.get_discounted_price()
+
+    @property
+    def total_price(self):
+        return self.unit_price * self.quantity
+
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -278,6 +328,15 @@ class Order(models.Model):
     order_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    razorpay_order_id = models.CharField(max_length=255, blank=True)
+    razorpay_payment_id = models.CharField(max_length=255, blank=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True)
+    full_name = models.CharField(max_length=255, blank=True)
+    phone_no = models.CharField(max_length=15, blank=True)
+    alternate_phone_no = models.CharField(max_length=15, blank=True)
+    home_address = models.TextField(blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    pincode = models.CharField(max_length=10, blank=True)
     shipping_address = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
