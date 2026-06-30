@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember
+from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember
 
 
 class CustomUserAdmin(UserAdmin):
@@ -179,6 +179,23 @@ class WishlistItemAdmin(admin.ModelAdmin):
 
 
 admin.site.register(WishlistItem, WishlistItemAdmin)
+
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    readonly_fields = ('product', 'quantity', 'created_at', 'updated_at')
+    extra = 0
+
+
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'total_items', 'total_price', 'updated_at')
+    search_fields = ('user__email',)
+    readonly_fields = ('created_at', 'updated_at')
+    inlines = [CartItemInline]
+
+
+admin.site.register(Cart, CartAdmin)
+admin.site.register(CartItem)
 
 
 class OrderItemInline(admin.TabularInline):
