@@ -16,8 +16,9 @@
                         <span class="badge bg-primary-subtle text-primary">Secure checkout</span>
                     </div>
 
-                    <form method="post" class="needs-validation" novalidate>
+                    <form id="checkout-form" method="post" class="needs-validation" novalidate>
                         {% csrf_token %}
+                        <input type="hidden" id="db-order-id" name="db_order_id" value="">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Full Name</label>
@@ -75,8 +76,31 @@
                             <span class="fs-4 fw-bold">${{ order_total|floatformat:2 }}</span>
                         </div>
 
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Select payment method</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="payment-method-razorpay" value="razorpay" checked>
+                                <label class="form-check-label" for="payment-method-razorpay">Razorpay</label>
+                            </div>
+                            <div class="ps-4 mt-2">
+                                <div class="small text-muted mb-1">Available via Razorpay:</div>
+                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-credit-card-fill me-1"></i>Card</span>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-qr-code me-1"></i>UPI</span>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-calendar3 me-1"></i>EMI</span>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-bank2 me-1"></i>Netbanking</span>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-wallet2 me-1"></i>Wallet</span>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-cash-stack me-1"></i>Pay Later</span>
+                                </div>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="radio" name="payment_method" id="payment-method-cod" value="cod">
+                                <label class="form-check-label" for="payment-method-cod">Cash on Delivery</label>
+                            </div>
+                        </div>
+
                         <div class="d-flex flex-wrap gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">Confirm Order</button>
+                            <button type="button" id="checkout-button" class="btn btn-primary btn-lg">Pay with Razorpay</button>
                             <a href="{% url 'cart' %}" class="btn btn-outline-secondary btn-lg">Back to Cart</a>
                         </div>
                     </form>
@@ -115,4 +139,140 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    const checkoutButton = document.getElementById('checkout-button');
+    const checkoutForm = document.getElementById('checkout-form');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    function showRazorpayError(message) {
+        const existingAlert = document.querySelector('.razorpay-alert');
+        if (existingAlert) existingAlert.remove();
+
+        const alertWrapper = document.createElement('div');
+        alertWrapper.className = 'alert alert-danger alert-dismissible fade show razorpay-alert';
+        alertWrapper.role = 'alert';
+        alertWrapper.innerHTML = `${message} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+        checkoutForm.parentElement.prepend(alertWrapper);
+    }
+
+    function getSelectedPaymentMethod() {
+        const selected = document.querySelector('input[name="payment_method"]:checked');
+        return selected ? selected.value : 'razorpay';
+    }
+
+    function updateCheckoutButtonText() {
+        checkoutButton.textContent = getSelectedPaymentMethod() === 'cod' ? 'Place Order (COD)' : 'Pay with Razorpay';
+    }
+
+    function handleRazorpayPayment(orderData) {
+        const options = {
+            key: orderData.key,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: orderData.name,
+            description: orderData.description,
+            order_id: orderData.order_id,
+            prefill: orderData.prefill,
+            method: {
+                card: true,
+                netbanking: true,
+                upi: true,
+                wallet: true,
+                emi: true,
+                paylater: true,
+            },
+            display: {
+                blocks: {
+                    upi: { name: 'UPI' },
+                    card: { name: 'Cards' },
+                    emi: { name: 'EMI' },
+                    netbanking: { name: 'Netbanking' },
+                    wallet: { name: 'Wallet' },
+                    paylater: { name: 'Pay Later' },
+                },
+                sequence: ['block.upi', 'block.card', 'block.emi', 'block.netbanking', 'block.wallet', 'block.paylater'],
+                preferences: {
+                    show_default_blocks: false,
+                },
+            },
+            theme: { color: '#0d6efd' },
+            handler: function (response) {
+                fetch('{% url "verify_razorpay_payment" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        order_id: response.razorpay_order_id,
+                        payment_id: response.razorpay_payment_id,
+                        signature: response.razorpay_signature,
+                        db_order_id: orderData.db_order_id,
+                    }),
+                })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.success) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            showRazorpayError(data.message || 'Payment verification failed.');
+                        }
+                    })
+                    .catch(() => {
+                        showRazorpayError('Unable to verify payment at this time. Please try again.');
+                    });
+            },
+            modal: {
+                ondismiss: function () {
+                    showRazorpayError('Payment popup closed before completion.');
+                }
+            }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+    }
+
+    checkoutButton.addEventListener('click', function () {
+        if (!checkoutForm.checkValidity()) {
+            checkoutForm.reportValidity();
+            return;
+        }
+
+        if (getSelectedPaymentMethod() === 'cod') {
+            checkoutForm.submit();
+            return;
+        }
+
+        const formData = new FormData(checkoutForm);
+        fetch('{% url "checkout" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: formData,
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    handleRazorpayPayment(data);
+                } else {
+                    showRazorpayError(data.message || 'Unable to create payment order.');
+                }
+            })
+            .catch(() => {
+                showRazorpayError('Unable to connect to payment service.');
+            });
+    });
+
+    document.querySelectorAll('input[name="payment_method"]').forEach((input) => {
+        input.addEventListener('change', updateCheckoutButtonText);
+    });
+
+    updateCheckoutButtonText();
+</script>
 {% endblock %}

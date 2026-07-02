@@ -41,7 +41,21 @@
                     {% for item in cart_items %}
                         <tr>
                             <td>
-                                <a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 80px; min-width: 80px;">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" style="max-height: 80px; object-fit: cover; width: 100%;">
+                                        {% else %}
+                                            <img src="{% static 'assets/placeholder.png' %}" alt="No image" class="img-fluid rounded" style="max-height: 80px; object-fit: cover; width: 100%;">
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'product_detail' item.product.slug %}" class="text-decoration-none fw-semibold">{{ item.product.name }}</a>
+                                        {% if item.product.category %}
+                                        <div class="small text-muted">{{ item.product.category.name }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </td>
                             <td>${{ item.price|floatformat:2 }}</td>
                             <td>

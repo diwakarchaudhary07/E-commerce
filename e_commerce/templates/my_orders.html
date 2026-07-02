@@ -48,6 +48,16 @@
                                 <p class="mb-1"><strong>Total:</strong> ${{ order.total_amount|floatformat:2 }}</p>
                                 <p class="mb-1"><strong>Shipping:</strong></p>
                                 <p class="small text-muted">{{ order.shipping_address|linebreaksbr }}</p>
+                                {% if order.status == 'pending' %}
+                                <form method="post" action="{% url 'cancel_order' order.id %}" class="mt-3">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Cancel Order</button>
+                                </form>
+                                {% else %}
+                                <div class="mt-3">
+                                    <span class="badge bg-danger">Order not cancellable</span>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
