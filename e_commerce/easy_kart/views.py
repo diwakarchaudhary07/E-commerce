@@ -10,6 +10,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
@@ -219,13 +220,10 @@ def checkout(request):
             razorpay_order = client.order.create(data=order_payload)
             order.razorpay_order_id = razorpay_order['id']
             order.save(update_fields=['razorpay_order_id'])
-            if cart:
-                cart.items.all().delete()
-            else:
-                request.session['cart'] = {}
             return JsonResponse({
                 'success': True,
                 'order_id': razorpay_order['id'],
+                'db_order_id': order.id,
                 'key': settings.RAZORPAY_KEY_ID,
                 'amount': int(order.total_amount * 100),
                 'currency': 'INR',
@@ -251,6 +249,53 @@ def checkout(request):
         'alternate_phone_no': request.user.alternate_mobile_no or '',
         'home_address': request.user.address or '',
     })
+
+
+@login_required(login_url='login')
+@require_POST
+def verify_razorpay_payment(request):
+    try:
+        payload = json.loads(request.body)
+    except ValueError:
+        return JsonResponse({'success': False, 'message': 'Invalid request body.'}, status=400)
+
+    razorpay_order_id = payload.get('order_id')
+    razorpay_payment_id = payload.get('payment_id')
+    razorpay_signature = payload.get('signature')
+    db_order_id = payload.get('db_order_id')
+
+    if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature, db_order_id]):
+        return JsonResponse({'success': False, 'message': 'Missing payment details.'}, status=400)
+
+    order = get_object_or_404(Order, id=db_order_id, user=request.user, razorpay_order_id=razorpay_order_id)
+
+    try:
+        import razorpay
+    except ImportError:
+        return JsonResponse({'success': False, 'message': 'Razorpay package is not installed.'}, status=400)
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    try:
+        client.utility.verify_payment_signature({
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature,
+        })
+    except Exception:
+        return JsonResponse({'success': False, 'message': 'Payment verification failed.'}, status=400)
+
+    order.razorpay_payment_id = razorpay_payment_id
+    order.razorpay_signature = razorpay_signature
+    order.status = 'processing'
+    order.save(update_fields=['razorpay_payment_id', 'razorpay_signature', 'status'])
+
+    cart = _get_or_create_user_cart(request)
+    if cart:
+        cart.items.all().delete()
+    else:
+        request.session['cart'] = {}
+
+    return JsonResponse({'success': True, 'redirect_url': reverse('my_orders')})
 
 
 @login_required(login_url='login')
@@ -297,6 +342,20 @@ def remove_from_cart(request, product_id):
     else:
         messages.info(request, 'This product is not in your cart.')
     return redirect('cart')
+
+
+@login_required(login_url='login')
+@require_POST
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status in ['completed', 'cancelled']:
+        messages.warning(request, 'This order cannot be cancelled.')
+        return redirect('my_orders')
+
+    order.status = 'cancelled'
+    order.save(update_fields=['status'])
+    messages.success(request, f'Order {order.order_number} has been cancelled.')
+    return redirect('my_orders')
 
 
 @login_required(login_url='login')
