@@ -20,11 +20,7 @@
                     Unassigned
                 {% endif %}
             </div>
-            <div class="mb-2 d-flex align-items-center gap-2">
-                <span class="small text-muted">Color:</span>
-                <span class="d-inline-block rounded-circle" style="width: 18px; height: 18px; background: {{ product.color_code }};"></span>
-                <span class="small text-muted">{{ product.color_code }}</span>
-            </div>
+            <div class="mb-2 small text-muted">SKU: {{ product.sku|default:'Not assigned' }}</div>
             <p class="text-muted">{{ product.description|linebreaksbr }}</p>
             <div class="mb-4">
                 {% if product.discount > 0 %}

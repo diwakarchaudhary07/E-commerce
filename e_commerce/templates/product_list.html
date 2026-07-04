@@ -39,11 +39,6 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-text text-muted mb-2">{{ product.description|truncatewords:20 }}</p>
-                        <div class="mb-2 d-flex align-items-center gap-2">
-                            <span class="small text-muted">Color:</span>
-                            <span class="d-inline-block rounded-circle" style="width: 18px; height: 18px; background: {{ product.color_code }};"></span>
-                            <span class="small text-muted">{{ product.color_code }}</span>
-                        </div>
                         <div class="mb-2 small text-muted">
                             Category: {% if product.category %}
                                 <a href="{% url 'category_detail' product.category.slug %}" class="text-decoration-none">{{ product.category.name }}</a>
@@ -51,6 +46,7 @@
                                 Unassigned
                             {% endif %}
                         </div>
+                        <div class="mb-2 small text-muted">SKU: {{ product.sku|default:'Not assigned' }}</div>
                         <div class="mb-3">
                             {% if product.discount > 0 %}
                                 <span class="text-danger fw-bold">${{ product.get_discounted_price|floatformat:2 }}</span>

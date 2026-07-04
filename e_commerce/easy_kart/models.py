@@ -128,6 +128,7 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
+    sku = models.CharField(max_length=50, unique=True, blank=True, null=True, help_text='Unique stock keeping unit')
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
@@ -136,8 +137,8 @@ class Product(models.Model):
         blank=True,
     )
     image = models.ImageField(upload_to='products/', null=True, blank=True)
-    color_code = models.CharField(max_length=7, default='#000000', help_text='Hex color code, e.g. #1db947')
     description = models.TextField(blank=True)
+    stock = models.PositiveIntegerField(default=0, help_text='Available stock quantity')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.PositiveIntegerField(default=0, help_text='Discount percentage')
     is_buy_now_available = models.BooleanField(default=True, help_text='If enabled, shows Buy Now button to purchase immediately')
@@ -162,6 +163,12 @@ class Product(models.Model):
         if not self.slug:
             from django.utils.text import slugify
             self.slug = slugify(self.name)
+
+        if not self.sku:
+            from django.utils.text import slugify
+            base_slug = self.slug or slugify(self.name) or 'product'
+            self.sku = f"SKU-{base_slug.replace('-', '').upper()[:20]}-{uuid.uuid4().hex[:6].upper()}"
+
         super().save(*args, **kwargs)
 
 
