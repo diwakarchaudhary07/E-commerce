@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ heading }}</h1>
+            <p class="text-muted mb-0">Search products by name or SKU and manage stock instantly.</p>
+        </div>
+        <form method="get" class="d-flex gap-2 w-100" style="max-width: 480px;">
+            <input type="text" name="q" class="form-control" placeholder="Search by product name or SKU" value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product Image</th>
+                            <th>Product Name</th>
+                            <th>SKU</th>
+                            <th>Stock</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td style="width: 90px;">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">No image</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ product.name }}</div>
+                            </td>
+                            <td>{{ product.sku|default:'Not assigned' }}</td>
+                            <td>
+                                <span class="badge {% if product.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">{{ product.stock }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                    <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-primary btn-sm" title="Preview product">
+                                        <i class="bi bi-eye"></i> Preview
+                                    </a>
+                                    <form method="post" action="{% url 'update_stock' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="decrease">
+                                        <input type="hidden" name="query" value="{{ query }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Decrease stock">
+                                            <i class="bi bi-dash-circle"></i> Decrease
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{% url 'update_stock' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="increase">
+                                        <input type="hidden" name="query" value="{{ query }}">
+                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Increase stock">
+                                            <i class="bi bi-plus-circle"></i> Increase
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">No products found. Try another search term.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,9 +3,72 @@ import json
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.core import mail
+from django.core.exceptions import FieldDoesNotExist
 from django.conf import settings
 
 from .models import CustomUser, Product, Cart, CartItem, Order
+
+
+class ProductSkuTests(TestCase):
+    def test_product_model_does_not_have_color_code_field(self):
+        with self.assertRaises(FieldDoesNotExist):
+            Product._meta.get_field('color_code')
+
+    def test_product_sku_is_generated_when_missing(self):
+        product = Product.objects.create(
+            name='SKU Test Product',
+            slug='sku-test-product',
+            price='199.99',
+        )
+
+        self.assertTrue(product.sku.startswith('SKU-'))
+        self.assertTrue(len(product.sku) > 10)
+
+
+class InventoryTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            email='inventory@example.com',
+            password='StrongPass123!',
+            full_name='Inventory User',
+            mobile_no='9876543210',
+            address='Inventory Address',
+        )
+
+    def test_inventory_search_finds_product_by_sku(self):
+        Product.objects.create(
+            name='Inventory Widget',
+            slug='inventory-widget',
+            sku='PT56',
+            price='12.50',
+            stock=5,
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('inventory'), {'q': 'PT56'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Inventory Widget')
+        self.assertContains(response, 'PT56')
+
+    def test_update_stock_changes_stock_value(self):
+        product = Product.objects.create(
+            name='Stock Product',
+            slug='stock-product',
+            sku='SP100',
+            price='25.00',
+            stock=3,
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse('update_stock', args=[product.id]),
+            {'action': 'increase', 'query': 'SP100'},
+        )
+
+        self.assertRedirects(response, reverse('inventory') + '?q=SP100')
+        product.refresh_from_db()
+        self.assertEqual(product.stock, 4)
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
