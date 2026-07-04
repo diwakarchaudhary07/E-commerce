@@ -4,6 +4,8 @@ from .views import *
 urlpatterns = [
     path('', home, name='home'),
     path('product/', product_page, name='product'),
+    path('inventory/', inventory_page, name='inventory'),
+    path('inventory/stock/<int:product_id>/', update_stock, name='update_stock'),
     path('category/', category_page, name='category'),
     path('category/<slug:slug>/', category_detail, name='category_detail'),
     path('gallery/', gallery_page, name='gallery'),
@@ -14,6 +16,7 @@ urlpatterns = [
     path('cart/remove/<int:product_id>/', remove_from_cart, name='remove_from_cart'),
     path('contact/', contact, name='contact'),
     path('product/buy/<slug:slug>/', buy_now, name='buy_now'),
+    path('product/sku/<str:sku>/', product_detail_by_sku, name='product_detail_by_sku'),
     path('wishlist/add/<slug:slug>/', add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:product_id>/', remove_from_wishlist, name='remove_from_wishlist'),
     path('checkout/', checkout, name='checkout'),
