@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db import transaction, IntegrityError
+from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
@@ -103,13 +104,55 @@ def product_page(request):
     })
 
 
-def product_detail(request, slug):
-    product = get_object_or_404(Product, slug=slug, is_active=True)
+@login_required(login_url='login')
+def inventory_page(request):
+    query = (request.GET.get('q') or '').strip()
+    products = Product.objects.all().order_by('-created_at')
+    if query:
+        products = products.filter(Q(name__icontains=query) | Q(sku__icontains=query))
+    return render(request, 'inventory.html', {
+        'page_title': 'Inventory',
+        'heading': 'Inventory Management',
+        'products': products,
+        'query': query,
+    })
+
+
+@login_required(login_url='login')
+@require_POST
+def update_stock(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    action = request.POST.get('action', '').strip().lower()
+    query = request.POST.get('query', '').strip()
+
+    if action == 'increase':
+        product.stock += 1
+    elif action == 'decrease' and product.stock > 0:
+        product.stock -= 1
+    product.save(update_fields=['stock'])
+
+    redirect_url = reverse('inventory')
+    if query:
+        redirect_url = f"{redirect_url}?q={query}"
+    return redirect(redirect_url)
+
+
+def _render_product_detail(request, product):
     return render(request, 'product_detail.html', {
         'page_title': product.name,
         'heading': product.name,
         'product': product,
     })
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(Product, Q(slug=slug) | Q(sku__iexact=slug), is_active=True)
+    return _render_product_detail(request, product)
+
+
+def product_detail_by_sku(request, sku):
+    product = get_object_or_404(Product, sku__iexact=sku, is_active=True)
+    return _render_product_detail(request, product)
 
 
 def category_detail(request, slug):
