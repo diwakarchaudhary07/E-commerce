@@ -1,13 +1,25 @@
+:root {
+    --ek-navy: #0b2a5f;
+    --ek-navy-dark: #071b3a;
+    --ek-blue: #1962ff;
+    --ek-blue-soft: #eaf2ff;
+    --ek-accent: #2d78ff;
+    --ek-text: #17304f;
+    --ek-muted: #6b7a91;
+    --ek-border: rgba(11, 42, 95, 0.12);
+    --ek-shadow: 0 12px 35px rgba(11, 42, 95, 0.08);
+}
+
 /* Announcement bar styling */
 .bg-announcement {
-    background: rgba(15, 78, 224, 0.18);
+    background: linear-gradient(90deg, rgba(25, 98, 255, 0.95), rgba(11, 42, 95, 0.95));
 }
 
 .announcement-bar {
     color: #ffffff;
     font-weight: 600;
     letter-spacing: 0.02em;
-    border-bottom: 1px solid rgba(15, 78, 224, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .announcement-content {
@@ -47,16 +59,69 @@
     }
 }
 
-/* Custom styles for Easy Kart product and category pages */
-body {
-    background: #f8f9fa;
+body.theme-easykart {
+    background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+    color: var(--ek-text);
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.card {
-    border: 1px solid rgba(0, 0, 0, 0.05);
+body.theme-easykart a {
+    color: var(--ek-blue);
+    transition: color 0.2s ease;
 }
 
-.card-img-top {
+body.theme-easykart a:hover {
+    color: var(--ek-navy);
+}
+
+body.theme-easykart .btn,
+body.theme-easykart .form-control,
+body.theme-easykart .form-select,
+body.theme-easykart .form-check-input {
+    border-radius: 0.8rem;
+}
+
+body.theme-easykart .btn-primary,
+body.theme-easykart .btn-outline-primary:hover {
+    background: linear-gradient(135deg, var(--ek-navy), var(--ek-blue));
+    border-color: var(--ek-blue);
+    color: #ffffff;
+    box-shadow: var(--ek-shadow);
+}
+
+body.theme-easykart .btn-primary:hover,
+body.theme-easykart .btn-outline-primary:hover {
+    filter: brightness(1.04);
+}
+
+body.theme-easykart .btn-outline-primary {
+    color: var(--ek-blue);
+    border-color: var(--ek-blue);
+}
+
+body.theme-easykart .btn-outline-success {
+    color: #198754;
+    border-color: #198754;
+}
+
+body.theme-easykart .btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+body.theme-easykart .btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+body.theme-easykart .card {
+    border: 1px solid var(--ek-border);
+    border-radius: 1rem;
+    box-shadow: var(--ek-shadow);
+    background: #ffffff;
+}
+
+body.theme-easykart .card-img-top {
     width: 100%;
     max-width: 100%;
     height: 180px;
@@ -64,8 +129,37 @@ body {
     display: block;
 }
 
-.navbar-logo-pro,
-.footer-logo {
+body.theme-easykart .table {
+    border-color: var(--ek-border);
+}
+
+body.theme-easykart .table thead th {
+    background: var(--ek-blue-soft);
+    color: var(--ek-navy);
+}
+
+body.theme-easykart .badge.bg-primary,
+body.theme-easykart .badge.bg-info,
+body.theme-easykart .badge.bg-success,
+body.theme-easykart .badge.bg-danger {
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+}
+
+body.theme-easykart .form-control:focus,
+body.theme-easykart .form-select:focus,
+body.theme-easykart .form-check-input:focus {
+    border-color: var(--ek-blue);
+    box-shadow: 0 0 0 0.2rem rgba(25, 98, 255, 0.18);
+}
+
+body.theme-easykart .alert-info {
+    background: var(--ek-blue-soft);
+    color: var(--ek-navy);
+    border-color: rgba(25, 98, 255, 0.16);
+}
+
+body.theme-easykart .navbar-logo-pro,
+body.theme-easykart .footer-logo {
     max-height: 70px;
     height: auto;
     width: auto;
@@ -74,26 +168,32 @@ body {
     box-shadow: none;
 }
 
-.footer-logo {
+body.theme-easykart .footer-logo {
     display: block;
     margin-bottom: 1rem;
 }
 
-/* Navbar Styling */
-:root {
-    --ek-navy: #0b2a5f;
-    --ek-navy-dark: #071b3a;
-    --ek-blue: #1962ff;
-    --ek-accent: #0f4ee0;
-    --ek-muted: #6b7a91;
-}
-
 .easykart-navbar {
-    position: static;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     padding: 0.95rem 0;
-    background-color: #ffffff;
-    border-bottom: 1px solid rgba(11, 42, 95, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ek-border);
+    z-index: 1035;
+}
+
+body.theme-easykart {
+    padding-top: 112px;
+}
+
+@media (max-width: 991px) {
+    body.theme-easykart {
+        padding-top: 132px;
+    }
 }
 
 .easykart-navbar .navbar-brand {
@@ -106,47 +206,6 @@ body {
     padding: 0;
     margin: 0;
     max-height: 56px;
-}
-
-.easykart-search {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.easykart-search .input-group {
-    width: 100%;
-    max-width: 720px;
-    border-radius: 999px;
-    overflow: hidden;
-    box-shadow: 0 18px 45px rgba(11, 42, 95, 0.08);
-}
-
-.easykart-search .form-control {
-    border: 0;
-    padding: 1rem 1.35rem;
-    background: #f6f9ff;
-    min-height: 60px;
-    border-radius: 0;
-}
-
-.easykart-search .form-control:focus {
-    box-shadow: none;
-}
-
-.easykart-search .btn-primary {
-    background-color: var(--ek-blue);
-    border-color: var(--ek-blue);
-    border-radius: 0;
-    min-height: 60px;
-    padding: 0 1.15rem;
-    box-shadow: 0 12px 32px rgba(25, 98, 255, 0.16);
-}
-
-.easykart-search .btn-primary i {
-    color: #fff;
-    font-size: 1.1rem;
 }
 
 .easykart-header-actions .easykart-icon-link {
@@ -168,7 +227,7 @@ body {
 
 .easykart-header-actions .easykart-icon-link:hover {
     color: var(--ek-blue);
-    background: rgba(25, 98, 255, 0.08);
+    background: var(--ek-blue-soft);
 }
 
 .easykart-header-actions .cart-badge {
@@ -262,11 +321,6 @@ body {
 }
 
 @media (max-width: 767px) {
-    .easykart-search {
-        margin-top: 1rem;
-        width: 100%;
-    }
-
     .easykart-header-actions {
         flex-wrap: wrap;
         gap: 1rem;
@@ -284,7 +338,7 @@ body {
 }
 
 .site-footer {
-    background: linear-gradient(180deg, #0b2a5f 0%, #071b3a 100%);
+    background: linear-gradient(180deg, var(--ek-navy) 0%, var(--ek-navy-dark) 100%);
     color: rgba(255, 255, 255, 0.92);
 }
 
@@ -299,7 +353,6 @@ body {
     text-decoration: underline;
 }
 
-/* Profile page improvements */
 .profile-card {
     background: #fff;
     border: 1px solid rgba(11, 42, 95, 0.06);

@@ -3,18 +3,87 @@
 
 {% block title %}Register | Easy Kart{% endblock %}
 
+{% block extra_head %}
+<style>
+    .register-banner {
+        background: linear-gradient(90deg, #0d6efd 0%, #1962ff 100%);
+        color: #ffffff;
+        min-height: 220px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 18px 40px rgba(13,110,253,0.15);
+        margin-bottom: 1.5rem;
+    }
+    .register-banner .banner-content {
+        padding: 2rem 1.5rem;
+    }
+    .register-banner h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .register-banner p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1rem;
+        max-width: 680px;
+    }
+    .register-card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    .register-card .card-body {
+        padding: 2rem;
+    }
+    .register-card .form-control {
+        border-radius: 0.75rem;
+        border: 1px solid #dee2e6;
+        padding: 0.95rem 1rem;
+    }
+    .register-card .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+    }
+    .register-btn {
+        border-radius: 0.85rem;
+        padding: 0.95rem 1.5rem;
+        background: #0d6efd;
+        border-color: #0d6efd;
+        font-weight: 600;
+        box-shadow: 0 10px 24px rgba(13,110,253,0.12);
+    }
+    .register-btn:hover {
+        background: #1962ff;
+        border-color: #1962ff;
+    }
+    .register-link a {
+        color: #0d6efd;
+    }
+    .register-link a:hover {
+        color: #1962ff;
+    }
+</style>
+{% endblock %}
+
 {% block header_banner %}
-  <div class="mb-4">
-    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Banner" style="max-height: 300px; object-fit: cover;">
-  </div>
+<div class="register-banner">
+    <div class="container banner-content">
+        <h1>Create Your Account</h1>
+        <p>Join Easy Kart today to manage your orders, wishlist, and deliver faster with our secure shopping experience.</p>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm register-card">
             <div class="card-body">
-                <h2 class="card-title mb-4">Register</h2>
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">Register</h2>
+                    <p class="text-muted mb-0">Fill in your details to start shopping with Easy Kart.</p>
+                </div>
                 {% if form.non_field_errors %}
                     <div class="alert alert-danger">
                         {% for err in form.non_field_errors %}
@@ -22,7 +91,7 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" class="login-form">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="mb-3">
@@ -32,12 +101,18 @@
                                 <div class="form-text">{{ field.help_text }}</div>
                             {% endif %}
                             {% for error in field.errors %}
-                                <div class="text-danger">{{ error }}</div>
+                                <div class="text-danger small mt-1">{{ error }}</div>
                             {% endfor %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary">Register</button>
+                    <div class="d-grid mt-3">
+                        <button type="submit" class="btn btn-primary register-btn">Register</button>
+                    </div>
                 </form>
+                <div class="text-center mt-4 register-link">
+                    <p class="mb-1 text-muted">Already have an account?</p>
+                    <a href="{% url 'login' %}">Sign in here</a>
+                </div>
             </div>
         </div>
     </div>

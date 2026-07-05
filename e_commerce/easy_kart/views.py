@@ -1,4 +1,5 @@
 ﻿import uuid
+from datetime import timedelta
 from decimal import Decimal
 
 import json
@@ -8,19 +9,20 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
 from .email_utils import send_otp_email, send_welcome_email
 
-from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm
-from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem
-from django.contrib.auth.decorators import login_required
+from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm
+from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -138,10 +140,13 @@ def update_stock(request, product_id):
 
 
 def _render_product_detail(request, product):
+    feedbacks = product.feedbacks.filter(is_approved=True).order_by('-created_at')
     return render(request, 'product_detail.html', {
         'page_title': product.name,
         'heading': product.name,
         'product': product,
+        'feedback_form': ProductFeedbackForm(),
+        'feedbacks': feedbacks,
     })
 
 
@@ -153,6 +158,59 @@ def product_detail(request, slug):
 def product_detail_by_sku(request, sku):
     product = get_object_or_404(Product, sku__iexact=sku, is_active=True)
     return _render_product_detail(request, product)
+
+
+def submit_feedback(request, slug):
+    product = get_object_or_404(Product, Q(slug=slug) | Q(sku__iexact=slug), is_active=True)
+
+    if request.method == 'POST':
+        form = ProductFeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.product = product
+            feedback.customer_name = request.POST.get('customer_name', '').strip() or 'Guest'
+            feedback.customer_email = request.POST.get('customer_email', '').strip() or None
+            feedback.save()
+            messages.success(request, 'Feedback submitted successfully. It is now pending approval.')
+            return redirect('product_detail', slug=product.slug)
+
+        messages.error(request, 'Please provide a valid review and rating.')
+        return render(request, 'product_detail.html', {
+            'page_title': product.name,
+            'heading': product.name,
+            'product': product,
+            'feedback_form': form,
+            'feedbacks': product.feedbacks.filter(is_approved=True).order_by('-created_at'),
+        })
+
+    return redirect('product_detail', slug=product.slug)
+
+
+@user_passes_test(lambda user: user.is_staff)
+def feedback_dashboard(request):
+    feedbacks = ProductFeedback.objects.select_related('product').all().order_by('-created_at')
+
+    if request.method == 'POST':
+        feedback_id = request.POST.get('feedback_id')
+        action = request.POST.get('action', '').strip().lower()
+        feedback = get_object_or_404(ProductFeedback, id=feedback_id)
+
+        if action == 'approve':
+            feedback.is_approved = True
+            feedback.save(update_fields=['is_approved'])
+            messages.success(request, 'Feedback approved successfully.')
+        elif action == 'delete':
+            feedback.delete()
+            messages.success(request, 'Feedback deleted successfully.')
+        else:
+            messages.error(request, 'Unknown action.')
+        return redirect('feedback_dashboard')
+
+    return render(request, 'feedback_dashboard.html', {
+        'page_title': 'Feedback Dashboard',
+        'heading': 'Feedback Dashboard',
+        'feedbacks': feedbacks,
+    })
 
 
 def category_detail(request, slug):
@@ -255,10 +313,11 @@ def checkout(request):
 
             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
             order_payload = {
-                'amount': int(order.total_amount * 100),
+                'amount': int(order.total_amount * Decimal('100')),
                 'currency': 'INR',
                 'receipt': str(order.id),
                 'notes': {'email': request.user.email, 'name': full_name},
+                'payment_capture': 1,
             }
             razorpay_order = client.order.create(data=order_payload)
             order.razorpay_order_id = razorpay_order['id']
@@ -404,11 +463,78 @@ def cancel_order(request, order_id):
 @login_required(login_url='login')
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).prefetch_related('order_items__product')
+    query = (request.GET.get('q') or '').strip()
+    date_filter = request.GET.get('date_filter', '').strip()
+    product_name = (request.GET.get('product_name') or '').strip()
+
+    if query:
+        orders = orders.filter(
+            Q(full_name__icontains=query) |
+            Q(order_number__icontains=query) |
+            Q(shipping_address__icontains=query)
+        )
+
+    if date_filter:
+        if date_filter == 'today':
+            orders = orders.filter(created_at__date=timezone.now().date())
+        elif date_filter == 'week':
+            start_date = timezone.now().date() - timedelta(days=7)
+            orders = orders.filter(created_at__date__gte=start_date)
+        elif date_filter == 'month':
+            start_date = timezone.now().date().replace(day=1)
+            orders = orders.filter(created_at__date__gte=start_date)
+
+    if product_name:
+        orders = orders.filter(order_items__product__name__icontains=product_name).distinct()
+
+    orders = orders.order_by('-created_at')
+
     return render(request, 'my_orders.html', {
         'page_title': 'My Orders',
         'heading': 'My Orders',
         'orders': orders,
+        'query': query,
+        'date_filter': date_filter,
+        'product_name': product_name,
     })
+
+
+@login_required(login_url='login')
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, 'order_detail.html', {
+        'page_title': f'Order #{order.order_number}',
+        'heading': f'Order #{order.order_number}',
+        'order': order,
+    })
+
+
+@login_required(login_url='login')
+def order_invoice(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, 'order_invoice.html', {
+        'page_title': f'Invoice #{order.order_number}',
+        'heading': f'Invoice #{order.order_number}',
+        'order': order,
+    })
+
+
+@login_required(login_url='login')
+def download_invoice(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    content = f"Invoice for Order #{order.order_number}\nCustomer: {order.full_name or order.user.full_name}\nTotal: {order.total_amount}\nStatus: {order.status}\n"
+    response = HttpResponse(content, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="invoice_{order.order_number}.txt"'
+    return response
+
+
+@login_required(login_url='login')
+@require_POST
+def delete_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order.delete()
+    messages.success(request, 'Order deleted successfully.')
+    return redirect('my_orders')
 
 
 def category_page(request):
@@ -835,8 +961,9 @@ def login(request):
 
 
 def logout(request):
-    auth_logout(request)
-    messages.success(request, 'You have been logged out successfully!')
+    if request.method in ('POST', 'GET'):
+        auth_logout(request)
+        messages.success(request, 'You have been logged out successfully!')
     return redirect('home')
 
 def team_members(request):

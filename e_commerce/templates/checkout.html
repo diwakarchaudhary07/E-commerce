@@ -177,6 +177,10 @@
             description: orderData.description,
             order_id: orderData.order_id,
             prefill: orderData.prefill,
+            notes: {
+                customer_email: orderData.prefill.email,
+                customer_name: orderData.prefill.name,
+            },
             method: {
                 card: true,
                 netbanking: true,
@@ -184,20 +188,6 @@
                 wallet: true,
                 emi: true,
                 paylater: true,
-            },
-            display: {
-                blocks: {
-                    upi: { name: 'UPI' },
-                    card: { name: 'Cards' },
-                    emi: { name: 'EMI' },
-                    netbanking: { name: 'Netbanking' },
-                    wallet: { name: 'Wallet' },
-                    paylater: { name: 'Pay Later' },
-                },
-                sequence: ['block.upi', 'block.card', 'block.emi', 'block.netbanking', 'block.wallet', 'block.paylater'],
-                preferences: {
-                    show_default_blocks: false,
-                },
             },
             theme: { color: '#0d6efd' },
             handler: function (response) {

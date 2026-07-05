@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ heading }}</h1>
+            <p class="text-muted mb-0">Preview the invoice for this order.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'download_invoice' order.id %}" class="btn btn-success">Download</a>
+            <a href="{% url 'my_orders' %}" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>Easy Kart</h5>
+                    <p class="mb-1">Invoice #{{ order.order_number }}</p>
+                    <p class="mb-1">Date: {{ order.created_at|date:'M d, Y' }}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5>{{ order.full_name|default:order.user.full_name }}</h5>
+                    <p class="mb-1">{{ order.phone_no }}</p>
+                    <p class="mb-0">{{ order.shipping_address|linebreaksbr }}</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.order_items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.unit_price|floatformat:2 }}</td>
+                            <td>${{ item.total_price|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-end mt-3">
+                <h5>Total: ${{ order.total_amount|floatformat:2 }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

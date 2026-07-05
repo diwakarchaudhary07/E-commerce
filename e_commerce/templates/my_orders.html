@@ -2,71 +2,128 @@
 
 {% block title %}My Orders | Easy Kart{% endblock %}
 
+{% block extra_head %}
+<style>
+    .orders-banner {
+        background: linear-gradient(90deg, #0d6efd 0%, #1962ff 100%);
+        color: #fff;
+        border-radius: 1rem;
+        padding: 2rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 16px 36px rgba(13,110,253,0.16);
+    }
+    .orders-banner h1 {
+        font-size: 2.4rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+    .orders-banner p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1rem;
+        max-width: 640px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="py-5">
-    <h1 class="mb-4">{{ heading }}</h1>
+    <div class="orders-banner">
+        <h1>My Orders</h1>
+        <p>Review all of your recent orders, check status updates, and manage order invoices in one place.</p>
+    </div>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="h5 mb-1">{{ heading }}</h2>
+            <p class="text-muted mb-0">Search, filter, and manage your orders and invoices.</p>
+        </div>
+    </div>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Search by keyword or order number" value="{{ query }}">
+        </div>
+        <div class="col-md-3">
+            <select name="date_filter" class="form-select">
+                <option value="">All Time</option>
+                <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
+                <option value="week" {% if date_filter == 'week' %}selected{% endif %}>Last 7 Days</option>
+                <option value="month" {% if date_filter == 'month' %}selected{% endif %}>This Month</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="product_name" class="form-control" placeholder="Product name" value="{{ product_name }}">
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
     {% if orders %}
-        <div class="accordion" id="ordersAccordion">
-            {% for order in orders %}
-            <div class="accordion-item mb-3 shadow-sm">
-                <h2 class="accordion-header" id="heading{{ order.order_number }}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ order.order_number }}" aria-expanded="false" aria-controls="collapse{{ order.order_number }}">
-                        <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <strong>Order #{{ order.order_number }}</strong>
-                                <div class="small text-muted">{{ order.created_at|date:'M d, Y H:i' }}</div>
-                            </div>
-                            <div class="text-end">
-                                <span class="badge bg-secondary text-capitalize">{{ order.status }}</span>
-                                <div class="fw-bold">${{ order.total_amount|floatformat:2 }}</div>
-                            </div>
-                        </div>
-                    </button>
-                </h2>
-                <div id="collapse{{ order.order_number }}" class="accordion-collapse collapse" aria-labelledby="heading{{ order.order_number }}" data-bs-parent="#ordersAccordion">
-                    <div class="accordion-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h6>Products</h6>
-                                <ul class="list-group mb-3">
-                                    {% for item in order.order_items.all %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <a href="{% url 'product_detail' item.product.slug %}" class="text-decoration-none">{{ item.product.name }}</a>
-                                            <div class="small text-muted">Qty: {{ item.quantity }}</div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle shadow-sm rounded overflow-hidden">
+                <thead class="table-light">
+                    <tr>
+                        <th>Order</th>
+                        <th>Products</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    {% with order.order_items.all|first as first_item %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">#{{ order.order_number }}</div>
+                            <div class="small text-muted">{{ order.item_count }} item(s)</div>
+                        </td>
+                        <td>
+                            {% if first_item and first_item.product %}
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if first_item.product.image %}
+                                        <img src="{{ first_item.product.image.url }}" alt="{{ first_item.product.name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;" />
+                                    {% else %}
+                                        <div class="rounded bg-light border d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                            <span class="text-muted small">No Image</span>
                                         </div>
-                                        <span>${{ item.total_price|floatformat:2 }}</span>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="col-md-4">
-                                <h6>Order Details</h6>
-                                <p class="mb-1"><strong>Order Number:</strong> {{ order.order_number }}</p>
-                                <p class="mb-1"><strong>Status:</strong> {{ order.status|capfirst }}</p>
-                                <p class="mb-1"><strong>Item Count:</strong> {{ order.item_count }}</p>
-                                <p class="mb-1"><strong>Total:</strong> ${{ order.total_amount|floatformat:2 }}</p>
-                                <p class="mb-1"><strong>Shipping:</strong></p>
-                                <p class="small text-muted">{{ order.shipping_address|linebreaksbr }}</p>
-                                {% if order.status == 'pending' %}
-                                <form method="post" action="{% url 'cancel_order' order.id %}" class="mt-3">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger">Cancel Order</button>
-                                </form>
-                                {% else %}
-                                <div class="mt-3">
-                                    <span class="badge bg-danger">Order not cancellable</span>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-semibold">{{ first_item.product.name }}</div>
+                                        {% if order.item_count > 1 %}
+                                            <div class="small text-muted">+ {{ order.item_count|add:'-1' }} more</div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                {% endif %}
+                            {% else %}
+                                <div class="small text-muted">No product available</div>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.created_at|date:'M d, Y' }}</td>
+                        <td>{{ order.full_name|default:order.user.full_name }}</td>
+                        <td>${{ order.total_amount|floatformat:2 }}</td>
+                        <td><span class="badge bg-secondary text-capitalize">{{ order.status }}</span></td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{% url 'order_invoice' order.id %}" class="btn btn-outline-info btn-sm">Preview</a>
+                                <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-primary btn-sm">View</a>
+                                <a href="{% url 'download_invoice' order.id %}" class="btn btn-outline-success btn-sm">Download</a>
+                                <form method="post" action="{% url 'delete_order' order.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this order?')">Delete</button>
+                                </form>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     {% else %}
-        <div class="alert alert-info">You have not placed any orders yet.</div>
+        <div class="alert alert-info">No orders matched your filters.</div>
         <a href="{% url 'product' %}" class="btn btn-primary">Shop Now</a>
     {% endif %}
 </div>

@@ -3,20 +3,50 @@
 
 {% block title %}Contact Us | Easy Kart{% endblock %}
 
+{% block extra_head %}
+<style>
+    .page-banner {
+        background: linear-gradient(90deg, #0d6efd 0%, #1962ff 100%);
+        min-height: 220px;
+        display: flex;
+        align-items: center;
+        color: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 18px 40px rgba(13,110,253,0.15);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .page-banner .banner-content {
+        padding: 2rem 1.5rem;
+    }
+    .page-banner h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .page-banner p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.05rem;
+        max-width: 620px;
+    }
+    .contact-info-card .contact-icon i,
+    .info-section a {
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
 {% block header_banner %}
-<div class="mb-4">
-    <img src="{% static 'assets/banners/banner3.jpg' %}" class="img-fluid w-100" alt="Contact Us Banner" style="max-height: 280px; object-fit: cover;">
+<div class="page-banner">
+    <div class="container banner-content">
+        <h1>Contact Us</h1>
+        <p>Need help? Reach out to Easy Kart and our support team will get back to you quickly.</p>
+    </div>
 </div>
 {% endblock %}
 
 {% block content %}
 <style>
-    .contact-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px 0;
-        margin-bottom: 50px;
-    }
     
     .contact-header h1 {
         font-size: 2.5rem;
@@ -151,14 +181,6 @@
         text-decoration: underline;
     }
 </style>
-
-<!-- Contact Header -->
-<div class="contact-header">
-    <div class="container">
-        <h1>Get In Touch</h1>
-        <p>We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
-    </div>
-</div>
 
 <!-- Main Contact Section -->
 <div class="container py-5">

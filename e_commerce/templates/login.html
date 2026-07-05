@@ -3,18 +3,94 @@
 
 {% block title %}Login | Easy Kart{% endblock %}
 
+{% block extra_head %}
+<style>
+    .login-banner {
+        background: linear-gradient(90deg, #0d6efd 0%, #1962ff 100%);
+        color: #fff;
+        border-radius: 1rem;
+        min-height: 240px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 18px 40px rgba(13, 110, 253, 0.15);
+        margin-bottom: 1.5rem;
+    }
+    .login-banner .banner-content {
+        padding: 2rem 1.5rem;
+    }
+    .login-banner h1 {
+        font-size: 2.6rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .login-banner p {
+        color: rgba(255,255,255,0.9);
+        max-width: 640px;
+        font-size: 1rem;
+    }
+    .login-card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    .login-card .card-body {
+        padding: 2rem;
+    }
+    .login-form .form-control {
+        border-radius: 0.75rem;
+        border: 1px solid #dee2e6;
+        padding: 0.95rem 1rem;
+    }
+    .login-form .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+    }
+    .login-form .btn-primary {
+        background: #0d6efd;
+        border-color: #0d6efd;
+        border-radius: 0.85rem;
+        padding: 0.95rem 1.5rem;
+        font-weight: 600;
+        box-shadow: 0 10px 24px rgba(13,110,253,0.12);
+    }
+    .login-form .btn-primary:hover {
+        background: #1962ff;
+        border-color: #1962ff;
+    }
+    .login-form .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .login-form .form-check-label {
+        margin-left: 0.35rem;
+    }
+    .login-form a {
+        color: #0d6efd;
+    }
+    .login-form a:hover {
+        color: #1962ff;
+    }
+</style>
+{% endblock %}
+
 {% block header_banner %}
-  <div class="mb-4">
-    <img src="{% static 'assets/banners/banner1.jpg' %}" class="img-fluid w-100" alt="Banner" style="max-height: 300px; object-fit: cover;">
-  </div>
+<div class="login-banner">
+    <div class="container banner-content">
+        <h1>Sign in to Easy Kart</h1>
+        <p>Access your account, manage orders, and enjoy a secure shopping experience with Easy Kart.</p>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title mb-4">Login</h2>
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm login-card">
+            <div class="card-body login-form">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">Login</h2>
+                    <p class="text-muted mb-0">Enter your details to continue to your account.</p>
+                </div>
 
                 {% if messages %}
                     {% for message in messages %}
@@ -26,28 +102,29 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         {{ form.email.label_tag }}
-                        {{ form.email }}
+                        {{ form.email.as_widget(attrs={"class": "form-control"}) }}
                         {% for error in form.email.errors %}
-                            <div class="text-danger small">{{ error }}</div>
+                            <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="mb-3">
                         {{ form.password.label_tag }}
-                        {{ form.password }}
+                        {{ form.password.as_widget(attrs={"class": "form-control"}) }}
                         {% for error in form.password.errors %}
-                            <div class="text-danger small">{{ error }}</div>
+                            <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="mb-3 form-check">
-                        {{ form.remember_me }}
-                        {{ form.remember_me.label_tag }}
+                        {{ form.remember_me.as_widget(attrs={"class": "form-check-input"}) }}
+                        {{ form.remember_me.label_tag(attrs={"class": "form-check-label"}) }}
                     </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                    </div>
                 </form>
 
-                <hr>
-                <div class="d-flex justify-content-between align-items-center">
-                    <p class="mb-0">Don't have an account?</p>
+                <div class="text-center">
+                    <p class="mb-2 text-muted">Don't have an account?</p>
                     <a href="{% url 'register' %}" class="btn btn-link">Create one</a>
                 </div>
             </div>

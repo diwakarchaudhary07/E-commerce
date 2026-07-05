@@ -1,5 +1,16 @@
 {% extends 'base.html' %}
 
+{% block header_banner %}
+<div class="mb-4">
+    <div class="w-100 rounded-3" style="height:220px; background: linear-gradient(90deg, var(--primary), #1962ff); box-shadow: 0 8px 24px rgba(13,110,253,0.08);">
+        <div class="container h-100 d-flex flex-column justify-content-center text-white">
+            <h1 class="display-6 fw-bold">Inventory Dashboard</h1>
+            <p class="mb-0" style="max-width: 720px; opacity: 0.95;">Manage your product stock, update SKU details, and keep your inventory accurate in real time.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
@@ -45,23 +56,23 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                    <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-primary btn-sm" title="Preview product">
-                                        <i class="bi bi-eye"></i> Preview
+                                    <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-primary btn-sm p-2" title="Preview product" aria-label="Preview product">
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
-                                    <form method="post" action="{% url 'update_stock' product.id %}">
+                                    <form method="post" action="{% url 'update_stock' product.id %}" class="d-inline">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="decrease">
                                         <input type="hidden" name="query" value="{{ query }}">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Decrease stock">
-                                            <i class="bi bi-dash-circle"></i> Decrease
+                                        <button type="submit" class="btn btn-outline-danger btn-sm p-2" title="Decrease stock" aria-label="Decrease stock">
+                                            <i class="bi bi-dash-circle-fill"></i>
                                         </button>
                                     </form>
-                                    <form method="post" action="{% url 'update_stock' product.id %}">
+                                    <form method="post" action="{% url 'update_stock' product.id %}" class="d-inline">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="increase">
                                         <input type="hidden" name="query" value="{{ query }}">
-                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Increase stock">
-                                            <i class="bi bi-plus-circle"></i> Increase
+                                        <button type="submit" class="btn btn-outline-success btn-sm p-2" title="Increase stock" aria-label="Increase stock">
+                                            <i class="bi bi-plus-circle-fill"></i>
                                         </button>
                                     </form>
                                 </div>

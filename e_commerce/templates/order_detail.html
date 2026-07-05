@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ heading }}</h1>
+            <p class="text-muted mb-0">Full order details and purchase summary.</p>
+        </div>
+        <a href="{% url 'my_orders' %}" class="btn btn-outline-secondary">Back to Orders</a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Order Number:</strong> {{ order.order_number }}</p>
+                    <p class="mb-1"><strong>Status:</strong> <span class="badge bg-secondary text-capitalize">{{ order.status }}</span></p>
+                    <p class="mb-1"><strong>Placed On:</strong> {{ order.created_at|date:'M d, Y H:i' }}</p>
+                    <p class="mb-1"><strong>Total Amount:</strong> ${{ order.total_amount|floatformat:2 }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Customer:</strong> {{ order.full_name|default:order.user.full_name }}</p>
+                    <p class="mb-1"><strong>Phone:</strong> {{ order.phone_no }}</p>
+                    <p class="mb-1"><strong>Shipping Address:</strong></p>
+                    <p class="text-muted mb-0">{{ order.shipping_address|linebreaksbr }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3">Ordered Products</h5>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.order_items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.unit_price|floatformat:2 }}</td>
+                            <td>${{ item.total_price|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-muted text-center py-3">No products found for this order.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
