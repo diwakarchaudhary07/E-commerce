@@ -172,6 +172,25 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
 
+class ProductFeedback(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='feedbacks')
+    customer_name = models.CharField(max_length=255, blank=True, default='Guest')
+    customer_email = models.EmailField(blank=True, null=True)
+    message = models.TextField()
+    rating = models.PositiveSmallIntegerField(default=5, choices=[(i, f'{i} star{"s" if i != 1 else ""}') for i in range(1, 6)])
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Product Feedback'
+        verbose_name_plural = 'Product Feedback'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.product.name} - {self.rating}★"
+
+
 class Gallery(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
