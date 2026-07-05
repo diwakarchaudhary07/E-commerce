@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember
+from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback
 
 
 class CustomUserAdmin(UserAdmin):
@@ -65,6 +65,20 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Product, ProductAdmin)
+
+
+class ProductFeedbackAdmin(admin.ModelAdmin):
+    list_display = ('product', 'customer_name', 'rating', 'is_approved', 'created_at')
+    list_filter = ('is_approved', 'rating', 'created_at')
+    search_fields = ('product__name', 'customer_name', 'customer_email', 'message')
+    readonly_fields = ('created_at', 'updated_at')
+    fieldsets = (
+        ('Feedback', {'fields': ('product', 'customer_name', 'customer_email', 'message', 'rating', 'is_approved')}),
+        ('Timestamps', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
+    )
+
+
+admin.site.register(ProductFeedback, ProductFeedbackAdmin)
 
 
 class CategoryAdmin(admin.ModelAdmin):
