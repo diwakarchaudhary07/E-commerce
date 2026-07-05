@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
 from .models import CustomUser
-from .models import Profile, Contact
+from .models import Profile, Contact, ProductFeedback
 
 
 class RegisterForm(forms.ModelForm):
@@ -171,5 +171,20 @@ class ContactForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (optional)'}),
             'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject'}),
             'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Your message...'}),
+        }
+
+
+class ProductFeedbackForm(forms.ModelForm):
+    rating = forms.ChoiceField(
+        choices=[(i, f'{i} star{"s" if i != 1 else ""}') for i in range(1, 6)],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Rating',
+    )
+
+    class Meta:
+        model = ProductFeedback
+        fields = ['message', 'rating']
+        widgets = {
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Share your experience about this product...'}),
         }
 
