@@ -6,7 +6,7 @@ from django.core import mail
 from django.core.exceptions import FieldDoesNotExist
 from django.conf import settings
 
-from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback
+from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback, Inventory
 
 
 class ProductSkuTests(TestCase):
@@ -69,6 +69,24 @@ class InventoryTests(TestCase):
         self.assertRedirects(response, reverse('inventory') + '?q=SP100')
         product.refresh_from_db()
         self.assertEqual(product.stock, 4)
+
+    def test_inventory_model_can_be_searched_by_name_and_sku(self):
+        Product.objects.create(
+            name='Inventory Proxy Product',
+            slug='inventory-proxy-product',
+            sku='INV-900',
+            price='18.00',
+            stock=2,
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('inventory'), {'q': 'Inventory Proxy'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Inventory Proxy Product')
+
+        sku_response = self.client.get(reverse('inventory'), {'q': 'INV-900'})
+        self.assertContains(sku_response, 'Inventory Proxy Product')
+        self.assertContains(sku_response, 'INV-900')
 
 
 class FeedbackSystemTests(TestCase):
