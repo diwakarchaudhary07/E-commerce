@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback
+from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, Inventory
 
 
 class CustomUserAdmin(UserAdmin):
@@ -65,6 +66,60 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Product, ProductAdmin)
+
+
+class InventoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'sku', 'stock', 'preview_image', 'is_active', 'stock_actions')
+    list_filter = ('is_active', 'category', 'created_at')
+    search_fields = ('name', 'sku', 'description')
+    readonly_fields = ('created_at', 'updated_at')
+
+    def preview_image(self, obj):
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" />')
+        return '-'
+
+    preview_image.short_description = 'Image'
+
+    def stock_actions(self, obj):
+        increase_url = reverse('admin:easy_kart_inventory_increase', args=[obj.pk])
+        decrease_url = reverse('admin:easy_kart_inventory_decrease', args=[obj.pk])
+        preview_url = reverse('admin:easy_kart_inventory_change', args=[obj.pk])
+        return mark_safe(
+            f'<a class="button" href="{decrease_url}" title="Decrease stock">-</a>'
+            f'&nbsp;'
+            f'<a class="button" href="{increase_url}" title="Increase stock">+</a>'
+            f'&nbsp;'
+            f'<a class="button" href="{preview_url}" title="Edit product">Preview</a>'
+        )
+
+    stock_actions.short_description = 'Actions'
+    stock_actions.allow_tags = True
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('<path:object_id>/increase-stock/', self.admin_site.admin_view(self.increase_stock), name='easy_kart_inventory_increase'),
+            path('<path:object_id>/decrease-stock/', self.admin_site.admin_view(self.decrease_stock), name='easy_kart_inventory_decrease'),
+        ]
+        return custom_urls + urls
+
+    def increase_stock(self, request, object_id, *args, **kwargs):
+        obj = self.get_object(request, object_id)
+        if obj is not None:
+            obj.increase_stock()
+            self.message_user(request, f'Stock increased for {obj.name}.')
+        return self.response_change(request, obj)
+
+    def decrease_stock(self, request, object_id, *args, **kwargs):
+        obj = self.get_object(request, object_id)
+        if obj is not None:
+            obj.decrease_stock()
+            self.message_user(request, f'Stock decreased for {obj.name}.')
+        return self.response_change(request, obj)
+
+
+admin.site.register(Inventory, InventoryAdmin)
 
 
 class ProductFeedbackAdmin(admin.ModelAdmin):
