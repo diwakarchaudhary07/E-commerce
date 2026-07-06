@@ -174,7 +174,7 @@ body.theme-easykart .footer-logo {
 }
 
 .easykart-navbar {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
@@ -187,13 +187,7 @@ body.theme-easykart .footer-logo {
 }
 
 body.theme-easykart {
-    padding-top: 112px;
-}
-
-@media (max-width: 991px) {
-    body.theme-easykart {
-        padding-top: 132px;
-    }
+    padding-top: 0;
 }
 
 .easykart-navbar .navbar-brand {
