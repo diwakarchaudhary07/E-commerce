@@ -21,7 +21,7 @@ from django.utils.html import strip_tags
 from .email_utils import send_otp_email, send_welcome_email
 
 from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm
-from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback
+from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, Inventory
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -109,9 +109,7 @@ def product_page(request):
 @login_required(login_url='login')
 def inventory_page(request):
     query = (request.GET.get('q') or '').strip()
-    products = Product.objects.all().order_by('-created_at')
-    if query:
-        products = products.filter(Q(name__icontains=query) | Q(sku__icontains=query))
+    products = Inventory.search(query)
     return render(request, 'inventory.html', {
         'page_title': 'Inventory',
         'heading': 'Inventory Management',
@@ -123,15 +121,14 @@ def inventory_page(request):
 @login_required(login_url='login')
 @require_POST
 def update_stock(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Inventory, id=product_id)
     action = request.POST.get('action', '').strip().lower()
     query = request.POST.get('query', '').strip()
 
     if action == 'increase':
-        product.stock += 1
-    elif action == 'decrease' and product.stock > 0:
-        product.stock -= 1
-    product.save(update_fields=['stock'])
+        product.increase_stock()
+    elif action == 'decrease':
+        product.decrease_stock()
 
     redirect_url = reverse('inventory')
     if query:

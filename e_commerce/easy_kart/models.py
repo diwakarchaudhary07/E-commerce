@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -170,6 +171,32 @@ class Product(models.Model):
             self.sku = f"SKU-{base_slug.replace('-', '').upper()[:20]}-{uuid.uuid4().hex[:6].upper()}"
 
         super().save(*args, **kwargs)
+
+
+class Inventory(Product):
+    class Meta:
+        proxy = True
+        verbose_name = 'Inventory Item'
+        verbose_name_plural = 'Inventory'
+        ordering = ['-created_at']
+
+    @classmethod
+    def search(cls, query=''):
+        queryset = cls.objects.all()
+        term = (query or '').strip()
+        if term:
+            queryset = queryset.filter(Q(name__icontains=term) | Q(sku__icontains=term))
+        return queryset.order_by('-created_at')
+
+    def increase_stock(self, amount=1):
+        self.stock = max(0, self.stock + amount)
+        self.save(update_fields=['stock'])
+        return self.stock
+
+    def decrease_stock(self, amount=1):
+        self.stock = max(0, self.stock - amount)
+        self.save(update_fields=['stock'])
+        return self.stock
 
 
 class ProductFeedback(models.Model):
