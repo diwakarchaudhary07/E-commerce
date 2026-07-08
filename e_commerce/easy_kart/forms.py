@@ -175,16 +175,24 @@ class ContactForm(forms.ModelForm):
 
 
 class ProductFeedbackForm(forms.ModelForm):
+    message = forms.CharField(
+        required=True,
+        label='Review Comment',
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Share your experience about this product...',
+            'required': 'required',
+        }),
+    )
     rating = forms.ChoiceField(
+        required=True,
         choices=[(i, f'{i} star{"s" if i != 1 else ""}') for i in range(1, 6)],
-        widget=forms.Select(attrs={'class': 'form-select'}),
-        label='Rating',
+        widget=forms.RadioSelect(attrs={'class': 'rating-input'}),
+        label='Star Rating',
     )
 
     class Meta:
         model = ProductFeedback
         fields = ['message', 'rating']
-        widgets = {
-            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Share your experience about this product...'}),
-        }
 
