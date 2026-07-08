@@ -98,6 +98,17 @@ class FeedbackSystemTests(TestCase):
             price='99.00',
             stock=7,
         )
+        
+        user = CustomUser.objects.create_user(
+            email='feedback@example.com',
+            password='StrongPass123!',
+            full_name='Feedback User',
+            mobile_no='9876543210',
+            address='Test Address',
+            is_email_verified=True,
+        )
+        
+        self.client.force_login(user)
 
         response = self.client.post(
             reverse('submit_feedback', args=[product.slug]),

@@ -48,4 +48,6 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     path('test-email/', send_test_email, name='send_test_email'),
     path('team/', team_members, name='team_members'),
+    path('product/<slug:slug>/related/', related_products, name='related_products'),
+    path('product/<slug:slug>/related-api/', get_related_products_api, name='get_related_products_api'),
 ]
