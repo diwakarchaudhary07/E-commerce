@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, Inventory
+from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, Inventory, RelatedProduct
 
 
 class CustomUserAdmin(UserAdmin):
@@ -296,3 +296,23 @@ class TeamMemberAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TeamMember, TeamMemberAdmin)
+
+
+class RelatedProductAdmin(admin.ModelAdmin):
+    list_display = ('product', 'related_to', 'order', 'created_at')
+    list_filter = ('created_at', 'product__category')
+    search_fields = ('product__name', 'related_to__name')
+    ordering = ('product', 'order')
+    fieldsets = (
+        ('Related Product Information', {
+            'fields': ('product', 'related_to', 'order')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
+
+
+admin.site.register(RelatedProduct, RelatedProductAdmin)

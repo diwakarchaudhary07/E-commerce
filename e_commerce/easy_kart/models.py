@@ -455,3 +455,20 @@ class TeamMember(models.Model):
 
     def __str__(self):
         return self.employee_name
+
+
+class RelatedProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='related_products_from')
+    related_to = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='related_products_to')
+    order = models.PositiveIntegerField(default=0, help_text='Display order for related products')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Related Product'
+        verbose_name_plural = 'Related Products'
+        unique_together = ('product', 'related_to')
+        ordering = ['order', '-created_at']
+
+    def __str__(self):
+        return f"{self.product.name} -> {self.related_to.name}"

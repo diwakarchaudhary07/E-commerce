@@ -23,7 +23,7 @@ from django.utils.html import strip_tags
 from .email_utils import send_otp_email, send_welcome_email
 
 from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm
-from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, Inventory
+from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, Inventory, RelatedProduct
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -177,13 +177,8 @@ def product_detail_by_sku(request, sku):
 @login_required(login_url='login')
 def submit_feedback(request, slug):
     product = get_object_or_404(Product, Q(slug=slug) | Q(sku__iexact=slug), is_active=True)
-    profile = getattr(request.user, 'profile', None)
 
     if request.method == 'POST':
-        if not profile or not profile.profile_image:
-            messages.error(request, 'Please upload a profile image before submitting feedback.')
-            return redirect('edit_profile')
-
         form = ProductFeedbackForm(request.POST)
         if form.is_valid():
             feedback = form.save(commit=False)
@@ -994,3 +989,54 @@ def team_members(request):
     }
 
     return render(request, 'team_members.html', context)
+
+
+def related_products(request, slug):
+    """Display related products for a given product."""
+    product = get_object_or_404(Product, Q(slug=slug) | Q(sku__iexact=slug), is_active=True)
+    
+    # Get related products in order
+    related_items = RelatedProduct.objects.filter(
+        product=product,
+        related_to__is_active=True
+    ).select_related('related_to').order_by('order')
+    
+    related_products_list = [item.related_to for item in related_items]
+    
+    return render(request, 'related_products.html', {
+        'page_title': f'Related Products - {product.name}',
+        'heading': f'Related Products for {product.name}',
+        'main_product': product,
+        'related_products': related_products_list,
+        'total_related': len(related_products_list),
+    })
+
+
+def get_related_products_api(request, slug):
+    """API endpoint to get related products as JSON."""
+    product = get_object_or_404(Product, Q(slug=slug) | Q(sku__iexact=slug), is_active=True)
+    
+    related_items = RelatedProduct.objects.filter(
+        product=product,
+        related_to__is_active=True
+    ).select_related('related_to', 'related_to__category').order_by('order')
+    
+    data = {
+        'product_id': product.id,
+        'product_name': product.name,
+        'related_products': [
+            {
+                'id': item.related_to.id,
+                'name': item.related_to.name,
+                'slug': item.related_to.slug,
+                'image': item.related_to.image.url if item.related_to.image else None,
+                'price': str(item.related_to.price),
+                'discount': item.related_to.discount,
+                'discounted_price': str(item.related_to.get_discounted_price()),
+                'category': item.related_to.category.name if item.related_to.category else None,
+            }
+            for item in related_items
+        ]
+    }
+    
+    return JsonResponse(data)
