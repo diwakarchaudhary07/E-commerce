@@ -10,6 +10,8 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.http import JsonResponse, HttpResponse
+from collections import Counter
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db import transaction, IntegrityError
@@ -138,12 +140,27 @@ def update_stock(request, product_id):
 
 def _render_product_detail(request, product):
     feedbacks = product.feedbacks.filter(is_approved=True).order_by('-created_at')
+    rating_values = feedbacks.values_list('rating', flat=True)
+    rating_counts = Counter(rating_values)
+    total_feedbacks = len(rating_values)
+    rating_distribution = []
+    for rating in range(5, 0, -1):
+        count = rating_counts.get(rating, 0)
+        percentage = round((count / total_feedbacks) * 100) if total_feedbacks else 0
+        rating_distribution.append({
+            'rating': rating,
+            'count': count,
+            'percentage': percentage,
+        })
+
     return render(request, 'product_detail.html', {
         'page_title': product.name,
         'heading': product.name,
         'product': product,
         'feedback_form': ProductFeedbackForm(),
         'feedbacks': feedbacks,
+        'rating_distribution': rating_distribution,
+        'total_feedbacks': total_feedbacks,
     })
 
 
@@ -157,16 +174,22 @@ def product_detail_by_sku(request, sku):
     return _render_product_detail(request, product)
 
 
+@login_required(login_url='login')
 def submit_feedback(request, slug):
     product = get_object_or_404(Product, Q(slug=slug) | Q(sku__iexact=slug), is_active=True)
+    profile = getattr(request.user, 'profile', None)
 
     if request.method == 'POST':
+        if not profile or not profile.profile_image:
+            messages.error(request, 'Please upload a profile image before submitting feedback.')
+            return redirect('edit_profile')
+
         form = ProductFeedbackForm(request.POST)
         if form.is_valid():
             feedback = form.save(commit=False)
             feedback.product = product
-            feedback.customer_name = request.POST.get('customer_name', '').strip() or 'Guest'
-            feedback.customer_email = request.POST.get('customer_email', '').strip() or None
+            feedback.customer_name = request.user.full_name or request.user.get_full_name() or request.user.email or 'Guest'
+            feedback.customer_email = request.user.email
             feedback.save()
             messages.success(request, 'Feedback submitted successfully. It is now pending approval.')
             return redirect('product_detail', slug=product.slug)

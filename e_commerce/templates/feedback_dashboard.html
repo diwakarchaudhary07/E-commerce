@@ -7,17 +7,20 @@
     </div>
 
     <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white border-0">
+            <h5 class="mb-0">Customer Feedback Submissions</h5>
+        </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover table-borderless align-middle">
                     <thead>
-                        <tr>
+                        <tr class="text-uppercase text-secondary small">
                             <th>Product</th>
                             <th>Customer</th>
                             <th>Rating</th>
                             <th>Message</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -25,15 +28,29 @@
                         <tr>
                             <td>{{ item.product.name }}</td>
                             <td>{{ item.customer_name|default:'Guest' }}</td>
-                            <td>{{ item.rating }}★</td>
-                            <td>{{ item.message }}</td>
-                            <td>{% if item.is_approved %}Approved{% else %}Pending{% endif %}</td>
                             <td>
-                                <form method="post" class="d-flex gap-2">
+                                <span class="text-warning">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= item.rating %}
+                                            <i class="bi bi-star-fill"></i>
+                                        {% else %}
+                                            <i class="bi bi-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </td>
+                            <td>{{ item.message }}</td>
+                            <td>
+                                <span class="badge {% if item.is_approved %}bg-success{% else %}bg-warning text-dark{% endif %} feedback-status-badge">
+                                    {% if item.is_approved %}Approved{% else %}Pending Approval{% endif %}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <form method="post" class="d-flex flex-wrap justify-content-end gap-2 mb-0">
                                     {% csrf_token %}
                                     <input type="hidden" name="feedback_id" value="{{ item.id }}">
-                                    <button type="submit" name="action" value="approve" class="btn btn-sm btn-success">Approve</button>
-                                    <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">Delete</button>
+                                    <button type="submit" name="action" value="approve" class="btn btn-sm btn-outline-light text-primary" {% if item.is_approved %}disabled{% endif %}>Approve</button>
+                                    <button type="submit" name="action" value="delete" class="btn btn-sm btn-outline-danger">Delete</button>
                                 </form>
                             </td>
                         </tr>
