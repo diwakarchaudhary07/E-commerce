@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row g-0 mb-5" style="background: linear-gradient(90deg, #0d6efd 0%, #1962ff 100%); min-height: 200px;">
+        <div class="col-12 d-flex align-items-center justify-content-center text-center text-white py-5">
+            <div>
+                <h1 class="display-5 fw-bold mb-2">{{ heading }}</h1>
+                <p class="fs-5 mb-0">{{ total_related }} related item{{ total_related|pluralize }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="container mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-primary text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'product_detail' main_product.slug %}" class="text-primary text-decoration-none">{{ main_product.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Related Products</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Main Product Info -->
+    <div class="container mb-5">
+        <div class="row align-items-center mb-5 pb-4 border-bottom">
+            <div class="col-lg-3 col-md-4 mb-3 mb-md-0">
+                <div class="bg-light rounded-3 overflow-hidden shadow-sm">
+                    {% if main_product.image %}
+                        <img src="{{ main_product.image.url }}" alt="{{ main_product.name }}" class="w-100 h-auto" style="object-fit: cover; height: 200px;">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <span class="text-center">No Image</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-8">
+                <span class="badge bg-primary text-white mb-2">Viewing Similar Items</span>
+                <h3 class="mb-3 fw-bold text-dark">{{ main_product.name }}</h3>
+                <p class="text-muted mb-3">{{ main_product.description|truncatewords:30 }}</p>
+                <div class="d-flex gap-3 align-items-center">
+                    <div>
+                        <span class="text-primary fw-bold fs-5">₹{{ main_product.get_discounted_price }}</span>
+                        {% if main_product.discount %}
+                            <span class="text-muted text-decoration-line-through ms-2">₹{{ main_product.price }}</span>
+                            <span class="badge bg-danger ms-2">{{ main_product.discount }}% Off</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{% url 'product_detail' main_product.slug %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-eye"></i> View Product
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products Section -->
+    <div class="container mb-5">
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h2 class="fw-bold mb-0" style="color: #0d6efd;">
+                    <i class="bi bi-link-45deg"></i> Related Products
+                </h2>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-primary-subtle text-primary fs-6">{{ total_related }} items</span>
+            </div>
+        </div>
+
+        {% if related_products %}
+            <div class="row g-4">
+                {% for product in related_products %}
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                        <div class="card h-100 shadow-sm border-0 transition-all" style="transition: all 0.3s ease;">
+                            <!-- Product Image -->
+                            <div class="position-relative overflow-hidden bg-light" style="height: 250px;">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top h-100 w-100" style="object-fit: cover; transition: transform 0.3s ease;" loading="lazy">
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-secondary text-white">
+                                        <i class="bi bi-image fs-2"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Discount Badge -->
+                                {% if product.discount %}
+                                    <span class="position-absolute top-3 end-3 badge bg-danger" style="font-size: 0.85rem;">{{ product.discount }}% Off</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="card-body d-flex flex-column">
+                                <!-- Category -->
+                                {% if product.category %}
+                                    <span class="badge bg-primary-subtle text-primary w-fit mb-2" style="width: fit-content;">{{ product.category.name }}</span>
+                                {% endif %}
+
+                                <!-- Product Name -->
+                                <h5 class="card-title fw-bold text-dark mb-2" style="min-height: 48px; overflow: hidden;">
+                                    <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark hover-primary" style="line-height: 1.5;">
+                                        {{ product.name|truncatewords:8 }}
+                                    </a>
+                                </h5>
+
+                                <!-- Description -->
+                                <p class="card-text text-muted small mb-3" style="flex-grow: 1;">
+                                    {{ product.description|truncatewords:12 }}
+                                </p>
+
+                                <!-- Price Section -->
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <div class="d-flex align-items-baseline gap-2">
+                                        <span class="fs-5 fw-bold text-primary">₹{{ product.get_discounted_price }}</span>
+                                        {% if product.discount %}
+                                            <span class="small text-muted text-decoration-line-through">₹{{ product.price }}</span>
+                                        {% else %}
+                                            <span class="small text-muted text-decoration-line-through">₹{{ product.price }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Stock Status -->
+                                <div class="mb-3">
+                                    {% if product.stock > 0 %}
+                                        <span class="badge bg-success text-white">
+                                            <i class="bi bi-check-circle"></i> In Stock ({{ product.stock }})
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary text-white">
+                                            <i class="bi bi-x-circle"></i> Out of Stock
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> View Details
+                                    </a>
+                                    {% if product.stock > 0 %}
+                                        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-cart-plus"></i> Add to Cart
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-secondary btn-sm" disabled>
+                                            <i class="bi bi-cart-x"></i> Out of Stock
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Wishlist Button -->
+                            <div class="card-footer bg-light border-top-0 pt-2">
+                                <a href="{% url 'add_to_wishlist' product.slug %}" class="btn btn-sm btn-outline-danger w-100">
+                                    <i class="bi bi-heart"></i> Add to Wishlist
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info border-0 shadow-sm" role="alert">
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem; color: #0d6efd; opacity: 0.3;"></i>
+                            <h5 class="mt-3 text-muted">No Related Products Found</h5>
+                            <p class="text-muted mb-0">We don't have any related products for this item at the moment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Browse More Section -->
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="bg-light rounded-3 p-5 text-center" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                    <h4 class="fw-bold mb-3">Looking for something else?</h4>
+                    <p class="text-muted mb-4">Browse our complete collection of products</p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <a href="{% url 'product' %}" class="btn btn-primary">
+                            <i class="bi bi-grid-3x2-gap"></i> View All Products
+                        </a>
+                        <a href="{% url 'category' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-tag"></i> Browse Categories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-all:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.15) !important;
+    }
+
+    .hover-primary:hover {
+        color: #0d6efd !important;
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+
+    .bg-primary-subtle {
+        background-color: #e7f1ff !important;
+    }
+
+    .text-primary {
+        color: #0d6efd !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .display-5 {
+            font-size: 2rem;
+        }
+
+        .card {
+            margin-bottom: 1rem;
+        }
+    }
+
+    /* Smooth transition for images */
+    .card-img-top {
+        transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

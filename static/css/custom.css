@@ -210,10 +210,83 @@ body {
   padding: 0.7rem 1rem;
 }
 
-.easykart-header-actions .dropdown-item:hover,
+..easykart-header-actions .dropdown-item:hover,
 .easykart-header-actions .dropdown-item.active {
   background-color: #e8f5e9;
   color: #1db947;
+}
+
+.rating-group {
+  gap: 0.5rem;
+}
+
+.rating-group .btn-check {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+}
+
+.rating-group .rating-btn {
+  min-width: 120px;
+  border-radius: 1rem;
+  padding: 0.75rem 0.95rem;
+  color: var(--primary);
+  border-color: var(--primary);
+  background-color: #ffffff;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.rating-group .rating-btn i {
+  color: #f9c74f;
+}
+
+.rating-group .btn-check:checked+.rating-btn {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.rating-group .btn-check:focus-visible+.rating-btn {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.35);
+}
+
+.feedback-status-badge {
+  min-width: 130px;
+}
+
+.rating-distribution .progress {
+  background-color: rgba(13, 110, 253, 0.12);
+}
+
+.rating-distribution .progress-bar {
+  min-width: 2rem;
+}
+
+.rating-distribution .text-warning {
+  line-height: 1.2;
+}
+
+.review-avatar {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+}
+
+.review-avatar.rounded-circle {
+  width: 54px;
+  height: 54px;
+}
+
+.rating-distribution .progress {
+  background-color: rgba(13, 110, 253, 0.12);
+}
+
+.rating-distribution .progress-bar {
+  min-width: 2rem;
+}
+
+.rating-distribution .text-warning {
+  line-height: 1.2;
 }
 
 /* Remove old hidden legacy helpers */
