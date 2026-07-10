@@ -7,17 +7,13 @@
 <style>
   html,
   body {
-    height: 100%;
+    min-height: 100%;
   }
   #heroBanner {
-    width: 100vw;
+    width: 100%;
     position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    min-height: 100vh;
-    height: 100vh;
+    min-height: 75vh;
+    height: auto;
     overflow: hidden;
     margin-bottom: 0;
     z-index: 0;
@@ -25,11 +21,29 @@
   #heroBanner .carousel-item,
   #heroBanner .carousel-item img {
     width: 100%;
-    min-height: 100vh;
-    height: 100vh;
+    min-height: 75vh;
+    height: auto;
   }
   #heroBanner .carousel-item img {
     object-fit: cover;
+  }
+  @media (max-width: 991.98px) {
+    #heroBanner {
+      min-height: 55vh;
+    }
+    #heroBanner .carousel-item,
+    #heroBanner .carousel-item img {
+      min-height: 55vh;
+    }
+  }
+  @media (max-width: 575.98px) {
+    #heroBanner {
+      min-height: 45vh;
+    }
+    #heroBanner .carousel-item,
+    #heroBanner .carousel-item img {
+      min-height: 45vh;
+    }
   }
   #heroBanner .carousel-indicators button {
     background-color: rgba(25, 98, 255, 0.65);
