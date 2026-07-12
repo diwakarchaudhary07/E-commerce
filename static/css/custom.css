@@ -13,66 +13,68 @@ body {
   background: var(--site-bg);
   color: #0f172a;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  padding-top: 92px;
+  /* Accounts for announcement bar + navbar fixed height */
 }
 
 /* Announcement Bar */
 .announcement-bar {
   width: 100%;
-  position: sticky;
-  top: 0;
-  left: 0;
+  position: relative;
   background: #0f4ee0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 0.35rem 0;
-  z-index: 1060;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.4rem 0;
+  display: flex;
+  align-items: center;
+  order: -1;
 }
 
 .announcement-content {
   width: 100%;
-  margin: 0 auto;
-  max-width: 1400px;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  min-height: 20px;
 }
 
 .announcement-marquee-wrapper {
   overflow: hidden;
   position: relative;
+  width: 100%;
 }
 
 .announcement-marquee {
-  display: inline-flex;
+  display: flex;
   white-space: nowrap;
-  animation: marqueeScroll 6s linear infinite;
+  animation: marqueeScroll 20s linear infinite;
   will-change: transform;
+  gap: 1rem;
 }
 
 .announcement-message {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding-right: 3rem;
-  font-size: 0.95rem;
-  font-weight: 700;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 600;
   color: #ffffff;
-}
-
-.announcement-sep {
-  opacity: 0.8;
-  padding-left: 0.25rem;
-  padding-right: 0.5rem;
+  line-height: 1;
 }
 
 .announcement-marquee i {
-  font-size: 1rem;
+  font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.95);
+  flex-shrink: 0;
 }
 
 @keyframes marqueeScroll {
   0% {
-    transform: translateX(0);
+    transform: translateX(100%);
   }
 
   100% {
-    transform: translateX(-60%);
+    transform: translateX(-100%);
   }
 }
 
@@ -85,7 +87,12 @@ body {
   background: #ffffff !important;
   border-bottom: 1px solid rgba(218, 220, 224, 0.75);
   margin-bottom: 0;
-  padding: 0.85rem 0;
+  padding: 0;
+  z-index: 1060;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .easykart-navbar .navbar-brand {
