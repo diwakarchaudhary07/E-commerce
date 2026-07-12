@@ -13,15 +13,15 @@
 </head>
 <body class="theme-easykart">
     {% if announcements %}
-    <div class="announcement-bar bg-announcement text-white py-2">
-        <div class="container-fluid px-0 announcement-content">
+    <div class="announcement-bar bg-announcement text-white">
+        <div class="announcement-content">
             <div class="announcement-marquee-wrapper">
                 <div class="announcement-marquee">
                     {% for ann in announcements %}
-                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}<span class="announcement-sep">&nbsp;•&nbsp;</span></span>
+                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
                     {% endfor %}
                     {% for ann in announcements %}
-                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}<span class="announcement-sep">&nbsp;•&nbsp;</span></span>
+                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
                     {% endfor %}
                 </div>
             </div>
@@ -29,7 +29,7 @@
     </div>
     {% endif %}
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar fixed-top">
         <div class="container-fluid px-0">
             <a class="navbar-brand d-flex align-items-center me-3" href="{% url 'home' %}">
                 <img src="{% static 'assets/logonew.png' %}" alt="Easy Kart" class="navbar-logo-pro">
