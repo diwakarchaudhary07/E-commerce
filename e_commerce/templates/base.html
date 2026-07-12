@@ -12,25 +12,27 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="theme-easykart">
-    {% if announcements %}
-    <div class="announcement-bar bg-announcement text-white">
-        <div class="announcement-content">
-            <div class="announcement-marquee-wrapper">
-                <div class="announcement-marquee">
-                    {% for ann in announcements %}
-                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
-                    {% endfor %}
-                    {% for ann in announcements %}
-                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
-                    {% endfor %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar fixed-top">
+        <!-- Announcement Bar at Top -->
+        {% if announcements %}
+        <div class="announcement-bar bg-announcement text-white w-100">
+            <div class="announcement-content">
+                <div class="announcement-marquee-wrapper">
+                    <div class="announcement-marquee">
+                        {% for ann in announcements %}
+                            <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
+                        {% endfor %}
+                        {% for ann in announcements %}
+                            <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar fixed-top">
-        <div class="container-fluid px-0">
+        <!-- Main Navbar Content -->
+        <div class="container-fluid px-0 w-100">
             <a class="navbar-brand d-flex align-items-center me-3" href="{% url 'home' %}">
                 <img src="{% static 'assets/logonew.png' %}" alt="Easy Kart" class="navbar-logo-pro">
             </a>
