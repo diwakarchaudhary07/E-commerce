@@ -40,6 +40,9 @@
                     <i class="bi bi-bolt-fill"></i> Buy Now
                 </a>
                 {% endif %}
+                <button type="button" class="btn btn-outline-info btn-lg" data-bs-toggle="modal" data-bs-target="#needHelpModal">
+                    <i class="bi bi-question-circle"></i> Need Help
+                </button>
                 {% if user.is_authenticated %}
                 <a href="{% url 'add_to_wishlist' product.slug %}" class="btn btn-outline-danger btn-lg">
                     <i class="bi bi-heart"></i> Add to Wishlist
@@ -199,4 +202,37 @@
         </div>
     </div>
 </div>
+
+<!-- Need Help Modal -->
+<div class="modal fade" id="needHelpModal" tabindex="-1" aria-labelledby="needHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{% url 'product_help_request' product.slug %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="needHelpModalLabel">Need Help with {{ product.name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Product Name</label>
+                        <input type="text" class="form-control" value="{{ product.name }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_query" class="form-label">Your Query</label>
+                        {{ help_form.query }}
+                        {% if help_form.query.errors %}
+                            <div class="text-danger small mt-1">{{ help_form.query.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

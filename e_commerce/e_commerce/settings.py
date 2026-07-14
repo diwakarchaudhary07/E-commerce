@@ -66,6 +66,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'easy_kart.context_processors.active_announcements',
+                'easy_kart.context_processors.cart_item_count',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],

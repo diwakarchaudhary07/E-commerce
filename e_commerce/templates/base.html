@@ -20,10 +20,10 @@
                 <div class="announcement-marquee-wrapper">
                     <div class="announcement-marquee">
                         {% for ann in announcements %}
-                            <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
+                            <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;<strong>{{ ann.message }}</strong></span>
                         {% endfor %}
                         {% for ann in announcements %}
-                            <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;{{ ann.message }}</span>
+                            <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;<strong>{{ ann.message }}</strong></span>
                         {% endfor %}
                     </div>
                 </div>
@@ -45,7 +45,6 @@
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'product' %}">Product</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'inventory' %}">Inventory</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'category' %}">Category</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'about_us' %}">About Us</a></li>
@@ -64,7 +63,7 @@
                             <a class="nav-link easykart-icon-link p-2 text-center" href="{% url 'cart' %}">
                                 <i class="bi bi-cart-fill" style="font-size: 1.35rem;"></i>
                                 <div class="small">Cart</div>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary cart-badge">0</span>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary cart-badge">{{ cart_item_count|default:0 }}</span>
                             </a>
                         </li>
                         <li class="nav-item mx-2 dropdown text-center">
@@ -135,6 +134,7 @@
                         <li><a href="{% url 'terms_and_conditions' %}">Terms &amp; Conditions</a></li>
                         <li><a href="{% url 'our_mission' %}">Our Mission</a></li>
                         <li><a href="{% url 'our_vision' %}">Our Vision</a></li>
+                        <li><a href="{% url 'team_members' %}">Our Team</a></li>
                     </ul>
                 </div>
 

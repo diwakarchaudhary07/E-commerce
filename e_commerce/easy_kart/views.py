@@ -22,8 +22,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
 from .email_utils import send_otp_email, send_welcome_email
 
-from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm
-from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, Inventory, RelatedProduct
+from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm, ProductHelpRequestForm
+from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -34,58 +34,80 @@ def _get_or_create_user_cart(request):
         return None
 
     cart, _ = Cart.objects.get_or_create(user=request.user)
-    session_cart = request.session.get('cart', {})
-    if session_cart:
-        for product_id, quantity in session_cart.items():
+    session_cart_data = request.session.get('cart', {})
+    if session_cart_data:
+        for product_id, quantity in session_cart_data.items():
             if not str(product_id).isdigit():
                 continue
             try:
                 product = Product.objects.get(id=int(product_id), is_active=True)
             except Product.DoesNotExist:
                 continue
-            item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
+            item, _ = CartItem.objects.get_or_create(cart=cart, product=product, defaults={'quantity': 0})
+            item.quantity += int(quantity)
+            item.save()
+        request.session['cart'] = {}
+
+    session_key = request.session.session_key
+    if session_key:
+        session_cart = Cart.objects.filter(session_key=session_key).exclude(id=cart.id).first()
+        if session_cart:
+            for item in session_cart.items.select_related('product').filter(product__is_active=True):
+                cart_item, _ = CartItem.objects.get_or_create(
+                    cart=cart,
+                    product=item.product,
+                    defaults={'quantity': 0}
+                )
+                cart_item.quantity += item.quantity
+                cart_item.save()
+            session_cart.delete()
+    return cart
+
+
+def _get_or_create_session_cart(request):
+    if not request.session.session_key:
+        request.session.save()
+
+    session_key = request.session.session_key
+    cart, _ = Cart.objects.get_or_create(session_key=session_key)
+    session_cart_data = request.session.get('cart', {})
+    if isinstance(session_cart_data, dict) and session_cart_data:
+        for product_id, quantity in session_cart_data.items():
+            if not str(product_id).isdigit():
+                continue
+            try:
+                product = Product.objects.get(id=int(product_id), is_active=True)
+            except Product.DoesNotExist:
+                continue
+            item, _ = CartItem.objects.get_or_create(cart=cart, product=product, defaults={'quantity': 0})
             item.quantity += int(quantity)
             item.save()
         request.session['cart'] = {}
     return cart
 
 
-def _build_cart_context(request):
+def _get_or_create_cart(request):
     if request.user.is_authenticated:
-        cart = _get_or_create_user_cart(request)
-        cart_items = []
-        total = Decimal('0.00')
-        if cart:
-            for item in cart.items.select_related('product').filter(product__is_active=True):
-                price = item.product.get_discounted_price()
-                item_total = price * item.quantity
-                cart_items.append({
-                    'product': item.product,
-                    'quantity': item.quantity,
-                    'price': price,
-                    'item_total': item_total,
-                })
-                total += item_total
-        return cart_items, total, cart
+        return _get_or_create_user_cart(request)
+    return _get_or_create_session_cart(request)
 
-    cart_data = request.session.get('cart', {})
-    product_ids = [int(pid) for pid in cart_data.keys() if str(pid).isdigit()]
-    products = Product.objects.filter(id__in=product_ids, is_active=True)
+
+def _build_cart_context(request):
+    cart = _get_or_create_cart(request)
     cart_items = []
     total = Decimal('0.00')
-
-    for product in products:
-        quantity = cart_data.get(str(product.id), 0)
-        price = product.get_discounted_price()
-        item_total = price * quantity
-        cart_items.append({
-            'product': product,
-            'quantity': quantity,
-            'price': price,
-            'item_total': item_total,
-        })
-        total += item_total
-
+    if cart:
+        for item in cart.items.select_related('product').filter(product__is_active=True):
+            price = item.product.get_discounted_price()
+            item_total = price * item.quantity
+            cart_items.append({
+                'product': item.product,
+                'quantity': item.quantity,
+                'price': price,
+                'item_total': item_total,
+            })
+            total += item_total
+        return cart_items, total, cart
     return cart_items, total, None
 
 
@@ -138,7 +160,7 @@ def update_stock(request, product_id):
     return redirect(redirect_url)
 
 
-def _render_product_detail(request, product):
+def _render_product_detail(request, product, help_form=None):
     feedbacks = product.feedbacks.filter(is_approved=True).order_by('-created_at')
     rating_values = feedbacks.values_list('rating', flat=True)
     rating_counts = Counter(rating_values)
@@ -158,10 +180,30 @@ def _render_product_detail(request, product):
         'heading': product.name,
         'product': product,
         'feedback_form': ProductFeedbackForm(),
+        'help_form': help_form or ProductHelpRequestForm(),
         'feedbacks': feedbacks,
         'rating_distribution': rating_distribution,
         'total_feedbacks': total_feedbacks,
     })
+
+
+def product_help_request(request, slug):
+    product = get_object_or_404(Product, Q(slug=slug) | Q(sku__iexact=slug), is_active=True)
+
+    if request.method != 'POST':
+        return redirect('product_detail', slug=product.slug)
+
+    form = ProductHelpRequestForm(request.POST)
+    if form.is_valid():
+        help_request = form.save(commit=False)
+        help_request.product = product
+        if request.user.is_authenticated:
+            help_request.user = request.user
+        help_request.save()
+        messages.success(request, 'Your help request has been submitted. We will get back to you soon.')
+        return redirect('product_detail', slug=product.slug)
+
+    return _render_product_detail(request, product, help_form=form)
 
 
 def product_detail(request, slug):
@@ -246,16 +288,17 @@ def category_detail(request, slug):
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_active=True)
-
-    if request.user.is_authenticated:
-        cart = _get_or_create_user_cart(request)
-        item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
-        item.quantity += 1
-        item.save()
+    cart = _get_or_create_cart(request)
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product,
+        defaults={'quantity': 0}
+    )
+    if created:
+        item.quantity = 1
     else:
-        cart = request.session.get('cart', {})
-        cart[str(product.id)] = cart.get(str(product.id), 0) + 1
-        request.session['cart'] = cart
+        item.quantity += 1
+    item.save()
 
     messages.success(request, f'Added {product.name} to cart.')
     return redirect('cart')
@@ -415,13 +458,12 @@ def verify_razorpay_payment(request):
     return JsonResponse({'success': True, 'redirect_url': reverse('my_orders')})
 
 
-@login_required(login_url='login')
 @require_POST
 def update_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_active=True)
-    cart = _get_or_create_user_cart(request)
+    cart = _get_or_create_cart(request)
     if not cart:
-        messages.error(request, 'Please log in to update your cart.')
+        messages.error(request, 'Your cart is empty.')
         return redirect('cart')
 
     item = cart.items.filter(product=product).first()
@@ -443,13 +485,12 @@ def update_cart(request, product_id):
     return redirect('cart')
 
 
-@login_required(login_url='login')
 @require_POST
 def remove_from_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_active=True)
-    cart = _get_or_create_user_cart(request)
+    cart = _get_or_create_cart(request)
     if not cart:
-        messages.error(request, 'Please log in to remove items from your cart.')
+        messages.error(request, 'Your cart is empty.')
         return redirect('cart')
 
     item = cart.items.filter(product=product).first()

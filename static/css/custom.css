@@ -217,7 +217,7 @@ body {
   padding: 0.7rem 1rem;
 }
 
-..easykart-header-actions .dropdown-item:hover,
+.easykart-header-actions .dropdown-item:hover,
 .easykart-header-actions .dropdown-item.active {
   background-color: #e8f5e9;
   color: #1db947;

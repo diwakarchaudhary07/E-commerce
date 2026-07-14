@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, Inventory, RelatedProduct
+from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct
 
 
 class CustomUserAdmin(UserAdmin):
@@ -134,6 +134,20 @@ class ProductFeedbackAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ProductFeedback, ProductFeedbackAdmin)
+
+
+class ProductHelpRequestAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'created_at')
+    list_filter = ('created_at', 'product')
+    search_fields = ('product__name', 'user__email', 'query')
+    readonly_fields = ('created_at',)
+    fieldsets = (
+        ('Help Request Details', {'fields': ('product', 'user', 'query')}),
+        ('Timestamps', {'fields': ('created_at',), 'classes': ('collapse',)}),
+    )
+
+
+admin.site.register(ProductHelpRequest, ProductHelpRequestAdmin)
 
 
 class CategoryAdmin(admin.ModelAdmin):
