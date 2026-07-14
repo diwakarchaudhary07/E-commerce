@@ -234,6 +234,21 @@ class ProductFeedback(models.Model):
         return None
 
 
+class ProductHelpRequest(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='help_requests')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    query = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Product Help Request'
+        verbose_name_plural = 'Product Help Requests'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Help request for {self.product.name}"
+
+
 class Gallery(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
@@ -337,7 +352,14 @@ class WishlistItem(models.Model):
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cart')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='cart',
+        null=True,
+        blank=True,
+    )
+    session_key = models.CharField(max_length=40, null=True, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -346,7 +368,9 @@ class Cart(models.Model):
         verbose_name_plural = 'Carts'
 
     def __str__(self):
-        return f"Cart for {self.user.email}"
+        if self.user:
+            return f"Cart for {self.user.email}"
+        return f"Cart for session {self.session_key}"
 
     @property
     def total_items(self):

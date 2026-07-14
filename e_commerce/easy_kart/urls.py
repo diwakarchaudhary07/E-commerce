@@ -18,6 +18,7 @@ urlpatterns = [
     path('product/buy/<slug:slug>/', buy_now, name='buy_now'),
     path('product/sku/<str:sku>/', product_detail_by_sku, name='product_detail_by_sku'),
     path('product/<slug:slug>/feedback/', submit_feedback, name='submit_feedback'),
+    path('product/<slug:slug>/help/', product_help_request, name='product_help_request'),
     path('feedback-dashboard/', feedback_dashboard, name='feedback_dashboard'),
     path('wishlist/add/<slug:slug>/', add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:product_id>/', remove_from_wishlist, name='remove_from_wishlist'),

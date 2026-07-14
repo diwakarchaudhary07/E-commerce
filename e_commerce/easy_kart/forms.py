@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
 from .models import CustomUser
-from .models import Profile, Contact, ProductFeedback
+from .models import Profile, Contact, ProductFeedback, ProductHelpRequest
 
 
 class RegisterForm(forms.ModelForm):
@@ -195,4 +195,21 @@ class ProductFeedbackForm(forms.ModelForm):
     class Meta:
         model = ProductFeedback
         fields = ['message', 'rating']
+
+
+class ProductHelpRequestForm(forms.ModelForm):
+    query = forms.CharField(
+        required=True,
+        label='Your Query',
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 5,
+            'placeholder': 'Describe your question about this product...',
+            'required': 'required',
+        }),
+    )
+
+    class Meta:
+        model = ProductHelpRequest
+        fields = ['query']
 
