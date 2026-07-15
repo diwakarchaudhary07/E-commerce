@@ -3,13 +3,123 @@
 
 {% block extra_head %}
 <style>
-  :root{--primary:#0d6efd}
-  .profile-avatar img{width:120px;height:120px;object-fit:cover;border:4px solid rgba(13,110,253,0.08);box-shadow:0 8px 20px rgba(13,110,253,0.06);}
-  .avatar-placeholder{width:120px;height:120px;font-size:2.2rem}
-  .sidebar-card .list-group-item.active{background:var(--primary);color:#fff;border-left:4px solid rgba(13,110,253,0.12)}
-  .sidebar-card .card-body h5{color:var(--brand-dark)}
-  .profile-actions{gap:0.5rem}
-  @media (max-width:767px){.profile-avatar img,.avatar-placeholder{width:96px;height:96px}}
+  :root {
+    --primary: #0d6efd;
+    --profile-soft: #f8f9ff;
+    --profile-border: #e7efff;
+    --profile-shadow: rgba(13, 110, 253, 0.14);
+  }
+
+  .profile-avatar {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto;
+  }
+
+  .profile-avatar img,
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 6px solid #ffffff;
+    box-shadow: 0 22px 40px var(--profile-shadow);
+    background: linear-gradient(180deg, rgba(13, 110, 253, 0.08), rgba(255, 255, 255, 0.95));
+  }
+
+  .avatar-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #6c757d;
+  }
+
+  .sidebar-card {
+    border: 0;
+    border-radius: 1.5rem;
+    overflow: hidden;
+  }
+
+  .sidebar-card .card-body {
+    background: linear-gradient(180deg, rgba(13, 110, 253, 0.06), rgba(255, 255, 255, 0.95));
+    border-bottom: 1px solid rgba(13, 110, 253, 0.12);
+  }
+
+  .sidebar-card .list-group-item {
+    border: 0;
+    border-radius: 0;
+    padding: 1rem 1.25rem;
+    color: #42506d;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .sidebar-card .list-group-item.active {
+    background: var(--primary);
+    color: #ffffff;
+    border-left: 4px solid rgba(255, 255, 255, 0.32);
+  }
+
+  .sidebar-card .list-group-item:hover {
+    background: rgba(13, 110, 253, 0.06);
+    color: #0b1220;
+  }
+
+  .profile-actions {
+    gap: 0.65rem;
+  }
+
+  .profile-card {
+    border: 0;
+    border-radius: 1.5rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .profile-card .card-body {
+    padding: 2rem;
+  }
+
+  .profile-info dt {
+    font-size: 0.95rem;
+    color: #1f314f;
+    font-weight: 600;
+  }
+
+  .profile-info dd {
+    margin-bottom: 1.35rem;
+    color: #5d6b84;
+  }
+
+  .profile-stat {
+    min-width: 120px;
+  }
+
+  .profile-stat .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--brand-dark);
+  }
+
+  .profile-stat .stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .profile-card .card-title {
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 767px) {
+    .profile-avatar {
+      width: 110px;
+      height: 110px;
+    }
+
+    .profile-card .card-body {
+      padding: 1.5rem;
+    }
+  }
 </style>
 {% endblock %}
 
@@ -68,19 +178,23 @@ document.addEventListener('DOMContentLoaded', function(){
 
     <div class="row g-4">
       <div class="col-lg-3">
-        <div class="card shadow-sm sidebar-card">
+        <div class="card sidebar-card shadow-sm">
           <div class="card-body text-center">
-            <div class="profile-avatar mx-auto mb-3">
+            <div class="profile-avatar mb-3">
               {% if profile.profile_image %}
-                <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="rounded-circle img-fluid">
+                <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="img-fluid">
               {% else %}
-                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center text-muted">
-                  <i class="bi bi-person" style="font-size: 2.2rem;"></i>
+                <div class="avatar-placeholder text-muted">
+                  <i class="bi bi-person"></i>
                 </div>
               {% endif %}
             </div>
-            <h5 class="mb-1">{{ profile.full_name }}</h5>
-            <p class="text-muted small mb-2">{{ profile.email }}</p>
+            <h5 class="mb-1">{{ profile.full_name|default:'Easy Kart Member' }}</h5>
+            <p class="text-muted small mb-3">{{ profile.email }}</p>
+            <div class="d-flex justify-content-center align-items-center flex-wrap profile-actions">
+              <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-primary">Edit Profile</a>
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePhotoModal">Change Photo</button>
+            </div>
           </div>
           <div class="list-group list-group-flush">
             <a href="#overview" class="list-group-item list-group-item-action active">Overview</a>
@@ -93,44 +207,66 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
 
       <div class="col-lg-9">
-        <div class="card shadow-sm">
+        <div class="card profile-card">
           <div class="card-body">
-            <h5 class="card-title mb-3">Profile Details</h5>
-            <div id="overview">
-              <div class="row">
-                <div class="col-md-6 mb-2"><strong>Full name</strong></div>
-                <div class="col-md-6 mb-2 text-md-end">{{ profile.full_name }}</div>
-
-                <div class="col-md-6 mb-2"><strong>Email</strong></div>
-                <div class="col-md-6 mb-2 text-md-end">{{ profile.email }}</div>
-
-                <div class="col-md-6 mb-2"><strong>Mobile</strong></div>
-                <div class="col-md-6 mb-2 text-md-end">{{ profile.mobile_no|default:'—' }}</div>
-
-                <div class="col-md-6 mb-2"><strong>Alternate Mobile</strong></div>
-                <div class="col-md-6 mb-2 text-md-end">{{ profile.alternate_mobile_no|default:'—' }}</div>
-
-                <div class="col-md-6 mb-2"><strong>Date of Birth</strong></div>
-                <div class="col-md-6 mb-2 text-md-end">{{ profile.dob|date:'F j, Y'|default:'—' }}</div>
-
-                <div class="col-md-6 mb-2"><strong>Gender</strong></div>
-                <div class="col-md-6 mb-2 text-md-end">{{ profile.get_gender_display|default:'—' }}</div>
-
-                <div class="col-12 mt-3"><strong>Address</strong></div>
-                <div class="col-12 text-md-end" style="white-space: pre-wrap;">{{ profile.address|default:'—' }}</div>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
+              <div>
+                <h5 class="card-title">Profile Details</h5>
+                <p class="text-muted mb-0">Keep your personal details, contact information, and security settings up to date.</p>
+              </div>
+              <div class="d-flex gap-3 flex-wrap">
+                <div class="profile-stat text-end">
+                  <div class="stat-value">0</div>
+                  <div class="stat-label">Orders</div>
+                </div>
+                <div class="profile-stat text-end">
+                  <div class="stat-value">0</div>
+                  <div class="stat-label">Wishlist</div>
+                </div>
               </div>
             </div>
 
+            <div id="overview">
+              <dl class="row profile-info mb-0">
+                <dt class="col-sm-4">Full name</dt>
+                <dd class="col-sm-8">{{ profile.full_name|default:'—' }}</dd>
+
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">{{ profile.email|default:'—' }}</dd>
+
+                <dt class="col-sm-4">Mobile</dt>
+                <dd class="col-sm-8">{{ profile.mobile_no|default:'—' }}</dd>
+
+                <dt class="col-sm-4">Alternate Mobile</dt>
+                <dd class="col-sm-8">{{ profile.alternate_mobile_no|default:'—' }}</dd>
+
+                <dt class="col-sm-4">Date of Birth</dt>
+                <dd class="col-sm-8">{{ profile.dob|date:'F j, Y'|default:'—' }}</dd>
+
+                <dt class="col-sm-4">Gender</dt>
+                <dd class="col-sm-8">{{ profile.get_gender_display|default:'—' }}</dd>
+
+                <dt class="col-sm-4">Address</dt>
+                <dd class="col-sm-8" style="white-space: pre-wrap;">{{ profile.address|default:'—' }}</dd>
+              </dl>
+            </div>
+
             <div id="orders" class="d-none mt-4">
-              <p class="text-muted">You have no recent orders.</p>
+              <div class="alert alert-info mb-0" role="alert">
+                You have no recent orders yet. Start shopping to see your order history here.
+              </div>
             </div>
 
             <div id="addresses" class="d-none mt-4">
-              <p class="text-muted">No saved addresses. Use Edit Profile to add shipping addresses.</p>
+              <div class="alert alert-info mb-0" role="alert">
+                No saved addresses yet. Add shipping details from the Edit Profile page.
+              </div>
             </div>
 
             <div id="wishlist" class="d-none mt-4">
-              <p class="text-muted">Your wishlist is empty.</p>
+              <div class="alert alert-info mb-0" role="alert">
+                Your wishlist is empty. Add your favorite products to keep them handy.
+              </div>
             </div>
 
             <div id="security" class="d-none mt-4">
