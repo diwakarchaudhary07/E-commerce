@@ -32,64 +32,76 @@
         {% endif %}
 
         <!-- Main Navbar Content -->
-        <div class="container-fluid px-0 w-100">
-            <a class="navbar-brand d-flex align-items-center me-3" href="{% url 'home' %}">
-                <img src="{% static 'assets/logonew.png' %}" alt="Easy Kart" class="navbar-logo-pro">
+        <div class="navbar-content d-flex w-100 align-items-center">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <img src="{% static 'assets/Logo.png' %}" alt="Easy Kart" class="navbar-logo-pro">
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#easyKartNavbar" aria-controls="easyKartNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#easyKartNavbar" aria-controls="easyKartNavbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="easyKartNavbar">
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'product' %}">Product</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'category' %}">Category</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about_us' %}">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
+            <div class="collapse navbar-collapse flex-grow-0" id="easyKartNavbar">
+                <ul class="navbar-nav align-items-center gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'product' %}active{% endif %}" href="{% url 'product' %}">Product</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'category' %}active{% endif %}" href="{% url 'category' %}">Category</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact Us</a>
+                    </li>
                 </ul>
+            </div>
 
-                <div class="d-flex ms-auto align-items-center">
-                    <ul class="navbar-nav mb-2 mb-lg-0 align-items-center easykart-header-actions">
-                        <li class="nav-item mx-2">
-                            <a class="nav-link easykart-icon-link p-2 text-center" href="{% url 'wishlist' %}">
-                                <i class="bi bi-heart" style="font-size: 1.35rem;"></i>
-                                <div class="small">Wishlist</div>
-                            </a>
-                        </li>
-                        <li class="nav-item mx-2 position-relative">
-                            <a class="nav-link easykart-icon-link p-2 text-center" href="{% url 'cart' %}">
-                                <i class="bi bi-cart-fill" style="font-size: 1.35rem;"></i>
-                                <div class="small">Cart</div>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary cart-badge">{{ cart_item_count|default:0 }}</span>
-                            </a>
-                        </li>
-                        <li class="nav-item mx-2 dropdown text-center">
-                            <a class="nav-link dropdown-toggle easykart-icon-link p-2 text-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle" style="font-size: 1.35rem;"></i>
-                                <div class="small">Profile</div>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                {% if user.is_authenticated %}
-                                    <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form method="post" action="{% url 'logout' %}" class="m-0">
-                                            {% csrf_token %}
-                                            <button type="submit" class="dropdown-item">Logout</button>
-                                        </form>
-                                    </li>
-                                {% else %}
-                                    <li><a class="dropdown-item" href="{% url 'login' %}">Sign In</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
-                                {% endif %}
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+            <div class="ms-auto">
+                <ul class="navbar-nav align-items-center gap-2 easykart-header-actions flex-row">
+                    <li class="nav-item">
+                        <a class="nav-link easykart-icon-link" href="{% url 'wishlist' %}" title="My Wishlist">
+                            <i class="bi bi-heart"></i>
+                            <span class="small">Wishlist</span>
+                        </a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link easykart-icon-link" href="{% url 'cart' %}" title="My Cart">
+                            <i class="bi bi-cart-fill"></i>
+                            <span class="small">Cart</span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">{{ cart_item_count|default:0 }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle easykart-icon-link" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="My Profile">
+                            <i class="bi bi-person-circle"></i>
+                            <span class="small">Profile</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            {% if user.is_authenticated %}
+                                <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{% url 'login' %}">Sign In</a></li>
+                                <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
