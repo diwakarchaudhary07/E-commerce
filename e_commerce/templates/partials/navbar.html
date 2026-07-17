@@ -1,0 +1,94 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar fixed-top">
+    <!-- Announcement Bar at Top -->
+    {% if announcements %}
+    <div class="announcement-bar bg-announcement text-white w-100">
+        <div class="announcement-content">
+            <div class="announcement-marquee-wrapper">
+                <div class="announcement-marquee">
+                    {% for ann in announcements %}
+                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;<strong>{{ ann.message }}</strong></span>
+                    {% endfor %}
+                    {% for ann in announcements %}
+                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;<strong>{{ ann.message }}</strong></span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Navbar Content -->
+    <div class="navbar-content d-flex w-100 align-items-center">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <img src="{% static 'assets/Logo.png' %}" alt="Easy Kart" class="navbar-logo-pro">
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#easyKartNavbar" aria-controls="easyKartNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse flex-grow-0" id="easyKartNavbar">
+            <ul class="navbar-nav align-items-center gap-1">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'product' %}active{% endif %}" href="{% url 'product' %}">Product</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'category' %}active{% endif %}" href="{% url 'category' %}">Category</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact Us</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="ms-auto">
+            <ul class="navbar-nav align-items-center gap-2 easykart-header-actions flex-row">
+                <li class="nav-item">
+                    <a class="nav-link easykart-icon-link" href="{% url 'wishlist' %}" title="My Wishlist">
+                        <i class="bi bi-heart"></i>
+                        <span class="small">Wishlist</span>
+                    </a>
+                </li>
+                <li class="nav-item position-relative">
+                    <a class="nav-link easykart-icon-link" href="{% url 'cart' %}" title="My Cart">
+                        <i class="bi bi-cart-fill"></i>
+                        <span class="small">Cart</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">{{ cart_item_count|default:0 }}</span>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle easykart-icon-link" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="My Profile">
+                        <i class="bi bi-person-circle"></i>
+                        <span class="small">Profile</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Sign In</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
