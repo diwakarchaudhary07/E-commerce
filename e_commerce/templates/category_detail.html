@@ -24,7 +24,7 @@
                 <p class="text-muted">Slug: <strong>{{ category.slug }}</strong></p>
                 <p>{{ category.description|linebreaksbr|default:'No description available for this category.' }}</p>
                 <div class="mt-4">
-                    <span class="badge bg-{{ category.is_active|yesno:'success,danger' }}">{{ category.is_active|yesno:'Active,Inactive' }}</span>
+                    <span class="badge badge-{{ category.is_active|yesno:'active,inactive' }}">{{ category.is_active|yesno:'Active,Inactive' }}</span>
                     <span class="text-muted ms-3">Created: {{ category.created_at|date:'M d, Y' }}</span>
                 </div>
             </div>
