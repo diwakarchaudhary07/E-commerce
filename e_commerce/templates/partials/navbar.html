@@ -1,25 +1,27 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar fixed-top">
-    <!-- Announcement Bar at Top -->
-    {% if announcements %}
-    <div class="announcement-bar bg-announcement text-white w-100">
-        <div class="announcement-content">
-            <div class="announcement-marquee-wrapper">
-                <div class="announcement-marquee">
-                    {% for ann in announcements %}
-                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;<strong>{{ ann.message }}</strong></span>
-                    {% endfor %}
-                    {% for ann in announcements %}
-                        <span class="announcement-message"><i class="bi bi-send-fill"></i>&nbsp;<strong>{{ ann.message }}</strong></span>
-                    {% endfor %}
-                </div>
+<!-- Premium Announcement Bar at Top -->
+{% if announcements %}
+<div class="announcement-bar fixed-top text-white w-100">
+    <div class="announcement-content">
+        <div class="announcement-marquee-wrapper">
+            <div class="announcement-marquee">
+                {% for ann in announcements %}
+                    <span class="announcement-message">
+                        <i class="bi bi-lightning-fill"></i>{{ ann.message }}
+                    </span>
+                {% endfor %}
+                {% for ann in announcements %}
+                    <span class="announcement-message">
+                        <i class="bi bi-lightning-fill"></i>{{ ann.message }}
+                    </span>
+                {% endfor %}
             </div>
         </div>
     </div>
-    {% endif %}
+</div>
+{% endif %}
 
-    <!-- Main Navbar Content -->
-    <div class="navbar-content d-flex w-100 align-items-center">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar fixed-top">
         <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
             <img src="{% static 'assets/Logo.png' %}" alt="Easy Kart" class="navbar-logo-pro">
         </a>
@@ -29,24 +31,24 @@
         </button>
 
         <div class="collapse navbar-collapse flex-grow-0" id="easyKartNavbar">
-            <ul class="navbar-nav align-items-center gap-1">
+            <ul class="navbar-nav align-items-center gap-1 easykart-menu">
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}" title="Home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'product' %}active{% endif %}" href="{% url 'product' %}">Product</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'product' %}active{% endif %}" href="{% url 'product' %}" title="Shop Products">Products</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'category' %}active{% endif %}" href="{% url 'category' %}">Category</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'category' %}active{% endif %}" href="{% url 'category' %}" title="Browse Categories">Category</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}" title="View Gallery">Gallery</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}">About Us</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}" title="About Us">About Us</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact Us</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}" title="Contact Us">Contact Us</a>
                 </li>
             </ul>
         </div>
@@ -55,15 +57,17 @@
             <ul class="navbar-nav align-items-center gap-2 easykart-header-actions flex-row">
                 <li class="nav-item">
                     <a class="nav-link easykart-icon-link" href="{% url 'wishlist' %}" title="My Wishlist">
-                        <i class="bi bi-heart"></i>
+                        <i class="bi bi-heart-fill"></i>
                         <span class="small">Wishlist</span>
                     </a>
                 </li>
                 <li class="nav-item position-relative">
                     <a class="nav-link easykart-icon-link" href="{% url 'cart' %}" title="My Cart">
-                        <i class="bi bi-cart-fill"></i>
+                        <i class="bi bi-bag-fill"></i>
                         <span class="small">Cart</span>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">{{ cart_item_count|default:0 }}</span>
+                        {% if cart_item_count %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">{{ cart_item_count }}</span>
+                        {% endif %}
                     </a>
                 </li>
                 <li class="nav-item dropdown">
@@ -73,18 +77,18 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                         {% if user.is_authenticated %}
-                            <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
-                            <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-bag-check me-2"></i>My Orders</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="post" action="{% url 'logout' %}" class="m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="dropdown-item">Logout</button>
+                                    <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
                                 </form>
                             </li>
                         {% else %}
-                            <li><a class="dropdown-item" href="{% url 'login' %}">Sign In</a></li>
-                            <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
                         {% endif %}
                     </ul>
                 </li>
