@@ -1,13 +1,13 @@
 :root {
-    --ek-navy: #0b2a5f;
-    --ek-navy-dark: #071b3a;
-    --ek-blue: #1962ff;
-    --ek-blue-soft: #eaf2ff;
-    --ek-accent: #2d78ff;
-    --ek-text: #17304f;
-    --ek-muted: #6b7a91;
-    --ek-border: rgba(11, 42, 95, 0.12);
-    --ek-shadow: 0 18px 45px rgba(11, 42, 95, 0.12);
+    --ek-navy: #0047AB;
+    --ek-navy-dark: #003580;
+    --ek-blue: #0047AB;
+    --ek-blue-soft: #f0f7ff;
+    --ek-accent: #FF6B35;
+    --ek-text: #0f172a;
+    --ek-muted: #6c757d;
+    --ek-border: rgba(0, 71, 171, 0.12);
+    --ek-shadow: 0 18px 45px rgba(0, 71, 171, 0.12);
     --ek-radius: 1rem;
     --ek-radius-lg: 1.5rem;
 }
@@ -23,7 +23,7 @@ html {
 }
 
 body.theme-easykart {
-    background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+    background: linear-gradient(180deg, #f6f8fb 0%, #f0f7ff 100%);
     color: var(--ek-text);
     font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
@@ -226,15 +226,15 @@ body.theme-easykart .footer-logo {
 }
 
 .easykart-navbar .nav-link.active {
-    color: #ff8c00 !important;
+    color: #FF6B35 !important;
 }
 
 .easykart-navbar .nav-link.active::after {
-    background: #ff8c00;
+    background: #FF6B35;
 }
 
 .easykart-navbar .nav-link:hover {
-    background: #ff8c00 !important;
+    background: #FF6B35 !important;
     color: #ffffff !important;
     transform: translateY(-2px);
 }
@@ -269,7 +269,7 @@ body.theme-easykart .footer-logo {
 }
 
 .easykart-header-actions .easykart-icon-link:hover {
-    background: #ff8c00;
+    background: #FF6B35;
     color: #ffffff;
     transform: translateY(-3px);
 }
@@ -280,14 +280,14 @@ body.theme-easykart .footer-logo {
 }
 
 .easykart-header-actions .cart-badge {
-    background: #1962ff;
+    background: #FF6B35;
     color: #ffffff;
     min-width: 22px;
     min-height: 22px;
     font-size: 0.7rem;
     line-height: 22px;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(25, 98, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 .easykart-menu {
