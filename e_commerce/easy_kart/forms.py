@@ -175,6 +175,15 @@ class ContactForm(forms.ModelForm):
 
 
 class ProductFeedbackForm(forms.ModelForm):
+    title = forms.CharField(
+        required=True,
+        label='Review Title',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Summarize your review in a short title',
+            'required': 'required',
+        }),
+    )
     message = forms.CharField(
         required=True,
         label='Review Comment',
@@ -194,7 +203,7 @@ class ProductFeedbackForm(forms.ModelForm):
 
     class Meta:
         model = ProductFeedback
-        fields = ['message', 'rating']
+        fields = ['title', 'message', 'rating']
 
 
 class ProductHelpRequestForm(forms.ModelForm):
