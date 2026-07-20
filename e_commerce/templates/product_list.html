@@ -46,7 +46,7 @@
                         <p class="card-text text-muted mb-2">{{ product.description|truncatewords:20 }}</p>
                         <div class="mb-2 small text-muted">
                             Category: {% if product.category %}
-                                <a href="{% url 'category_detail' product.category.slug %}" class="text-decoration-none">{{ product.category.name }}</a>
+                                <a href="{% url 'category_detail' product.category.slug %}" class="text-decoration-none product-category-link">{{ product.category.name }}</a>
                             {% else %}
                                 Unassigned
                             {% endif %}
@@ -54,11 +54,11 @@
                         <div class="mb-2 small text-muted">SKU: {{ product.sku|default:'Not assigned' }}</div>
                         <div class="mb-3">
                             {% if product.discount > 0 %}
-                                <span class="text-danger fw-bold">${{ product.get_discounted_price|floatformat:2 }}</span>
-                                <span class="text-muted text-decoration-line-through ms-2">${{ product.price|floatformat:2 }}</span>
+                                <span class="product-price-discounted fw-bold">${{ product.get_discounted_price|floatformat:2 }}</span>
+                                <span class="product-price-original ms-2">${{ product.price|floatformat:2 }}</span>
                                 <span class="badge badge-discount">{{ product.discount }}% off</span>
                             {% else %}
-                                <span class="fw-bold">${{ product.price|floatformat:2 }}</span>
+                                <span class="fw-bold product-price">${{ product.price|floatformat:2 }}</span>
                             {% endif %}
                         </div>
                         <div class="mt-auto gap-2 d-flex flex-wrap">
