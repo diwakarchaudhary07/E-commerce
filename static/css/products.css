@@ -216,11 +216,18 @@
     font-size: 0.95rem;
 }
 
-.product-detail-category a {
+.product-detail-category a,
+.product-category-link {
     color: #FF6B35;
     text-decoration: none;
     font-weight: 600;
     transition: all 0.2s ease;
+}
+
+.product-category-link:hover,
+.product-detail-category a:hover {
+    color: #0047AB;
+    text-decoration: underline;
 }
 
 .product-detail-category a:hover {
