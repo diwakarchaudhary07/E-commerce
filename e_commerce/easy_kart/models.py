@@ -232,6 +232,8 @@ class ProductFeedback(models.Model):
 
         if hasattr(user, 'profile') and user.profile.profile_image:
             return user.profile.profile_image.url
+        if getattr(user, 'profile_image', None):
+            return user.profile_image.url
         return None
 
 
