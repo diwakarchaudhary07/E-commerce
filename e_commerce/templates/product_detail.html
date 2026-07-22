@@ -26,6 +26,30 @@
                 {% endif %}
             </div>
             <div class="mb-2 small text-muted">SKU: {{ product.sku|default:'Not assigned' }}</div>
+            <div class="mb-2">
+                {% if product.stock > 0 %}
+                    <span class="badge bg-info text-dark">In Stock: {{ product.stock }}</span>
+                {% else %}
+                    <span class="badge bg-danger">Out of Stock</span>
+                {% endif %}
+            </div>
+            <div class="product-rating-summary d-flex align-items-center gap-3 mb-3">
+                <div class="star-rating stars-readonly" aria-label="Average rating {{ average_rating }} out of 5">
+                    {% for i in full_star_range %}
+                        <i class="bi bi-star-fill text-ek-accent"></i>
+                    {% endfor %}
+                    {% for i in half_star_range %}
+                        <i class="bi bi-star-half text-ek-accent"></i>
+                    {% endfor %}
+                    {% for i in empty_star_range %}
+                        <i class="bi bi-star text-muted"></i>
+                    {% endfor %}
+                </div>
+                <div class="product-rating-text">
+                    <span class="fw-semibold">{{ average_rating|floatformat:1 }}/5</span>
+                    <span class="text-muted">({{ total_feedbacks }} Review{% if total_feedbacks != 1 %}s{% endif %})</span>
+                </div>
+            </div>
             <p class="text-muted">{{ product.description|linebreaksbr }}</p>
             <div class="mb-4">
                 {% if product.discount > 0 %}
@@ -55,14 +79,22 @@
     </div>
 </div>
 
-<div class="card mt-4 shadow-sm">
+<div class="card mt-4 shadow-sm product-feedback-section">
     <div class="card-body">
-        <h3 class="h4 mb-3">Customer Feedback</h3>
+        <h3 class="h4 mb-3">Customer Reviews</h3>
 
-        <div class="mb-4">
+        <div class="mb-4 feedback-summary">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                 <div>
-                    <div class="h6 mb-1">Star Rating Distribution</div>
+                    <div class="h6 mb-1">Average Rating</div>
+                    <div class="d-flex align-items-center gap-2 mb-2 average-rating-holder">
+                        <span class="display-5 mb-0 average-rating">{{ average_rating|floatformat:1 }}</span>
+                        <span class="text-warning average-rating-stars" aria-label="Average rating">
+                            {% for i in "12345" %}
+                                <i class="bi {% if forloop.counter <= average_rating|floatformat:0 %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                            {% endfor %}
+                        </span>
+                    </div>
                     <div class="text-muted">Based on {{ total_feedbacks }} review{% if total_feedbacks != 1 %}s{% endif %}</div>
                 </div>
             </div>
@@ -94,7 +126,11 @@
         </div>
 
         {% if user.is_authenticated %}
-        <form method="post" action="{% url 'submit_feedback' product.slug %}" class="mb-4">
+        <div class="feedback-form-header mb-3">
+            <h4 class="h5 mb-1">Write a Customer Review</h4>
+            <p class="text-muted small mb-0">Share your experience to help other shoppers choose the right product.</p>
+        </div>
+        <form method="post" action="{% url 'submit_feedback' product.slug %}" class="mb-4 feedback-form">
             {% csrf_token %}
             <div class="row g-3">
                 <div class="col-12">
@@ -102,26 +138,20 @@
                     <input type="text" class="form-control bg-white" value="{{ product.name }}" readonly>
                 </div>
 
-                <div class="col-md-4 col-sm-12">
-                    <label class="form-label">Customer Profile Image</label>
-                    {% if user.profile.profile_image %}
-                        <img src="{{ user.profile.profile_image.url }}" alt="{{ user.full_name|default:user.email }}" class="img-fluid rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
-                    {% else %}
-                        <div class="border rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-                            <i class="bi bi-person-fill fs-3 text-muted"></i>
+                <div class="col-12">
+                    <div class="reviewer-card d-flex align-items-center gap-3 p-3 rounded border bg-white shadow-sm">
+                        {% if user.profile.profile_image or user.profile_image %}
+                            <img src="{{ user.profile.profile_image.url|default:user.profile_image.url }}" alt="{{ user.full_name|default:user.profile.full_name|default:user.get_full_name|default:user.email }}" class="reviewer-avatar rounded-circle">
+                        {% else %}
+                            <div class="reviewer-avatar rounded-circle bg-light d-flex align-items-center justify-content-center text-ek-blue">
+                                <i class="bi bi-person-fill fs-4"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <div class="small text-muted mb-1">Reviewer</div>
+                            <div class="fw-semibold text-ek-navy">{{ user.full_name|default:user.profile.full_name|default:user.get_full_name|default:user.email }}</div>
                         </div>
-                        <div class="small text-danger mt-2">Please upload your profile image in <a href="{% url 'edit_profile' %}">Profile Settings</a>.</div>
-                    {% endif %}
-                </div>
-
-                <div class="col-md-8 col-sm-12">
-                    <label class="form-label">Customer Name</label>
-                    <input type="text" class="form-control bg-white" value="{{ user.full_name|default:user.get_full_name|default:user.email }}" readonly>
-                </div>
-
-                <div class="col-md-8 col-sm-12">
-                    <label class="form-label">Customer Email</label>
-                    <input type="email" class="form-control bg-white" value="{{ user.email }}" readonly>
+                    </div>
                 </div>
 
                 <div class="col-12">
@@ -143,8 +173,8 @@
                     <label class="form-label">Star Rating</label>
                     <div class="rating-group d-flex flex-wrap gap-2">
                         {% for value, label in feedback_form.fields.rating.choices %}
-                            {% with field_name=feedback_form.rating.name %}
-                                <input class="btn-check" type="radio" name="{{ field_name }}" id="rating-{{ forloop.counter }}" value="{{ value }}" autocomplete="off" required {% if feedback_form.rating.value|stringformat:"s" == value|stringformat:"s" %}checked{% endif %}>
+                            {% with field_name=feedback_form.rating.name selected_value=feedback_form.rating.value %}
+                                <input class="btn-check" type="radio" name="{{ field_name }}" id="rating-{{ forloop.counter }}" value="{{ value }}" autocomplete="off" required {% if selected_value|stringformat:"s" == value|stringformat:"s" %}checked{% endif %}>
                                 <label class="btn btn-outline-primary rating-btn" for="rating-{{ forloop.counter }}">
                                     <i class="bi bi-star-fill"></i> {{ label }}
                                 </label>
@@ -172,23 +202,33 @@
         <div class="row g-3">
             {% for item in feedbacks %}
                 <div class="col-12">
-                    <div class="border rounded p-3 bg-light">
-                        <div class="d-flex align-items-start gap-3 mb-3">
-                            {% if item.customer_avatar_url %}
-                                <img src="{{ item.customer_avatar_url }}" alt="{{ item.customer_name|default:'Guest' }}" class="review-avatar rounded-circle">
-                            {% else %}
-                                <span class="review-avatar rounded-circle bg-primary text-white d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-person-fill fs-5"></i>
-                                </span>
-                            {% endif %}
-                            <div class="flex-fill">
-                                <div class="fw-semibold">{{ item.customer_name|default:'Guest' }}</div>
-                                {% if item.title %}
-                                    <div class="h6 mb-2">{{ item.title }}</div>
-                                {% endif %}
+                    <div class="border rounded p-3 bg-light feedback-card">
+                        <div class="d-flex flex-column gap-3 mb-3">
+                            <div class="d-flex align-items-start justify-content-between gap-3 review-card-header">
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if item.customer_avatar_url %}
+                                        <img src="{{ item.customer_avatar_url }}" alt="{{ item.customer_name|default:'Guest' }}" class="review-avatar rounded-circle">
+                                    {% else %}
+                                        <span class="review-avatar rounded-circle bg-ek-blue text-white d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person-fill fs-5"></i>
+                                        </span>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-semibold text-ek-navy">{{ item.customer_name|default:'Guest' }}</div>
+                                        {% if item.title %}
+                                            <div class="h6 mb-0 text-ek-navy">{{ item.title }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-muted small">{{ item.created_at|date:"M j, Y" }}</div>
+                            </div>
+                            <div class="review-rating-stars text-ek-accent">
+                                {% for i in "12345" %}
+                                    <i class="bi {% if forloop.counter <= item.rating %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                                {% endfor %}
                             </div>
                         </div>
-                        <p class="mb-0">{{ item.message }}</p>
+                        <p class="mb-0 review-message">{{ item.message }}</p>
                     </div>
                 </div>
             {% empty %}

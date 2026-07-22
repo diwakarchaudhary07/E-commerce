@@ -3,7 +3,7 @@
 
 {% block header_banner %}
 <section class="product-hero position-relative mb-4">
-    <div class="product-hero-bg" style="background-image: url('{% static 'assets/product banner.png' %}');"></div>
+    <div class="product-hero-bg"></div>
     <div class="product-hero-overlay"></div>
     <div class="container position-relative" style="z-index:3;">
         <div style="min-height:60vh; display:flex; align-items:center;">
@@ -16,8 +16,8 @@
     </div>
     <style>
         .product-hero{ overflow: hidden; border-radius: 0; }
-        .product-hero-bg{ position: absolute; inset: 0; width:100%; height:100%; background-size: cover; background-position: center; }
-        .product-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 71, 171, 0.55) 0%, rgba(255, 107, 53, 0.15) 100%); }
+        .product-hero-bg{ position: absolute; inset: 0; width:100%; height:100%; background: linear-gradient(135deg, rgba(0, 71, 171, 0.95) 0%, rgba(255, 107, 53, 0.85) 100%); }
+        .product-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 71, 171, 0.45) 0%, rgba(255, 107, 53, 0.15) 100%); }
     </style>
 </section>
 {% endblock %}
