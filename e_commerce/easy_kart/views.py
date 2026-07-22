@@ -160,11 +160,12 @@ def update_stock(request, product_id):
     return redirect(redirect_url)
 
 
-def _render_product_detail(request, product, help_form=None):
+def _render_product_detail(request, product, feedback_form=None, help_form=None):
     feedbacks = product.feedbacks.filter(is_approved=True).order_by('-created_at')
     rating_values = feedbacks.values_list('rating', flat=True)
     rating_counts = Counter(rating_values)
     total_feedbacks = len(rating_values)
+    average_rating = round(sum(rating_values) / total_feedbacks, 1) if total_feedbacks else 0
     rating_distribution = []
     for rating in range(5, 0, -1):
         count = rating_counts.get(rating, 0)
@@ -175,15 +176,31 @@ def _render_product_detail(request, product, help_form=None):
             'percentage': percentage,
         })
 
+    if total_feedbacks:
+        average_rating = round(sum(rating_values) / total_feedbacks, 1)
+        star_rating = round(average_rating * 2) / 2
+        full_stars = int(star_rating)
+        half_star = 1 if star_rating - full_stars == 0.5 else 0
+    else:
+        average_rating = 0
+        full_stars = 0
+        half_star = 0
+
+    empty_stars = 5 - full_stars - half_star
+
     return render(request, 'product_detail.html', {
         'page_title': product.name,
         'heading': product.name,
         'product': product,
-        'feedback_form': ProductFeedbackForm(),
+        'feedback_form': feedback_form or ProductFeedbackForm(),
         'help_form': help_form or ProductHelpRequestForm(),
         'feedbacks': feedbacks,
         'rating_distribution': rating_distribution,
         'total_feedbacks': total_feedbacks,
+        'average_rating': average_rating,
+        'full_star_range': range(full_stars),
+        'half_star_range': range(half_star),
+        'empty_star_range': range(empty_stars),
     })
 
 
@@ -225,20 +242,17 @@ def submit_feedback(request, slug):
         if form.is_valid():
             feedback = form.save(commit=False)
             feedback.product = product
-            feedback.customer_name = request.user.full_name or request.user.get_full_name() or request.user.email or 'Guest'
+            customer_name = request.user.full_name or request.user.get_full_name()
+            if not customer_name and hasattr(request.user, 'profile'):
+                customer_name = request.user.profile.full_name
+            feedback.customer_name = customer_name or request.user.email or 'Guest'
             feedback.customer_email = request.user.email
             feedback.save()
             messages.success(request, 'Feedback submitted successfully. It is now pending approval.')
             return redirect('product_detail', slug=product.slug)
 
         messages.error(request, 'Please provide a valid review and rating.')
-        return render(request, 'product_detail.html', {
-            'page_title': product.name,
-            'heading': product.name,
-            'product': product,
-            'feedback_form': form,
-            'feedbacks': product.feedbacks.filter(is_approved=True).order_by('-created_at'),
-        })
+        return _render_product_detail(request, product, feedback_form=form)
 
     return redirect('product_detail', slug=product.slug)
 
