@@ -137,6 +137,77 @@ body.theme-easykart .badge.bg-danger {
     box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.15);
 }
 
+.product-feedback-section .feedback-summary .average-rating {
+    color: var(--ek-accent);
+}
+
+.product-feedback-section .feedback-summary .average-rating-stars .bi-star-fill,
+.product-feedback-section .review-rating-stars .bi-star-fill {
+    color: var(--ek-accent);
+}
+
+.product-feedback-section .review-avatar {
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    background: var(--ek-blue);
+}
+
+.product-feedback-section .review-card {
+    border-color: rgba(0, 71, 171, 0.16);
+    background: #fbfcff;
+}
+
+.product-feedback-section .review-card-header .text-ek-navy,
+.product-feedback-section .review-card .review-message {
+    color: var(--ek-text);
+}
+
+.reviewer-card {
+    background: rgba(240, 247, 255, 0.9);
+    border: 1px solid rgba(0, 71, 171, 0.16);
+}
+
+.reviewer-avatar {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.reviewer-card .text-ek-navy {
+    color: var(--ek-navy);
+}
+
+.reviewer-card .text-muted {
+    color: var(--ek-muted);
+}
+
+.product-feedback-section .rating-distribution .progress {
+    height: 12px;
+    background: rgba(0, 71, 171, 0.08);
+}
+
+.product-feedback-section .rating-distribution .progress-bar {
+    background: linear-gradient(135deg, var(--ek-navy), var(--ek-blue));
+}
+
+.product-feedback-section .feedback-form .btn-primary {
+    background: linear-gradient(135deg, var(--ek-navy), var(--ek-blue));
+    border-color: var(--ek-blue);
+}
+
+.product-feedback-section .feedback-form-header h4 {
+    color: var(--ek-navy);
+}
+
+.product-feedback-section .feedback-form-header p {
+    color: var(--ek-muted);
+}
+
 body.theme-easykart .form-control:focus,
 body.theme-easykart .form-select:focus,
 body.theme-easykart .form-check-input:focus {
@@ -323,16 +394,30 @@ body.theme-easykart .footer-logo {
 .easykart-menu .nav-link {
     color: rgba(255, 255, 255, 0.95) !important;
     font-weight: 600;
-    padding: 0.75rem 1rem;
-    border-radius: 14px;
-    transition: all 0.22s ease;
+    padding: 0.8rem 1.15rem;
+    border-radius: 12px;
+    transition: background-color 0.35s ease, color 0.35s ease, transform 0.25s ease;
     text-align: center;
+    background: transparent;
 }
 
 .easykart-menu .nav-link:hover,
 .easykart-menu .nav-link:focus {
-    color: #fff !important;
-    background: rgba(255, 255, 255, 0.1);
+    color: var(--ek-accent) !important;
+    background: var(--ek-blue) !important;
+    transform: translateY(-1px);
+}
+
+.easykart-menu .nav-link.active {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--ek-accent) 0%, #ff8b59 100%) !important;
+    box-shadow: 0 12px 28px rgba(255, 107, 53, 0.22);
+}
+
+.easykart-menu .nav-link.active:hover,
+.easykart-menu .nav-link.active:focus {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #e1572c 0%, #ff8b59 100%) !important;
 }
 
 .easykart-menu .navbar-nav {
