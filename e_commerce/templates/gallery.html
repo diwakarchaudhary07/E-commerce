@@ -4,15 +4,63 @@
 {% block title %}Gallery | Easy Kart{% endblock %}
 
 {% block header_banner %}
-<section class="gallery-hero position-relative mb-4">
+<section class="gallery-hero position-relative mb-5">
     <div class="gallery-hero-bg"></div>
     <div class="gallery-hero-overlay"></div>
     <div class="container position-relative" style="z-index:3;">
-        <div style="min-height:60vh; display:flex; align-items:center;">
-            <div>
-                <span class="badge bg-white text-primary mb-3">Our Gallery</span>
-                <h1 class="display-3 fw-bold text-white">Discover. Explore.</h1>
-                <p class="lead text-white-75">Browse our collection of images and products.</p>
+        <div class="row align-items-center" style="min-height:50vh;">
+            <div class="col-lg-6">
+                <span class="badge bg-white text-primary mb-3">Easy Kart Gallery</span>
+                <h1 class="display-4 fw-bold text-white">Shop More, Pay Less.</h1>
+                <p class="lead text-white-75">Discover curated products and category highlights designed for fast checkout, secure shopping, and trusted delivery.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{% url 'product' %}" class="btn btn-light btn-lg text-primary">Shop Now</a>
+                    <a href="{% url 'category' %}" class="btn btn-outline-light btn-lg">Explore Categories</a>
+                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mt-4">
+                    <div class="col">
+                        <div class="gallery-highlight p-3 rounded-4 text-white">
+                            <strong>Fast Delivery</strong>
+                            <p class="mb-0 small text-white-75">On time, every order.</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gallery-highlight p-3 rounded-4 text-white">
+                            <strong>Secure Checkout</strong>
+                            <p class="mb-0 small text-white-75">Protected payment process.</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gallery-highlight p-3 rounded-4 text-white">
+                            <strong>Best Deals</strong>
+                            <p class="mb-0 small text-white-75">Curated value products.</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="gallery-highlight p-3 rounded-4 text-white">
+                            <strong>Easy Returns</strong>
+                            <p class="mb-0 small text-white-75">Simple and reliable.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="gallery-banner-img position-relative rounded-5 overflow-hidden shadow-lg">
+                    {% if featured_products and featured_products.0.image %}
+                        <img src="{{ featured_products.0.image.url }}" alt="{{ featured_products.0.name }}" class="gallery-banner-image w-100 h-100">
+                    {% else %}
+                        <div class="gallery-banner-image fallback d-flex align-items-center justify-content-center">Featured product</div>
+                    {% endif %}
+                    <div class="gallery-surface p-4 position-absolute bottom-0 start-0 w-100 text-white">
+                        <div class="d-flex gap-3 flex-wrap">
+                            {% for category in gallery_categories %}
+                            <div class="category-chip rounded-pill px-3 py-2">
+                                {{ category.name }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -20,16 +68,24 @@
         .gallery-hero{ overflow: hidden; border-radius: 0; }
         .gallery-hero-bg{ position: absolute; inset: 0; width:100%; height:100%; background: linear-gradient(135deg, rgba(0, 71, 171, 0.95) 0%, rgba(255, 107, 53, 0.85) 100%); }
         .gallery-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 71, 171, 0.45) 0%, rgba(255, 107, 53, 0.15) 100%); }
+        .gallery-highlight{ background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); }
+        .gallery-banner-img{ min-height: 420px; }
+        .gallery-banner-image{ object-fit: cover; min-height: 420px; }
+        .gallery-banner-image.fallback{ background: linear-gradient(135deg, #0047AB, #FF6B35); min-height: 420px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 700; }
+        .gallery-surface{ background: rgba(0, 0, 0, 0.35); }
+        .category-chip{ background: rgba(255, 255, 255, 0.16); color: #ffffff; font-weight: 600; }
+        .gallery-hero .btn-light{ color: #0047AB; }
+        .gallery-hero .btn-outline-light{ border-color: rgba(255,255,255,0.85); }
+        @media (max-width: 991px) { .gallery-banner-img{ min-height: 320px; } }
     </style>
 </section>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3">Gallery</h1>
-            <p class="text-muted mb-0">Browse our collection of images and products.</p>
+            <p class="text-muted mb-0">Discover product and category visuals that showcase our latest offerings, curated collections, and quality craftsmanship.</p>
         </div>
     </div>
 
@@ -77,4 +133,19 @@
     <div class="alert alert-info">No gallery items available yet.</div>
     {% endif %}
 </div>
+
+<style>
+.gallery-hero{ overflow: hidden; border-radius: 0; }
+.gallery-hero-bg{ position: absolute; inset: 0; width:100%; height:100%; background: linear-gradient(135deg, rgba(0, 71, 171, 0.95) 0%, rgba(255, 107, 53, 0.85) 100%); }
+.gallery-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 71, 171, 0.45) 0%, rgba(255, 107, 53, 0.15) 100%); }
+.gallery-highlight{ background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); }
+.gallery-banner-img{ min-height: 420px; }
+.gallery-banner-image{ object-fit: cover; min-height: 420px; }
+.gallery-banner-image.fallback{ background: linear-gradient(135deg, #0047AB, #FF6B35); min-height: 420px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 700; }
+.gallery-surface{ background: rgba(0, 0, 0, 0.35); }
+.category-chip{ background: rgba(255, 255, 255, 0.16); color: #ffffff; font-weight: 600; }
+.gallery-hero .btn-light{ color: #0047AB; }
+.gallery-hero .btn-outline-light{ border-color: rgba(255,255,255,0.85); }
+@media (max-width: 991px) { .gallery-banner-img{ min-height: 320px; } }
+</style>
 {% endblock %}
