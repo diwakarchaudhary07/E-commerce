@@ -27,43 +27,39 @@
 {% endblock %}
 
 {% block content %}
+{% with default_about_short='Easy Kart is an online storefront that makes shopping simple and enjoyable with curated products, secure checkout, and responsive order support.' default_about='Easy Kart is an online storefront built to make shopping simple, secure, and enjoyable. We bring customers curated products across categories like fashion, electronics, lifestyle, and home, with clear inventory, easy checkout, and responsive order tracking.' default_mission='To connect customers with quality products through an intuitive, reliable online shopping experience.' default_vision='To become a trusted destination for shoppers seeking great value and a seamless e-commerce journey.' %}
 <div class="container py-5">
-    {% if about %}
     <div class="row g-4">
         <!-- Main Content Column -->
         <div class="col-lg-8">
-            {% if about.image %}
+            {% if about and about.image %}
             <div class="mb-4">
-                <img src="{{ about.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ about.title }}">
+                <img src="{{ about.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ about.title|default:'About Easy Kart' }}">
             </div>
             {% endif %}
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h1 class="card-title mb-3">{{ about.title }}</h1>
+                    <h1 class="card-title mb-3">{{ about.title|default:'About Easy Kart' }}</h1>
                     <div class="about-content">
-                        {{ about.content|linebreaksbr }}
+                        {{ about.content|default:default_about|linebreaksbr }}
                     </div>
                 </div>
             </div>
 
-            {% if about.mission %}
             <div class="card shadow-sm mb-4 border-start border-primary border-5">
                 <div class="card-body">
                     <h3 class="card-title text-primary mb-3"><i class="bi bi-target"></i> Our Mission</h3>
-                    <p>{{ about.mission|linebreaksbr }}</p>
+                    <p>{{ about.mission|default:default_mission|linebreaksbr }}</p>
                 </div>
             </div>
-            {% endif %}
 
-            {% if about.vision %}
             <div class="card shadow-sm border-start border-success border-5">
                 <div class="card-body">
                     <h3 class="card-title text-success mb-3"><i class="bi bi-eye"></i> Our Vision</h3>
-                    <p>{{ about.vision|linebreaksbr }}</p>
+                    <p>{{ about.vision|default:default_vision|linebreaksbr }}</p>
                 </div>
             </div>
-            {% endif %}
         </div>
 
         <!-- Sidebar Column -->
@@ -86,6 +82,7 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3"><i class="bi bi-info-circle"></i> Company Info</h5>
                     <div class="small text-muted">
+                        {% if about %}
                         <p class="mb-2">
                             <strong>Last Updated:</strong><br>
                             {{ about.updated_at|date:'F d, Y' }}
@@ -94,18 +91,21 @@
                             <strong>Status:</strong><br>
                             <span class="badge bg-success">Active</span>
                         </p>
+                        {% else %}
+                        <p class="mb-2">
+                            <strong>Company:</strong><br>
+                            Easy Kart Online Store
+                        </p>
+                        <p class="mb-0">
+                            <strong>Status:</strong><br>
+                            <span class="badge bg-secondary">Content fallback</span>
+                        </p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    {% else %}
-    <div class="alert alert-info" role="alert">
-        <h5 class="alert-heading">No About Us content available yet.</h5>
-        <p>Please check back soon for more information about our company.</p>
-        <hr>
-        <p class="mb-0">In the meantime, feel free to explore our <a href="{% url 'product' %}" class="alert-link">products</a> or <a href="{% url 'category' %}" class="alert-link">categories</a>.</p>
-    </div>
-    {% endif %}
 </div>
+{% endwith %}
 {% endblock %}

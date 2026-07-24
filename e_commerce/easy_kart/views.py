@@ -616,10 +616,14 @@ def category_page(request):
 
 def gallery_page(request):
     gallery_items = Gallery.objects.filter(is_active=True).order_by('order', '-created_at')
+    categories = Category.objects.filter(is_active=True, image__isnull=False).order_by('name')[:2]
+    featured_products = Product.objects.filter(is_active=True, image__isnull=False).order_by('-created_at')[:2]
     return render(request, 'gallery.html', {
         'page_title': 'Gallery',
         'heading': 'Gallery',
         'gallery_items': gallery_items,
+        'gallery_categories': categories,
+        'featured_products': featured_products,
     })
 
 
