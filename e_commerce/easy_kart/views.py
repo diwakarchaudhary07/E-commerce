@@ -188,6 +188,18 @@ def _render_product_detail(request, product, feedback_form=None, help_form=None)
 
     empty_stars = 5 - full_stars - half_star
 
+    related_items = RelatedProduct.objects.filter(
+        product=product,
+        related_to__is_active=True
+    ).select_related('related_to').order_by('order', '-created_at')
+
+    related_products = [item.related_to for item in related_items]
+    if not related_products and product.category:
+        related_products = list(Product.objects.filter(
+            category=product.category,
+            is_active=True
+        ).exclude(id=product.id).order_by('-created_at')[:4])
+
     return render(request, 'product_detail.html', {
         'page_title': product.name,
         'heading': product.name,
@@ -201,6 +213,8 @@ def _render_product_detail(request, product, feedback_form=None, help_form=None)
         'full_star_range': range(full_stars),
         'half_star_range': range(half_star),
         'empty_star_range': range(empty_stars),
+        'related_products': related_products,
+        'related_products_count': len(related_products),
     })
 
 

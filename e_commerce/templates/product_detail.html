@@ -238,6 +238,62 @@
     </div>
 </div>
 
+{% if related_products %}
+<div class="card mt-4 shadow-sm related-products-section">
+    <div class="card-body">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+            <div>
+                <h3 class="h4 mb-1">Related Products</h3>
+                <p class="text-muted mb-0">Customers also viewed these items for {{ product.name }}.</p>
+            </div>
+            <span class="badge bg-ek-orange text-white py-2 px-3">{{ related_products_count }} item{% if related_products_count != 1 %}s{% endif %}</span>
+        </div>
+
+        <div class="row g-3">
+            {% for related in related_products %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card h-100 related-card border-0 shadow-sm">
+                        <div class="related-card-img overflow-hidden bg-light position-relative" style="min-height: 220px;">
+                            {% if related.image %}
+                                <img src="{{ related.image.url }}" alt="{{ related.name }}" class="img-fluid h-100 w-100 object-fit-cover">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                    <i class="bi bi-image fs-1"></i>
+                                </div>
+                            {% endif %}
+                            {% if related.discount > 0 %}
+                                <span class="badge bg-ek-orange text-white position-absolute top-3 end-3 related-discount-badge">-{{ related.discount }}%</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            {% if related.category %}
+                                <span class="badge bg-ek-blue text-white mb-2">{{ related.category.name }}</span>
+                            {% endif %}
+                            <h5 class="card-title mb-2"><a href="{% url 'product_detail' related.slug %}" class="text-dark text-decoration-none">{{ related.name|truncatewords:7 }}</a></h5>
+                            <p class="card-text text-muted small mb-3">{{ related.description|truncatewords:12 }}</p>
+                            <div class="mb-3">
+                                <span class="fw-bold text-ek-blue">${{ related.get_discounted_price|floatformat:2 }}</span>
+                                {% if related.discount > 0 %}
+                                    <span class="text-muted text-decoration-line-through ms-2">${{ related.price|floatformat:2 }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="mt-auto d-grid gap-2">
+                                <a href="{% url 'product_detail' related.slug %}" class="btn btn-outline-ek-blue btn-sm">View</a>
+                                {% if related.stock > 0 %}
+                                    <a href="{% url 'add_to_cart' related.id %}" class="btn btn-ek-orange btn-sm">Add to Cart</a>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm" disabled>Out of Stock</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Need Help Modal -->
 <div class="modal fade" id="needHelpModal" tabindex="-1" aria-labelledby="needHelpModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
