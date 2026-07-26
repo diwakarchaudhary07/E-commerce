@@ -258,6 +258,113 @@
     color: #FF6B35;
 }
 
+/* Related Products Section */
+.related-products-section {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.related-card {
+    border-radius: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.related-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 30px rgba(0, 71, 171, 0.12);
+}
+
+.related-card-img img {
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.related-card:hover .related-card-img img {
+    transform: scale(1.05);
+}
+
+.related-discount-badge {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF7A45 100%);
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+..btn-ek-orange {
+    color: #ffffff;
+    background: linear-gradient(135deg, #FF6B35 0%, #FF7A45 100%);
+    border: 1px solid #FF6B35;
+    box-shadow: 0 6px 16px rgba(255, 107, 53, 0.18);
+    transition: all 0.25s ease;
+}
+
+.btn-ek-orange:hover,
+.btn-ek-orange:focus {
+    background: linear-gradient(135deg, #e65712 0%, #d65200 100%);
+    border-color: #d65200;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-ek-blue {
+    color: #ffffff;
+    background: #0047AB;
+    border: 1px solid #0047AB;
+    box-shadow: 0 6px 16px rgba(0, 71, 171, 0.18);
+    transition: all 0.25s ease;
+}
+
+.btn-ek-blue:hover,
+.btn-ek-blue:focus {
+    background: #003580;
+    border-color: #003580;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-outline-ek-blue {
+    color: #0047AB;
+    background: transparent;
+    border: 1px solid #0047AB;
+    transition: all 0.25s ease;
+}
+
+.btn-outline-ek-blue:hover,
+.btn-outline-ek-blue:focus {
+    background: #0047AB;
+    color: #ffffff;
+    border-color: #0047AB;
+    transform: translateY(-1px);
+}
+
+.badge.bg-ek-blue {
+    background: #0047AB !important;
+}
+
+.text-ek-navy {
+    color: #00254d !important;
+}
+
+.badge.bg-ek-orange {
+    background: #FF6B35 !important;
+}
+
+.text-ek-blue {
+    color: #0047AB !important;
+}
+
+.text-ek-orange {
+    color: #FF6B35 !important;
+}
+
+.bg-ek-blue {
+    background-color: #0047AB !important;
+}
+
+.bg-ek-orange {
+    background-color: #FF6B35 !important;
+}
+
 .bi-star {
     color: #FFD700;
 }
