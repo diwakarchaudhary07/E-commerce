@@ -6,7 +6,7 @@ from django.core import mail
 from django.core.exceptions import FieldDoesNotExist
 from django.conf import settings
 
-from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback, Inventory
+from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback, Inventory, AIHelpChatMessage
 
 
 class ProductSkuTests(TestCase):
@@ -87,6 +87,32 @@ class InventoryTests(TestCase):
         sku_response = self.client.get(reverse('inventory'), {'q': 'INV-900'})
         self.assertContains(sku_response, 'Inventory Proxy Product')
         self.assertContains(sku_response, 'INV-900')
+
+
+class NeedHelpAssistantTests(TestCase):
+    def test_need_help_page_renders_and_saves_chat_message(self):
+        user = CustomUser.objects.create_user(
+            email='assistant@example.com',
+            password='StrongPass123!',
+            full_name='Assistant User',
+            mobile_no='9876543210',
+            address='Test Address',
+            is_email_verified=True,
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('need_help'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'AI Help Assistant')
+
+        submit_response = self.client.post(
+            reverse('need_help'),
+            {'message': 'How do I track my order?'}
+        )
+
+        self.assertEqual(submit_response.status_code, 200)
+        self.assertTrue(AIHelpChatMessage.objects.filter(user=user).exists())
+        self.assertContains(submit_response, 'How do I track my order?')
 
 
 class FeedbackSystemTests(TestCase):
