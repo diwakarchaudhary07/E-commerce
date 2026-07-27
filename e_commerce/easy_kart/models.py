@@ -252,6 +252,33 @@ class ProductHelpRequest(models.Model):
         return f"Help request for {self.product.name}"
 
 
+class AIHelpChatMessage(models.Model):
+    SENDER_CHOICES = (
+        ('user', 'User'),
+        ('assistant', 'Assistant'),
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='ai_help_messages',
+    )
+    session_key = models.CharField(max_length=40, blank=True, null=True)
+    sender = models.CharField(max_length=10, choices=SENDER_CHOICES, default='user')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'AI Help Chat Message'
+        verbose_name_plural = 'AI Help Chat Messages'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.get_sender_display()}: {self.message[:40]}"
+
+
 class Gallery(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)

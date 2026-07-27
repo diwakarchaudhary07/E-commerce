@@ -23,7 +23,7 @@ from django.utils.html import strip_tags
 from .email_utils import send_otp_email, send_welcome_email
 
 from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm, ProductHelpRequestForm
-from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct
+from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -311,6 +311,64 @@ def category_detail(request, slug):
     return render(request, 'category_detail.html', {
         'category': category,
         'products': products,
+    })
+
+
+def _get_help_conversation(request):
+    if request.user.is_authenticated:
+        return AIHelpChatMessage.objects.filter(user=request.user).order_by('created_at')
+
+    if not request.session.session_key:
+        request.session.save()
+    return AIHelpChatMessage.objects.filter(session_key=request.session.session_key).order_by('created_at')
+
+
+def _generate_ai_help_reply(message):
+    text = message.lower()
+    if any(keyword in text for keyword in ['order', 'track', 'delivery', 'shipping']):
+        return "I can help with your order status, delivery updates, or shipping questions. Share your order number if you have one and I’ll guide you further."
+    if any(keyword in text for keyword in ['return', 'refund', 'cancel']):
+        return "Returns, refunds, and order cancellations usually follow the policy timeline. I can help you check the next step or explain the process clearly."
+    if any(keyword in text for keyword in ['payment', 'checkout', 'card', 'pay']):
+        return "Payment issues are often caused by card verification or a temporary gateway error. I can help you troubleshoot the checkout step and confirm the safest next action."
+    if any(keyword in text for keyword in ['product', 'quality', 'size', 'stock']):
+        return "I can help you compare products, confirm availability, or answer questions about product details and sizing before checkout."
+    if any(keyword in text for keyword in ['account', 'login', 'password', 'otp']):
+        return "Account access problems can usually be solved by resetting the password or re-sending the verification code. I can help you through that quickly."
+    return "Thanks for reaching out. I can assist with orders, payments, returns, product details, and account support. Tell me what you need help with and I’ll guide you."
+
+
+def need_help_page(request):
+    conversation = _get_help_conversation(request)
+    if request.method == 'POST':
+        user_message = (request.POST.get('message') or '').strip()
+        if user_message:
+            chat_message = AIHelpChatMessage(
+                user=request.user if request.user.is_authenticated else None,
+                session_key=request.session.session_key if request.session.session_key else None,
+                sender='user',
+                message=user_message,
+            )
+            chat_message.save()
+
+            assistant_reply = _generate_ai_help_reply(user_message)
+            AIHelpChatMessage.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                session_key=request.session.session_key if request.session.session_key else None,
+                sender='assistant',
+                message=assistant_reply,
+            )
+            conversation = _get_help_conversation(request)
+        else:
+            messages.error(request, 'Please enter a question or concern before sending.')
+
+    product_name = request.GET.get('product', '').strip()
+    return render(request, 'need_help.html', {
+        'page_title': 'Need Help',
+        'heading': 'AI Help Assistant',
+        'conversation': conversation,
+        'assistant_name': 'Easy Kart Assistant',
+        'product_name': product_name,
     })
 
 
