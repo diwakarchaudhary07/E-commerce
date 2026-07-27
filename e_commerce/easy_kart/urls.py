@@ -15,6 +15,7 @@ urlpatterns = [
     path('cart/update/<int:product_id>/', update_cart, name='update_cart'),
     path('cart/remove/<int:product_id>/', remove_from_cart, name='remove_from_cart'),
     path('contact/', contact, name='contact'),
+    path('need-help/', need_help_page, name='need_help'),
     path('product/buy/<slug:slug>/', buy_now, name='buy_now'),
     path('product/sku/<str:sku>/', product_detail_by_sku, name='product_detail_by_sku'),
     path('product/<slug:slug>/feedback/', submit_feedback, name='submit_feedback'),

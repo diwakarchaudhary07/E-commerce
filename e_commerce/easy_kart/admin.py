@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct
+from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
 
 
 class CustomUserAdmin(UserAdmin):
@@ -148,6 +148,20 @@ class ProductHelpRequestAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ProductHelpRequest, ProductHelpRequestAdmin)
+
+
+class AIHelpChatMessageAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'user', 'message', 'created_at')
+    list_filter = ('sender', 'created_at')
+    search_fields = ('message', 'user__email')
+    readonly_fields = ('created_at',)
+    fieldsets = (
+        ('Chat Message', {'fields': ('sender', 'user', 'session_key', 'message')}),
+        ('Timestamps', {'fields': ('created_at',), 'classes': ('collapse',)}),
+    )
+
+
+admin.site.register(AIHelpChatMessage, AIHelpChatMessageAdmin)
 
 
 class CategoryAdmin(admin.ModelAdmin):
