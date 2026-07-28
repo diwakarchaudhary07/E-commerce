@@ -1,12 +1,36 @@
+import hashlib
+import hmac
 import json
 
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.core import mail
 from django.core.exceptions import FieldDoesNotExist
 from django.conf import settings
 
 from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback, Inventory, AIHelpChatMessage
+from .views import _verify_razorpay_signature
+
+
+class RazorpaySignatureTests(SimpleTestCase):
+    @override_settings(RAZORPAY_KEY_SECRET='test_secret')
+    def test_verifies_valid_razorpay_signature(self):
+        order_id = 'order_123'
+        payment_id = 'pay_456'
+        signature = hmac.new(
+            b'test_secret',
+            f'{order_id}|{payment_id}'.encode('utf-8'),
+            hashlib.sha256,
+        ).hexdigest()
+
+        self.assertTrue(_verify_razorpay_signature(order_id, payment_id, signature))
+
+    @override_settings(RAZORPAY_KEY_SECRET='test_secret')
+    def test_rejects_invalid_razorpay_signature(self):
+        order_id = 'order_123'
+        payment_id = 'pay_456'
+
+        self.assertFalse(_verify_razorpay_signature(order_id, payment_id, 'invalid-signature'))
 
 
 class ProductSkuTests(TestCase):
