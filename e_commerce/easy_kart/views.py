@@ -1,4 +1,6 @@
-﻿import uuid
+﻿import hashlib
+import hmac
+import uuid
 from datetime import timedelta
 from decimal import Decimal
 
@@ -27,6 +29,23 @@ from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Co
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
+
+
+def _verify_razorpay_signature(order_id, payment_id, signature, key_secret=None):
+    if not all([order_id, payment_id, signature]):
+        return False
+
+    key_secret = key_secret or settings.RAZORPAY_KEY_SECRET
+    if not key_secret:
+        return False
+
+    payload = f'{order_id}|{payment_id}'
+    expected_signature = hmac.new(
+        key_secret.encode('utf-8'),
+        payload.encode('utf-8'),
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(signature.lower(), expected_signature.lower())
 
 
 def _get_or_create_user_cart(request):
@@ -518,17 +537,22 @@ def verify_razorpay_payment(request):
     try:
         import razorpay
     except ImportError:
-        return JsonResponse({'success': False, 'message': 'Razorpay package is not installed.'}, status=400)
+        razorpay = None
 
-    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-    try:
-        client.utility.verify_payment_signature({
-            'razorpay_order_id': razorpay_order_id,
-            'razorpay_payment_id': razorpay_payment_id,
-            'razorpay_signature': razorpay_signature,
-        })
-    except Exception:
-        return JsonResponse({'success': False, 'message': 'Payment verification failed.'}, status=400)
+    if razorpay is not None:
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        try:
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature,
+            })
+        except Exception:
+            if not _verify_razorpay_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature):
+                return JsonResponse({'success': False, 'message': 'Payment verification failed.'}, status=400)
+    else:
+        if not _verify_razorpay_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature):
+            return JsonResponse({'success': False, 'message': 'Payment verification failed.'}, status=400)
 
     order.razorpay_payment_id = razorpay_payment_id
     order.razorpay_signature = razorpay_signature
