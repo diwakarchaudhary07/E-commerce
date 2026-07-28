@@ -474,7 +474,6 @@ def checkout(request):
             except ImportError:
                 return JsonResponse({'success': False, 'message': 'Razorpay package is not installed.'}, status=400)
 
-            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
             order_payload = {
                 'amount': int(order.total_amount * Decimal('100')),
                 'currency': 'INR',
@@ -482,7 +481,18 @@ def checkout(request):
                 'notes': {'email': request.user.email, 'name': full_name},
                 'payment_capture': 1,
             }
-            razorpay_order = client.order.create(data=order_payload)
+
+            try:
+                client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+                razorpay_order = client.order.create(data=order_payload)
+            except Exception as exc:
+                order.delete()
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Unable to create Razorpay order. Please try again.',
+                    'error': str(exc),
+                }, status=500)
+
             order.razorpay_order_id = razorpay_order['id']
             order.save(update_fields=['razorpay_order_id'])
             return JsonResponse({
@@ -490,7 +500,7 @@ def checkout(request):
                 'order_id': razorpay_order['id'],
                 'db_order_id': order.id,
                 'key': settings.RAZORPAY_KEY_ID,
-                'amount': int(order.total_amount * 100),
+                'amount': int(order.total_amount * Decimal('100')),
                 'currency': 'INR',
                 'name': 'Easy Kart',
                 'description': 'Order payment',
