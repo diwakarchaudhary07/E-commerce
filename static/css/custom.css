@@ -210,12 +210,33 @@ select {
   font-weight: 600;
   padding: 0.55rem 0.85rem;
   border-radius: 0.75rem;
+  transition: color 0.3s ease, background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.easykart-menu .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0.4rem;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--ek-orange);
+  border-radius: 999px;
+  transition: width 0.3s ease, left 0.3s ease;
 }
 
 .easykart-menu .nav-link:hover,
 .easykart-menu .nav-link:focus {
   color: var(--ek-orange) !important;
-  background: rgba(255, 107, 53, 0.08);
+  background: rgba(255, 107, 53, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.easykart-menu .nav-link:hover::after,
+.easykart-menu .nav-link:focus::after {
+  width: 52%;
+  left: 24%;
 }
 
 .navbar-nav .nav-link.active {
