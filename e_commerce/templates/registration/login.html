@@ -64,6 +64,13 @@
         color: #003580;
         text-decoration: none;
     }
+    .auth-card .forgot-link {
+        font-weight: 600;
+        color: #FF6B35;
+    }
+    .auth-card .forgot-link:hover {
+        color: #d04a1b;
+    }
 </style>
 {% endblock %}
 
@@ -129,6 +136,10 @@
                         <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
                     </div>
                 </form>
+
+                <div class="text-center mb-3">
+                    <a href="{% url 'password_reset' %}" class="forgot-link">Forgot password?</a>
+                </div>
 
                 <div class="text-center">
                     <p class="mb-2 text-muted">Need an account?</p>
