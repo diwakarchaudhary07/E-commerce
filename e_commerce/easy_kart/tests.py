@@ -8,7 +8,7 @@ from django.core import mail
 from django.core.exceptions import FieldDoesNotExist
 from django.conf import settings
 
-from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback, Inventory, AIHelpChatMessage, PasswordResetOTP
+from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback, Inventory, AIHelpChatMessage
 from .views import _verify_razorpay_signature
 
 
@@ -111,6 +111,32 @@ class InventoryTests(TestCase):
         sku_response = self.client.get(reverse('inventory'), {'q': 'INV-900'})
         self.assertContains(sku_response, 'Inventory Proxy Product')
         self.assertContains(sku_response, 'INV-900')
+
+
+class PasswordResetFlowTests(TestCase):
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+    def test_login_page_shows_forgot_password_link(self):
+        response = self.client.get(reverse('login'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Forgot password?')
+
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+    def test_password_reset_request_sends_email(self):
+        user = CustomUser.objects.create_user(
+            email='reset@example.com',
+            password='StrongPass123!',
+            full_name='Reset User',
+            mobile_no='9876543210',
+            address='Reset Address',
+            is_email_verified=True,
+        )
+
+        response = self.client.post(reverse('password_reset'), {'email': user.email})
+
+        self.assertRedirects(response, reverse('password_reset_done'))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Reset Your ShopSphere Password', mail.outbox[0].subject)
 
 
 class NeedHelpAssistantTests(TestCase):
@@ -261,38 +287,6 @@ class OrdersModuleTests(TestCase):
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
-@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
-class ForgotPasswordTests(TestCase):
-    def test_forgot_password_request_sends_otp_for_registered_email(self):
-        user = CustomUser.objects.create_user(
-            email='forgot@example.com',
-            password='StrongPass123!',
-            full_name='Forgot User',
-            mobile_no='9876543210',
-            address='Forgot Address',
-            is_email_verified=True,
-        )
-
-        response = self.client.post(
-            reverse('forgot_password'),
-            data={'email': user.email},
-        )
-
-        self.assertRedirects(response, reverse('forgot_password_verify'))
-        self.assertTrue(PasswordResetOTP.objects.filter(email__iexact=user.email).exists())
-        self.assertEqual(len(mail.outbox), 1)
-
-    def test_forgot_password_request_shows_error_for_unregistered_email(self):
-        response = self.client.post(
-            reverse('forgot_password'),
-            data={'email': 'missing@example.com'},
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Email is not registered.')
-        self.assertFalse(PasswordResetOTP.objects.exists())
-
-
 class OTPRegistrationTests(TestCase):
     def test_checkout_creates_order_with_customer_details(self):
         user = CustomUser.objects.create_user(

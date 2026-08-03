@@ -1,5 +1,6 @@
 ﻿import hashlib
 import hmac
+import random
 import uuid
 from datetime import timedelta
 from decimal import Decimal
@@ -10,6 +11,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.http import JsonResponse, HttpResponse
 from collections import Counter
@@ -21,10 +23,11 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.html import strip_tags
-from .email_utils import send_otp_email, send_welcome_email
+from .email_utils import send_otp_email, send_welcome_email, send_password_reset_email
 
-from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm, ProductHelpRequestForm
+from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm, ProductHelpRequestForm, PasswordResetRequestForm, PasswordResetConfirmCaptchaForm
 from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
@@ -931,6 +934,82 @@ def send_login_otp(request):
     # Login-by-OTP flow is disabled. Users should log in with email/password.
     messages.error(request, 'Login via OTP is disabled. Please use your password to log in.')
     return redirect('login')
+
+
+def password_reset(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    form = PasswordResetRequestForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        email = form.cleaned_data['email'].strip().lower()
+        user = CustomUser.objects.filter(email__iexact=email).first()
+
+        if user and user.is_active and user.is_email_verified:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            reset_link = request.build_absolute_uri(reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token}))
+            send_password_reset_email(user, reset_link)
+
+        messages.success(request, 'If an account exists for that email, a password reset link has been sent.')
+        return redirect('password_reset_done')
+
+    return render(request, 'forgot_password.html', {'form': form, 'page_title': 'Forgot Password'})
+
+
+def password_reset_done(request):
+    return render(request, 'password_reset_done.html', {'page_title': 'Password Reset Requested'})
+
+
+def _build_captcha(request):
+    first = random.randint(2, 9)
+    second = random.randint(2, 9)
+    request.session['password_reset_captcha_answer'] = first + second
+    return f"{first} + {second} = ?"
+
+
+def password_reset_confirm(request, uidb64, token):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    captcha_question = request.session.get('password_reset_captcha_question')
+    captcha_expected = request.session.get('password_reset_captcha_answer')
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = PasswordResetConfirmCaptchaForm(request.POST, user=user, captcha_expected=captcha_expected)
+            if form.is_valid():
+                form.save()
+                request.session.pop('password_reset_captcha_answer', None)
+                request.session.pop('password_reset_captcha_question', None)
+                messages.success(request, 'Your password has been reset successfully. You can now sign in.')
+                return redirect('login')
+        else:
+            captcha_question = _build_captcha(request)
+            request.session['password_reset_captcha_question'] = captcha_question
+            form = PasswordResetConfirmCaptchaForm(user=user)
+
+        return render(request, 'registration/password_reset_confirm.html', {
+            'form': form,
+            'validlink': True,
+            'captcha_question': captcha_question,
+            'page_title': 'Reset Password',
+        })
+
+    return render(request, 'registration/password_reset_confirm.html', {
+        'validlink': False,
+        'page_title': 'Reset Password',
+    })
+
+
+def password_reset_complete(request):
+    return render(request, 'password_reset_complete.html', {'page_title': 'Password Reset Complete'})
 
 
 def contact(request):
