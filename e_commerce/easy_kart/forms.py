@@ -6,6 +6,82 @@ from .models import CustomUser
 from .models import Profile, Contact, ProductFeedback, ProductHelpRequest
 
 
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your registered email',
+        }),
+        label='Email',
+    )
+
+
+class PasswordResetConfirmCaptchaForm(forms.Form):
+    new_password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter a new password',
+        }),
+        label='New Password',
+    )
+    confirm_password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm your new password',
+        }),
+        label='Confirm Password',
+    )
+    captcha_answer = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter captcha answer',
+        }),
+        label='Captcha',
+    )
+
+    def __init__(self, *args, user=None, captcha_expected=None, **kwargs):
+        self.user = user
+        self.captcha_expected = captcha_expected
+        super().__init__(*args, **kwargs)
+
+    def clean_captcha_answer(self):
+        answer = self.cleaned_data.get('captcha_answer')
+        if answer is None or str(answer).strip() == '':
+            raise ValidationError('Please enter the captcha answer.')
+
+        if self.captcha_expected is None or str(answer).strip() != str(self.captcha_expected):
+            raise ValidationError('Captcha answer is incorrect.')
+
+        return answer
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password and confirm_password and password != confirm_password:
+            raise ValidationError('Passwords do not match.')
+
+        if password:
+            validate_password(password)
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        if not self.user:
+            raise ValueError('Password reset form must be initialized with a user.')
+
+        password = self.cleaned_data.get('new_password')
+        self.user.set_password(password)
+        if commit:
+            self.user.save()
+        return self.user
+
+
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(
         required=True,
