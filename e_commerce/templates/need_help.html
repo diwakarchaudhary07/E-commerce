@@ -61,8 +61,25 @@
 
     .help-list .list-group-item {
         border: none;
-        padding: 0.6rem 0;
-        color: #4b5563;
+        padding: 0.9rem 1rem;
+        color: #1f2937;
+        cursor: pointer;
+        border-radius: 0.9rem;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .help-list .list-group-item:hover {
+        background: rgba(0,71,171,0.08);
+        transform: translateX(4px);
+        color: #0047AB;
+    }
+    .help-list .topic-button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: inherit;
     }
 </style>
 {% endblock %}
@@ -115,10 +132,10 @@
                         {% endif %}
                     </div>
 
-                    <form method="post" class="row g-2">
+                    <form method="post" class="row g-2" id="chatForm">
                         {% csrf_token %}
                         <div class="col-md-9">
-                            <input type="text" name="message" class="form-control form-control-lg" placeholder="Type your question here..." required>
+                            <input type="text" name="message" id="chatInput" class="form-control form-control-lg" placeholder="Type your question here..." required>
                         </div>
                         <div class="col-md-3">
                             <button type="submit" class="btn btn-primary w-100 btn-lg">
@@ -136,11 +153,11 @@
                     <h5 class="fw-bold mb-3" style="color: #0047AB;">Popular help topics</h5>
                     <div class="help-list">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Track your order status</li>
-                            <li class="list-group-item">Check return and refund steps</li>
-                            <li class="list-group-item">Resolve payment or checkout issues</li>
-                            <li class="list-group-item">Ask about product details or stock</li>
-                            <li class="list-group-item">Get support for account login or OTP</li>
+                            <li class="list-group-item"><button type="button" class="topic-button" onclick="sendTopic('Track your order status')">Track your order status</button></li>
+                            <li class="list-group-item"><button type="button" class="topic-button" onclick="sendTopic('Check return and refund steps')">Check return and refund steps</button></li>
+                            <li class="list-group-item"><button type="button" class="topic-button" onclick="sendTopic('Resolve payment or checkout issues')">Resolve payment or checkout issues</button></li>
+                            <li class="list-group-item"><button type="button" class="topic-button" onclick="sendTopic('Ask about product details or stock')">Ask about product details or stock</button></li>
+                            <li class="list-group-item"><button type="button" class="topic-button" onclick="sendTopic('Get support for account login or OTP')">Get support for account login or OTP</button></li>
                         </ul>
                     </div>
                     <a href="{% url 'contact' %}" class="btn btn-outline-primary mt-3 w-100">
@@ -151,4 +168,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    function sendTopic(topic) {
+        const chatInput = document.getElementById('chatInput');
+        const chatForm = document.getElementById('chatForm');
+        if (!chatInput || !chatForm) return;
+        chatInput.value = topic;
+        chatForm.submit();
+    }
+</script>
 {% endblock %}
