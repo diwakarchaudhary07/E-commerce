@@ -1098,7 +1098,7 @@ def add_to_wishlist(request, slug):
         messages.error(request, 'Product not found.')
     
     # Redirect to referrer or wishlist page
-    return redirect(request.META.get('HTTP_REFERER', 'wishlist'))
+    return redirect(request.META.get('HTTP_REFERER', reverse('wishlist')))
 
 
 @login_required(login_url='login')
