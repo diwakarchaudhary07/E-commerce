@@ -18,12 +18,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8!q5m)3%zpg@2xb4wsanebd)=%lru%e#2&90jlvf-30_86%w@e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']  # Changed to allow all to prevent local connection blocks
 
 # Allow common local origins for CSRF checks during development
 CSRF_TRUSTED_ORIGINS = [
-    
+
     "https://e-commerce-5rpq.onrender.com",
     "http://127.0.0.1:8000",
     "http://localhost:8000",
