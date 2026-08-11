@@ -136,7 +136,7 @@ class PasswordResetFlowTests(TestCase):
 
         self.assertRedirects(response, reverse('password_reset_done'))
         self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('Reset Your ShopSphere Password', mail.outbox[0].subject)
+        self.assertIn('Reset Your EasyKart Password', mail.outbox[0].subject)
 
 
 class NeedHelpAssistantTests(TestCase):

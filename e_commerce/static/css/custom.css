@@ -276,6 +276,95 @@ body.theme-easykart .footer-logo {
 }
 
 .easykart-navbar .navbar-toggler {
+
+    /* Site layout: CSS Grid for overall page structure */
+    body.theme-easykart {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+            "nav"
+            "main"
+            "footer";
+        min-height: 100vh;
+    }
+
+    .easykart-navbar {
+        grid-area: nav;
+    }
+
+    main.container {
+        grid-area: main;
+        max-width: 1280px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .site-footer,
+    footer.site-footer {
+        grid-area: footer;
+    }
+
+    /* Responsive product grid using CSS Grid + Flex fallback */
+    @media (max-width: 1199.98px) {
+        .row.g-4 {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .row.g-4>[class*="col-"] {
+            width: 100% !important;
+            margin: 0 !important;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .row.g-4 {
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        }
+    }
+
+    /* Make images responsive and use object-fit where appropriate */
+    img,
+    .home-product-img img,
+    .home-category-circle img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+    }
+
+    /* Ensure card layouts use flexbox for internal alignment */
+    .home-product-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .home-product-card .card-body {
+        flex: 1 1 auto;
+    }
+
+    /* Utility: responsive containers using max-width and responsive units */
+    main.container {
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @media (min-width: 1200px) {
+        main.container {
+            max-width: 1200px;
+        }
+    }
+
+    @media (min-width: 1400px) {
+        main.container {
+            max-width: 1400px;
+        }
+    }
+
     border: 2px solid #000000;
     padding: 0.4rem 0.6rem;
     margin-left: auto;

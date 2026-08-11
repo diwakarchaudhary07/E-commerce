@@ -165,13 +165,13 @@ class RegisterForm(forms.ModelForm):
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(
+    identifier = forms.CharField(
         required=True,
-        widget=forms.EmailInput(attrs={
+        widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter your email',
+            'placeholder': 'Email or username',
         }),
-        label='Email',
+        label='Email or Username',
     )
     password = forms.CharField(
         required=True,

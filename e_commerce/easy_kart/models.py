@@ -17,7 +17,9 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        # allow passing username in extra_fields or as explicit arg
+        username = extra_fields.pop('username', None)
+        user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -33,11 +35,15 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
+        # If username is not provided for superuser, generate from email
+        if 'username' not in extra_fields or not extra_fields.get('username'):
+            extra_fields['username'] = email.split('@')[0]
         return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractUser):
-    username = None  # Remove username field, use email instead
+    # Keep an optional username field so users can sign in with username OR email.
+    username = models.CharField(max_length=150, unique=True, null=True, blank=True)
     
     GENDER_CHOICES = (
         ("Male", "Male"),

@@ -101,9 +101,9 @@
                 <form method="post" novalidate>
                     {% csrf_token %}
                     <div class="mb-3">
-                        {{ form.email.label_tag }}
-                        {{ form.email.as_widget(attrs={"class": "form-control"}) }}
-                        {% for error in form.email.errors %}
+                        {{ form.identifier.label_tag }}
+                        {{ form.identifier.as_widget(attrs={"class": "form-control"}) }}
+                        {% for error in form.identifier.errors %}
                             <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>

@@ -107,11 +107,11 @@
                     {% csrf_token %}
 
                     <div class="mb-3">
-                        <label for="id_username" class="form-label">Username or Email</label>
-                        <input id="id_username" class="form-control" name="username" type="text" value="{{ form.username.value|default:'' }}" required autofocus>
-                        {% if form.username.errors %}
+                        <label for="id_identifier" class="form-label">Username or Email</label>
+                        <input id="id_identifier" class="form-control" name="identifier" type="text" value="{{ form.identifier.value|default:'' }}" required autofocus>
+                        {% if form.identifier.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.username.errors|striptags }}
+                                {{ form.identifier.errors|striptags }}
                             </div>
                         {% endif %}
                     </div>

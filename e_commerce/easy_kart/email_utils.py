@@ -7,7 +7,7 @@ from django.utils.html import strip_tags
 
 def send_otp_email(user, otp_code):
     """Send OTP email to user"""
-    subject = 'Email Verification OTP - ShopSphere'
+    subject = 'Email Verification OTP - EasyKart'
     html_message = render_to_string('otp_email.html', {
         'full_name': user.full_name,
         'otp_code': otp_code,
@@ -30,7 +30,7 @@ def send_otp_email(user, otp_code):
 
 def send_welcome_email(user):
     """Send welcome email to user after verification"""
-    subject = 'Welcome to ShopSphere!'
+    subject = 'Welcome to EasyKart!'
     html_message = render_to_string('welcome_email.html', {
         'full_name': user.full_name,
     })
@@ -48,7 +48,7 @@ def send_welcome_email(user):
 
 def send_password_reset_email(user, reset_link):
     """Send password reset email"""
-    subject = 'Reset Your ShopSphere Password'
+    subject = 'Reset Your EasyKart Password'
     html_message = render_to_string('password_reset_email.html', {
         'full_name': user.full_name,
         'reset_link': reset_link,

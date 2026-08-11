@@ -1188,20 +1188,23 @@ def login(request):
     form = LoginForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            email = form.cleaned_data['email']
+            identifier = form.cleaned_data['identifier'].strip()
             password = form.cleaned_data['password']
             remember_me = form.cleaned_data.get('remember_me', False)
-
-            user = CustomUser.objects.filter(email__iexact=email).first()
+            # Attempt to find user by email first (prioritize email), otherwise by username (case-insensitive)
+            user = CustomUser.objects.filter(email__iexact=identifier).first()
             if not user:
-                messages.error(request, 'Invalid email or password!')
+                user = CustomUser.objects.filter(username__iexact=identifier).first()
+            if not user:
+                messages.error(request, 'Invalid email/username or password!')
             elif not user.is_email_verified:
+                # If user found by username, still require email verification
                 messages.warning(request, 'Please verify your email before logging in.')
-                request.session['email_for_verification'] = email
+                request.session['email_for_verification'] = user.email
                 return redirect('verify_otp')
             else:
-                # Use email for authentication kwargs since we updated USERNAME_FIELD
-                authenticated_user = authenticate(request, email=email, password=password)
+                # Our USERNAME_FIELD is still 'email' so authenticate with email kwarg
+                authenticated_user = authenticate(request, email=user.email, password=password)
                 if authenticated_user is not None:
                     auth_login(request, authenticated_user)
                     if remember_me:
