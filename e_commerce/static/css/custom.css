@@ -31,6 +31,17 @@ body.theme-easykart {
     padding-top: 100px;
 }
 
+main.container {
+    margin: 0 10px;
+}
+
+@media (max-width: 575.98px) {
+    main.container {
+        width: calc(100% - 20px);
+        max-width: calc(100% - 20px);
+    }
+}
+
 body.theme-easykart a {
     color: var(--ek-blue);
     transition: color 0.2s ease;
