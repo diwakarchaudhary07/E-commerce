@@ -87,14 +87,25 @@ DATABASES = {
 }
 
 # Email settings
-# Forced to use SMTP universally instead of Console so you actually get the OTP email during testing
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'boyroyal4853@gmail.com'
-EMAIL_HOST_PASSWORD = 'nqykbpcpcrugdxpt'
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Use environment variables in production and keep a safe local fallback.
+# For Gmail / SMTP app-password setups:
+#   EMAIL_HOST_USER=your-account@gmail.com
+#   EMAIL_HOST_PASSWORD=your-app-password
+#   DEFAULT_FROM_EMAIL=your-account@gmail.com
+#   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'boyroyal4853@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in {'1', 'true', 'yes', 'on'}
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() in {'1', 'true', 'yes', 'on'}
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Local fallback for development when no SMTP credentials are configured.
+if not EMAIL_HOST_PASSWORD and EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend':
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Password validation

@@ -1,5 +1,6 @@
 ﻿from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 
 from .models import CustomUser
@@ -107,6 +108,10 @@ class RegisterForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         if email:
             email = email.strip().lower()
+            try:
+                validate_email(email)
+            except ValidationError:
+                raise ValidationError('Enter a valid email address.')
             if CustomUser.objects.filter(email__iexact=email).exists():
                 raise ValidationError('Email is already registered.')
         return email
