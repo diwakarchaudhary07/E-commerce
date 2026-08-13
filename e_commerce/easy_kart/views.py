@@ -1185,7 +1185,14 @@ def login(request):
     if request.user.is_authenticated:
         return redirect('home')
 
-    form = LoginForm(request.POST or None)
+    if request.method == 'POST':
+        post_data = request.POST.copy()
+        if 'identifier' not in post_data and 'email' in post_data:
+            post_data['identifier'] = post_data['email']
+        form = LoginForm(post_data)
+    else:
+        form = LoginForm()
+
     if request.method == 'POST':
         if form.is_valid():
             identifier = form.cleaned_data['identifier'].strip()
@@ -1211,7 +1218,7 @@ def login(request):
                         request.session.set_expiry(1209600)
                     else:
                         request.session.set_expiry(0)
-                    
+
                     messages.success(request, f'Welcome back, {authenticated_user.full_name or authenticated_user.email}!')
                     return redirect('home')
                 else:

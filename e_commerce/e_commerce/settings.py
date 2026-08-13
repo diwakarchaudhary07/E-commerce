@@ -136,6 +136,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
+    BASE_DIR.parent / 'static',
     BASE_DIR / 'static',
 ]
 
@@ -145,8 +146,11 @@ STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
+    # Use the non-manifest storage backend in dev/test so static tags resolve without
+    # needing a collectstatic manifest build. Production builds can still use WhiteNoise
+    # compression without the manifest requirement.
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
