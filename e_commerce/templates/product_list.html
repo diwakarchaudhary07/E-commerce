@@ -65,9 +65,6 @@
                         {% else %}
                             <div class="bg-light d-flex align-items-center justify-content-center" style="height: 240px;">No image</div>
                         {% endif %}
-                        <a href="{% url 'add_to_wishlist' product.slug %}" class="home-wishlist-icon" title="Add to Wishlist">
-                            <i class="bi bi-heart"></i>
-                        </a>
                     </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ product.name }}</h5>
