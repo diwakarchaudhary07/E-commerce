@@ -1,0 +1,757 @@
+/* =====================================================
+   COMPREHENSIVE RESPONSIVE DESIGN
+   Mobile First Approach - All Devices
+   ===================================================== */
+
+/* =====================================================
+   ULTRA MOBILE - 320px to 374px (Small Phones)
+   ===================================================== */
+@media (max-width: 374px) {
+    :root {
+        font-size: 13px;
+    }
+
+    body.theme-easykart {
+        padding-top: 180px;
+        font-size: 0.9rem;
+    }
+
+    main.container {
+        margin: 0 5px;
+        padding: 0.5rem 5px;
+    }
+
+    .row {
+        --bs-gutter-x: 0.5rem;
+        --bs-gutter-y: 0.5rem;
+    }
+
+    .container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    h1,
+    .h1 {
+        font-size: 1.5rem;
+    }
+
+    h2,
+    .h2 {
+        font-size: 1.25rem;
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.1rem;
+    }
+
+    .navbar-brand img {
+        max-width: 80px;
+    }
+
+    .card {
+        margin-bottom: 0.75rem;
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+    }
+
+    .home-wishlist-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .home-wishlist-icon i {
+        font-size: 1.4rem;
+    }
+
+    .navbar {
+        padding: 0.4rem;
+    }
+}
+
+/* =====================================================
+   MOBILE - 375px to 575px (Mobile Phones)
+   ===================================================== */
+@media (max-width: 575.98px) {
+    :root {
+        font-size: 14px;
+    }
+
+    body.theme-easykart {
+        padding-top: 180px;
+    }
+
+    main.container,
+    .hero-banner-shell.container,
+    section.container {
+        margin: 0 !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .container-fluid {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Typography */
+    h1,
+    .h1 {
+        font-size: 1.75rem;
+        line-height: 2rem;
+    }
+
+    h2,
+    .h2 {
+        font-size: 1.5rem;
+        line-height: 1.75rem;
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.25rem;
+        line-height: 1.5rem;
+    }
+
+    h4,
+    .h4 {
+        font-size: 1.1rem;
+        line-height: 1.25rem;
+    }
+
+    h5,
+    .h5 {
+        font-size: 1rem;
+        line-height: 1.25rem;
+    }
+
+    h6,
+    .h6 {
+        font-size: 0.9rem;
+        line-height: 1.1rem;
+    }
+
+    /* Spacing */
+    .py-4 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .py-5 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    .my-4 {
+        margin-top: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .my-5 {
+        margin-top: 1.5rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    /* Grid & Layout */
+    .row.g-4 {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+        gap: 0.75rem !important;
+    }
+
+    .row.g-4>[class*="col-"] {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Cards */
+    .card {
+        border-radius: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-lg {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+    }
+
+    /* Navbar */
+    .easykart-navbar {
+        padding: 0.5rem 0.75rem !important;
+        width: calc(100% - 0.75rem) !important;
+        margin: 0 0.375rem !important;
+    }
+
+    .navbar-brand img {
+        max-width: 70px;
+        height: auto;
+    }
+
+    .easykart-navbar .navbar-nav {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .easykart-navbar .nav-link {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.9rem;
+    }
+
+    .easykart-header-actions {
+        justify-content: space-around;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    /* Products */
+    .product-price {
+        font-size: 1.25rem;
+    }
+
+    .product-price-discounted {
+        font-size: 1.25rem;
+    }
+
+    .product-price-original {
+        font-size: 0.9rem;
+    }
+
+    /* Wishlist Icon */
+    .home-wishlist-icon {
+        width: 70px;
+        height: 70px;
+        top: 10px;
+        right: 10px;
+    }
+
+    .home-wishlist-icon i {
+        font-size: 1.6rem;
+    }
+
+    /* Forms */
+    .form-control,
+    .form-select {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    /* Images */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Carousel */
+    .carousel-item {
+        min-height: 45vh;
+    }
+
+    /* Footer */
+    .site-footer {
+        padding: 2rem 0;
+    }
+
+    .site-footer .row {
+        --bs-gutter-y: 1.5rem;
+    }
+
+    .footer-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Alerts */
+    .alert {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    /* Dropdowns */
+    .dropdown-menu {
+        min-width: 100%;
+    }
+
+    /* Tables */
+    .table {
+        font-size: 0.9rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
+}
+
+/* =====================================================
+   TABLET - 576px to 767px (Small Tablets)
+   ===================================================== */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    :root {
+        font-size: 15px;
+    }
+
+    body.theme-easykart {
+        padding-top: 180px;
+    }
+
+    main.container,
+    .hero-banner-shell.container,
+    section.container {
+        margin: 0 !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Typography */
+    h1,
+    .h1 {
+        font-size: 2rem;
+    }
+
+    h2,
+    .h2 {
+        font-size: 1.75rem;
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.5rem;
+    }
+
+    /* Grid */
+    .row.g-4 {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+        gap: 1rem !important;
+    }
+
+    /* Navbar */
+    .easykart-navbar {
+        padding: 0.75rem 1rem !important;
+    }
+
+    .navbar-brand img {
+        max-width: 90px;
+    }
+
+    .easykart-navbar .nav-link {
+        padding: 0.6rem 1rem !important;
+        font-size: 0.95rem;
+    }
+
+    .easykart-header-actions {
+        margin-top: 1rem;
+        gap: 1rem;
+    }
+
+    /* Carousel */
+    .carousel-item {
+        min-height: 50vh;
+    }
+
+    /* Wishlist Icon */
+    .home-wishlist-icon {
+        width: 75px;
+        height: 75px;
+    }
+
+    .home-wishlist-icon i {
+        font-size: 1.7rem;
+    }
+}
+
+/* =====================================================
+   TABLET - 768px to 991px (Large Tablets)
+   ===================================================== */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    :root {
+        font-size: 16px;
+    }
+
+    body.theme-easykart {
+        padding-top: 160px;
+    }
+
+    main.container,
+    .hero-banner-shell.container,
+    section.container {
+        margin: 0 auto !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Typography */
+    h1,
+    .h1 {
+        font-size: 2.25rem;
+    }
+
+    h2,
+    .h2 {
+        font-size: 1.9rem;
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.6rem;
+    }
+
+    /* Grid */
+    .row.g-4 {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    }
+
+    /* Navbar */
+    .easykart-navbar {
+        padding: 0.75rem 1.5rem !important;
+    }
+
+    .navbar-brand img {
+        max-width: 100px;
+    }
+
+    .easykart-navbar .navbar-collapse {
+        margin-top: 1rem;
+    }
+
+    .easykart-header-actions {
+        margin-top: 0;
+        justify-content: flex-end;
+    }
+
+    /* Carousel */
+    .carousel-item {
+        min-height: 60vh;
+    }
+
+    /* Wishlist Icon */
+    .home-wishlist-icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .home-wishlist-icon i {
+        font-size: 1.8rem;
+    }
+}
+
+/* =====================================================
+   DESKTOP - 992px to 1199px (Small Desktop)
+   ===================================================== */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+
+    main.container,
+    .hero-banner-shell.container,
+    section.container {
+        max-width: 100%;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    /* Grid */
+    .row.g-4 {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    }
+
+    /* Navbar */
+    .easykart-navbar {
+        padding: 0.75rem 2rem !important;
+    }
+
+    .navbar-brand img {
+        max-width: 110px;
+    }
+
+    .easykart-header-actions {
+        justify-content: flex-end;
+        gap: 2rem;
+    }
+
+    /* Carousel */
+    .carousel-item {
+        min-height: 65vh;
+    }
+}
+
+/* =====================================================
+   DESKTOP - 1200px to 1399px (Large Desktop)
+   ===================================================== */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+
+    main.container,
+    .hero-banner-shell.container,
+    section.container {
+        max-width: 1200px;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    /* Grid */
+    .row.g-4 {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+    }
+
+    /* Carousel */
+    .carousel-item {
+        min-height: 70vh;
+    }
+}
+
+/* =====================================================
+   ULTRA DESKTOP - 1400px+ (Extra Large Desktop)
+   ===================================================== */
+@media (min-width: 1400px) {
+
+    main.container,
+    .hero-banner-shell.container,
+    section.container {
+        max-width: 1400px;
+        padding-left: 2.5rem;
+        padding-right: 2.5rem;
+    }
+
+    /* Grid */
+    .row.g-4 {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+    }
+
+    /* Carousel */
+    .carousel-item {
+        min-height: 75vh;
+    }
+}
+
+/* =====================================================
+   UNIVERSAL RESPONSIVE IMPROVEMENTS
+   ===================================================== */
+
+/* Fluid Images */
+img,
+.img-fluid,
+.home-product-img img,
+.home-category-circle img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Responsive Video/Iframe Embed */
+iframe,
+embed,
+object {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Flexible Form Inputs */
+.form-control,
+.form-select,
+.form-range {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Touch-friendly Button Sizes */
+.btn {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Flexible Grid Container */
+.container,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl,
+.container-xxl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Responsive Tables */
+@media (max-width: 767.98px) {
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        font-size: 0.9rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
+}
+
+/* Responsive Modals */
+.modal-dialog {
+    margin: 0.5rem;
+}
+
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        max-width: calc(100% - 1rem);
+    }
+}
+
+/* Responsive Margins & Padding */
+@media (max-width: 575.98px) {
+    .mx-auto {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+
+    .px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .py-5 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .mt-5 {
+        margin-top: 1.5rem;
+    }
+
+    .mb-5 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Responsive Text */
+@media (max-width: 767.98px) {
+    .text-lg {
+        font-size: 1rem;
+    }
+
+    .text-xl {
+        font-size: 1.25rem;
+    }
+
+    .text-2xl {
+        font-size: 1.5rem;
+    }
+}
+
+/* Flexible Navigation */
+.navbar {
+    flex-wrap: wrap;
+}
+
+.navbar-nav {
+    flex-direction: row;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Responsive Cards Layout */
+.card-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .card-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Flexible Flex Containers */
+.flex-responsive {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .flex-responsive {
+        flex-direction: column;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body.theme-easykart {
+        padding-top: 0;
+    }
+
+    .navbar,
+    .footer,
+    .announcement-bar {
+        display: none;
+    }
+
+    main.container {
+        max-width: 100%;
+    }
+}
+
+/* Orientation Handling */
+@media (orientation: landscape) and (max-height: 600px) {
+    body.theme-easykart {
+        padding-top: 120px;
+    }
+
+    .carousel-item {
+        min-height: 40vh;
+    }
+}
