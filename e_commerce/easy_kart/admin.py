@@ -57,6 +57,11 @@ class ProductAdmin(admin.ModelAdmin):
         ('Product Information', {
             'fields': ('name', 'slug', 'sku', 'category', 'image', 'description', 'stock', 'price', 'discount', 'is_buy_now_available', 'is_active')
         }),
+        ('Product Specifications', {
+            'fields': ('size', 'shape', 'weight'),
+            'classes': ('collapse',),
+            'description': 'Add product specifications like size, shape, and weight'
+        }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
