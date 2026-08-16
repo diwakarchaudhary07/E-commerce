@@ -26,6 +26,40 @@
                 {% endif %}
             </div>
             <div class="mb-2 small text-muted">SKU: {{ product.sku|default:'Not assigned' }}</div>
+            
+            <!-- Product Specifications Section -->
+            <div class="product-specs-section mb-4 p-3 bg-light rounded">
+                <h5 class="mb-3">Product Specifications</h5>
+                <div class="row g-3">
+                    {% if product.size %}
+                    <div class="col-md-6 col-sm-12">
+                        <div class="spec-item">
+                            <span class="spec-label"><i class="bi bi-rulers"></i> Size:</span>
+                            <span class="spec-value fw-semibold">{{ product.size }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if product.shape %}
+                    <div class="col-md-6 col-sm-12">
+                        <div class="spec-item">
+                            <span class="spec-label"><i class="bi bi-circle"></i> Shape:</span>
+                            <span class="spec-value fw-semibold">{{ product.shape }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if product.weight %}
+                    <div class="col-md-6 col-sm-12">
+                        <div class="spec-item">
+                            <span class="spec-label"><i class="bi bi-scales"></i> Weight:</span>
+                            <span class="spec-value fw-semibold">{{ product.weight }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
             <div class="mb-2">
                 {% if product.stock > 0 %}
                     <span class="badge bg-info text-dark">In Stock: {{ product.stock }}</span>
