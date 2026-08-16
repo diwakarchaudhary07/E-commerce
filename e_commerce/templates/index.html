@@ -225,6 +225,40 @@
     color: #6c757d;
   }
 
+  .home-product-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .home-product-spec {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(0, 71, 171, 0.06);
+    border: 1px solid rgba(0, 71, 171, 0.12);
+    color: var(--ek-blue);
+    border-radius: 999px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.74rem;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .home-product-spec span {
+    font-size: 0.68rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  .home-product-spec strong {
+    font-weight: 800;
+    color: #153a73;
+  }
+
   .home-product-card .btn-outline-primary {
     border-color: rgba(0, 71, 171, 0.3);
     color: var(--primary);
@@ -420,9 +454,9 @@
   <!-- Products -->
   <section class="container mb-5">
     <h3 class="mb-4">Latest Products</h3>
-    <div class="row g-4">
+    <div class="row g-4 home-product-grid">
       {% for product in products %}
-        <div class="col-6 col-md-3">
+        <div class="col-12 col-sm-6 col-lg-3">
           <div class="card home-product-card h-100 shadow-sm">
             <div class="home-product-img">
               {% if product.image %}
@@ -441,7 +475,15 @@
               <h6 class="card-title">{{ product.name }}</h6>
               <p class="small text-muted mb-2">{% if product.category %}{{ product.category.name }}{% endif %}</p>
               <p class="small text-muted mb-3">SKU: {{ product.sku|default:'Not assigned' }}</p>
-              <div class="mt-auto d-flex gap-2">
+              <div class="home-product-meta">
+                {% if product.size %}
+                  <div class="home-product-spec"><span>Size</span><strong>{{ product.size }}</strong></div>
+                {% endif %}
+                {% if product.weight %}
+                  <div class="home-product-spec"><span>Weight</span><strong>{{ product.weight }}</strong></div>
+                {% endif %}
+              </div>
+              <div class="mt-3 d-flex gap-2">
                 <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-primary btn-sm flex-grow-1">View</a>
                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-sm flex-grow-1">Add</a>
               </div>
