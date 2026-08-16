@@ -46,6 +46,20 @@
             transform: translateY(-6px);
             box-shadow: 0 18px 35px rgba(0, 71, 171, 0.12);
         }
+        .product-size-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.38rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(0, 71, 171, 0.08);
+            border: 1px solid rgba(0, 71, 171, 0.15);
+            color: #0047AB;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
     </style>
 </section>
 {% endblock %}
@@ -77,6 +91,9 @@
                             {% endif %}
                         </div>
                         <div class="mb-2 small text-muted">SKU: {{ product.sku|default:'Not assigned' }}</div>
+                        <div class="mb-2">
+                            <span class="product-size-badge">Size: {{ product.size|default:'Standard' }}</span>
+                        </div>
                         <div class="mb-3">
                             {% if product.discount > 0 %}
                                 <span class="product-price-discounted fw-bold">${{ product.get_discounted_price|floatformat:2 }}</span>
