@@ -1,62 +1,75 @@
 {% extends 'base.html' %}
 
+{% block title %}Feedback Dashboard | Easy Kart{% endblock %}
+
 {% block content %}
-<div class="py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>{{ heading }}</h2>
+<div class="py-2 py-md-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="h3 fw-bold mb-1">{{ heading }}</h1>
+            <p class="text-muted small mb-0">Moderate and approve customer product reviews</p>
+        </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white border-0">
-            <h5 class="mb-0">Customer Feedback Submissions</h5>
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white border-0 py-3">
+            <h5 class="mb-0 fw-bold">Customer Feedback Submissions</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-borderless align-middle">
-                    <thead>
-                        <tr class="text-uppercase text-secondary small">
-                            <th>Product</th>
-                            <th>Customer</th>
-                            <th>Rating</th>
-                            <th>Message</th>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="text-uppercase small">
+                            <th style="min-width: 140px;">Product</th>
+                            <th style="min-width: 120px;">Customer</th>
+                            <th style="min-width: 100px;">Rating</th>
+                            <th style="min-width: 180px;">Message</th>
                             <th>Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end" style="min-width: 140px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in feedbacks %}
                         <tr>
-                            <td>{{ item.product.name }}</td>
+                            <td>
+                                <a href="{% url 'product_detail' item.product.slug %}" class="fw-semibold text-dark text-decoration-none">{{ item.product.name }}</a>
+                            </td>
                             <td>{{ item.customer_name|default:'Guest' }}</td>
                             <td>
-                                <span class="text-warning">
+                                <span class="text-warning small text-nowrap">
                                     {% for i in "12345" %}
                                         {% if forloop.counter <= item.rating %}
                                             <i class="bi bi-star-fill"></i>
                                         {% else %}
-                                            <i class="bi bi-star"></i>
+                                            <i class="bi bi-star text-muted"></i>
                                         {% endif %}
                                     {% endfor %}
                                 </span>
                             </td>
-                            <td>{{ item.message }}</td>
+                            <td class="small">{{ item.message|truncatewords:15 }}</td>
                             <td>
-                                <span class="badge {% if item.is_approved %}bg-success{% else %}bg-warning text-dark{% endif %} feedback-status-badge">
-                                    {% if item.is_approved %}Approved{% else %}Pending Approval{% endif %}
+                                <span class="badge {% if item.is_approved %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                    {% if item.is_approved %}Approved{% else %}Pending{% endif %}
                                 </span>
                             </td>
                             <td class="text-end">
-                                <form method="post" class="d-flex flex-wrap justify-content-end gap-2 mb-0">
+                                <form method="post" class="d-inline-flex justify-content-end gap-1 mb-0">
                                     {% csrf_token %}
                                     <input type="hidden" name="feedback_id" value="{{ item.id }}">
-                                    <button type="submit" name="action" value="approve" class="btn btn-sm btn-outline-light text-primary" {% if item.is_approved %}disabled{% endif %}>Approve</button>
-                                    <button type="submit" name="action" value="delete" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    {% if not item.is_approved %}
+                                    <button type="submit" name="action" value="approve" class="btn btn-sm btn-outline-success py-1 px-2" title="Approve review">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    {% endif %}
+                                    <button type="submit" name="action" value="delete" class="btn btn-sm btn-outline-danger py-1 px-2" title="Delete review" onclick="return confirm('Delete this feedback?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </form>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-muted text-center">No feedback submitted yet.</td>
+                            <td colspan="6" class="text-muted text-center py-4">No feedback submitted yet.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -5,142 +5,84 @@
 
 {% block extra_head %}
 <style>
-  html,
-  body {
-    min-height: 100%;
-  }
   .hero-banner-shell {
-    padding: 1.25rem 0 1.5rem;
+    padding: 0.5rem 0 1.5rem;
   }
   .hero-banner-shell .carousel {
-    border-radius: 1.4rem;
+    border-radius: 1.25rem;
     overflow: hidden;
-    box-shadow: 0 20px 45px rgba(0, 71, 171, 0.16);
+    box-shadow: 0 16px 36px rgba(0, 71, 171, 0.14);
     margin: 0 auto;
   }
   #heroBanner {
     width: 100%;
     position: relative;
-    min-height: 75vh;
-    height: auto;
     overflow: hidden;
     margin-bottom: 0;
-    z-index: 0;
   }
-  #heroBanner .carousel-item,
   #heroBanner .carousel-item img {
     width: 100%;
-    min-height: 75vh;
-    height: auto;
-  }
-  #heroBanner .carousel-item img {
+    height: clamp(200px, 48vh, 500px);
     object-fit: cover;
-  }
-  @media (max-width: 991.98px) {
-    .hero-banner-shell {
-      padding: 1rem 0 1.25rem;
-    }
-    #heroBanner {
-      min-height: 55vh;
-    }
-    #heroBanner .carousel-item,
-    #heroBanner .carousel-item img {
-      min-height: 55vh;
-    }
-  }
-  @media (max-width: 575.98px) {
-    .hero-banner-shell {
-      padding: 0.75rem 0 1rem;
-    }
-    #heroBanner {
-      min-height: 45vh;
-    }
-    #heroBanner .carousel-item,
-    #heroBanner .carousel-item img {
-      min-height: 45vh;
-    }
   }
   #heroBanner .carousel-indicators button {
     background-color: rgba(0, 71, 171, 0.65);
     border-color: rgba(255, 255, 255, 0.8);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 4px;
   }
   #heroBanner .carousel-indicators .active {
     background-color: #ffffff;
+    width: 24px;
+    border-radius: 999px;
   }
   #heroBanner .carousel-control-prev-icon,
   #heroBanner .carousel-control-next-icon {
     filter: invert(100%);
-  }
-  .hero-fullscreen {
-    min-height: 45vh;
-    background: linear-gradient(135deg, rgba(0, 71, 171, 0.92) 0%, rgba(255, 107, 53, 0.78) 100%);
-    color: #ffffff;
-  }
-  .hero-fullscreen h1,
-  .hero-fullscreen p {
-    color: #ffffff;
-  }
-  .hero-fullscreen .btn-primary {
-    background-color: var(--ek-blue);
-    border-color: var(--ek-blue);
-  }
-  .hero-fullscreen .btn-primary:hover {
-    background-color: var(--ek-accent);
-    border-color: var(--ek-accent);
-  }
-
-  main.container,
-  .hero-banner-shell.container,
-  .hero-banner-shell,
-  section.container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  .hero-banner-shell {
-    padding-top: 0;
-    padding-bottom: 0;
   }
 
   .home-category-slider {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    scrollbar-width: thin;
   }
   .home-category-slider::-webkit-scrollbar {
-    height: 10px;
+    height: 6px;
   }
   .home-category-slider::-webkit-scrollbar-track {
-    background: rgba(255,255,255,.6);
+    background: rgba(0, 71, 171, 0.05);
     border-radius: 999px;
   }
   .home-category-slider::-webkit-scrollbar-thumb {
-    background: rgba(25, 98, 255, 0.35);
+    background: rgba(0, 71, 171, 0.25);
     border-radius: 999px;
   }
   .home-category-card {
     scroll-snap-align: center;
-    flex: 0 0 auto;
-    width: 240px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 0 0 180px;
+    width: 180px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 1rem;
+    border: 1px solid rgba(0, 71, 171, 0.08);
   }
   .home-category-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 18px 40px rgba(0, 71, 171, 0.16);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(0, 71, 171, 0.14);
   }
   .home-category-circle {
-    width: 210px;
-    height: 210px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     overflow: hidden;
-    border: 4px solid rgba(0, 71, 171, 0.18);
+    border: 3px solid rgba(0, 71, 171, 0.15);
     background: linear-gradient(180deg, rgba(241, 244, 255, 0.95), rgba(227, 234, 255, 0.95));
     position: relative;
-    margin: 0 auto;
+    margin: 0 auto 0.75rem;
   }
   .home-category-circle img,
   .home-category-circle .home-category-fallback {
@@ -149,18 +91,12 @@
     object-fit: cover;
     display: block;
   }
-  .home-category-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0, 71, 171, 0.15), rgba(0, 71, 171, 0.25));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  .home-category-card:hover .home-category-overlay {
-    opacity: 1;
-  }
   .home-category-title {
-    min-height: 2.5rem;
+    min-height: 2.2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .home-product-card {
@@ -168,160 +104,82 @@
     border-radius: 1rem;
     overflow: hidden;
     background: #ffffff;
-    transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
-    min-height: 300px;
-    width: 250px;
-    max-width: 250px;
-    margin: 0 auto;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    width: 100%;
+    height: 100%;
     border: 1px solid rgba(0, 71, 171, 0.08);
+    display: flex;
+    flex-direction: column;
   }
 
   .home-product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 30px rgba(0, 71, 171, 0.12);
-    border-color: rgba(0, 71, 171, 0.22);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 32px rgba(0, 71, 171, 0.12);
+    border-color: rgba(0, 71, 171, 0.2);
   }
 
   .home-product-img {
     position: relative;
-    height: 180px;
+    height: 190px;
     overflow: hidden;
-    background: linear-gradient(180deg, rgba(0, 71, 171, 0.08), rgba(255, 255, 255, 0.95));
+    background: #f8fafc;
   }
 
   .home-product-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.45s ease;
+    transition: transform 0.4s ease;
   }
 
   .home-product-card:hover .home-product-img img {
-    transform: scale(1.06);
+    transform: scale(1.05);
   }
 
   .home-product-badge {
     position: absolute;
-    top: 1rem;
-    left: 1rem;
-    padding: 0.35rem 0.85rem;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.65rem;
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: #ffffff;
     background: rgba(0, 71, 171, 0.92);
-    box-shadow: 0 14px 30px rgba(0, 71, 171, 0.18);
+    box-shadow: 0 4px 12px rgba(0, 71, 171, 0.2);
+    z-index: 2;
   }
 
   .home-product-card .card-body {
-    padding: 0.8rem 0.8rem 0.9rem;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
 
   .home-product-card .card-title {
-    min-height: 2.2rem;
-    font-size: 0.9rem;
+    min-height: 2.4rem;
+    font-size: 0.92rem;
     font-weight: 700;
     line-height: 1.3;
-    margin-bottom: 0.25rem;
-  }
-
-  .home-product-grid {
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: -10px;
-    margin-right: -10px;
-  }
-
-  .home-product-grid > [class*='col-'] {
-    flex: 0 0 25%;
-    max-width: 25%;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .home-product-card .card-text {
-    color: #6c757d;
-  }
-
-  .home-product-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
-
-  .home-product-spec {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    background: rgba(0, 71, 171, 0.06);
-    border: 1px solid rgba(0, 71, 171, 0.12);
-    color: var(--ek-blue);
-    border-radius: 999px;
-    padding: 0.4rem 0.7rem;
-    font-size: 0.74rem;
-    line-height: 1.2;
-    font-weight: 700;
-  }
-
-  .home-product-spec span {
-    font-size: 0.68rem;
-    opacity: 0.8;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: 600;
-  }
-
-  .home-product-spec strong {
-    font-weight: 800;
-    color: #153a73;
-    display: inline-block;
-    white-space: normal;
-    line-height: 1.3;
-    max-width: 100%;
-  }
-
-  .home-product-card .btn-outline-primary {
-    border-color: rgba(0, 71, 171, 0.3);
-    color: var(--primary);
-  }
-
-  .home-product-card .btn-outline-primary:hover {
-    background: rgba(0, 71, 171, 0.06);
-  }
-
-  @media (max-width: 991.98px) {
-    .home-category-card {
-      width: 200px;
-    }
-    .home-category-circle {
-      width: 180px;
-      height: 180px;
-    }
-  }
-  @media (max-width: 767.98px) {
-    .home-category-card {
-      width: 170px;
-    }
-    .home-category-circle {
-      width: 150px;
-      height: 150px;
-    }
+    margin-bottom: 0.35rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   @media (max-width: 575.98px) {
-    .home-category-slider {
-      padding-left: 0.5rem;
+    .home-category-card {
+      flex: 0 0 150px;
+      width: 150px;
     }
-  }
-
-  @media (max-width: 768px) {
-    #heroBanner {
-      height: 70vh;
+    .home-category-circle {
+      width: 100px;
+      height: 100px;
     }
-    #heroBanner .carousel-item,
-    #heroBanner .carousel-item img {
-      height: 70vh;
+    .home-product-img {
+      height: 160px;
     }
   }
 </style>
@@ -329,7 +187,7 @@
 
 {% block content %}
   <!-- Banner Carousel Section -->
-  <div class="hero-banner-shell container">
+  <div class="hero-banner-shell">
     <div id="heroBanner" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -359,11 +217,11 @@
   </div>
 
   <!-- Categories -->
-  <section class="container mb-5">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+  <section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
       <div>
-        <p class="text-secondary mb-1">Shop by category</p>
-        <h3 class="mb-0">Categories</h3>
+        <p class="text-secondary small mb-0">Shop by category</p>
+        <h3 class="h4 mb-0 fw-bold">Featured Categories</h3>
       </div>
       <div class="btn-group btn-group-sm" role="group" aria-label="Category slider controls">
         <button type="button" class="btn btn-outline-primary home-category-prev" aria-label="Previous category">
@@ -374,27 +232,25 @@
         </button>
       </div>
     </div>
-    <div class="home-category-slider d-flex gap-3 pb-3">
+    <div class="home-category-slider d-flex gap-3 pb-2">
       {% for category in categories %}
-        <a href="{% url 'category_detail' category.slug %}" class="home-category-card card shadow-sm border-0 text-center text-decoration-none text-dark">
-          <div class="card-body py-3">
-            <div class="home-category-circle mb-3">
+        <a href="{% url 'category_detail' category.slug %}" class="home-category-card card shadow-sm text-center text-decoration-none text-dark">
+          <div class="card-body py-3 px-2">
+            <div class="home-category-circle mb-2">
               {% if category.image %}
                 <img src="{{ category.image.url }}" alt="{{ category.name }}">
               {% else %}
-                <div class="home-category-fallback bg-secondary d-flex align-items-center justify-content-center text-white">No image</div>
+                <div class="home-category-fallback bg-secondary d-flex align-items-center justify-content-center text-white small">No image</div>
               {% endif %}
-              <div class="home-category-overlay"></div>
             </div>
-            <h6 class="home-category-title mb-2 fw-semibold">{{ category.name }}</h6>
-            <p class="small text-muted mb-0">{{ category.description|truncatechars:45|default:'Explore products in this category.' }}</p>
+            <h6 class="home-category-title mb-1 fw-semibold small">{{ category.name }}</h6>
+            <p class="small text-muted mb-0" style="font-size: 0.75rem;">{{ category.description|truncatechars:35|default:'Explore category' }}</p>
           </div>
         </a>
       {% empty %}
-      <div class="col-12"><div class="alert alert-info">No categories available.</div></div>
-    {% endfor %}
+        <div class="col-12"><div class="alert alert-info">No categories available.</div></div>
+      {% endfor %}
     </div>
-    <div class="text-center mt-3 small text-muted">Swipe to browse categories. Autoplay keeps the slider moving.</div>
   </section>
 
   <script>
@@ -403,8 +259,8 @@
     if (!slider) return;
 
     const card = slider.querySelector('.home-category-card');
-    const cardWidth = card ? card.offsetWidth + 24 : 260;
-    const autoplayDelay = 3200;
+    const cardWidth = card ? card.offsetWidth + 16 : 190;
+    const autoplayDelay = 3500;
     let autoplayTimer = null;
     let isPointerDown = false;
     let startX = 0;
@@ -438,7 +294,7 @@
       startX = event.clientX;
       scrollStart = slider.scrollLeft;
       stopAutoplay();
-      slider.setPointerCapture(event.pointerId);
+      slider.setPointerCapture?.(event.pointerId);
     });
 
     slider.addEventListener('pointermove', (event) => {
@@ -449,7 +305,6 @@
 
     slider.addEventListener('pointerup', () => {
       isPointerDown = false;
-      slider.releasePointerCapture?.();
     });
     slider.addEventListener('pointercancel', () => {
       isPointerDown = false;
@@ -457,8 +312,6 @@
 
     slider.addEventListener('mouseenter', stopAutoplay);
     slider.addEventListener('mouseleave', startAutoplay);
-    slider.addEventListener('focusin', stopAutoplay);
-    slider.addEventListener('focusout', startAutoplay);
 
     document.querySelector('.home-category-prev')?.addEventListener('click', () => {
       stopAutoplay();
@@ -474,30 +327,45 @@
   </script>
 
   <!-- Products -->
-  <section class="container mb-5">
-    <h3 class="mb-4">Latest Products</h3>
-    <div class="row g-4 home-product-grid">
+  <section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <p class="text-secondary small mb-0">Discover our collection</p>
+        <h3 class="h4 mb-0 fw-bold">Latest Products</h3>
+      </div>
+      <a href="{% url 'product' %}" class="btn btn-outline-primary btn-sm">View All</a>
+    </div>
+    <div class="row g-3 g-md-4">
       {% for product in products %}
-        <div class="col-12 col-sm-6 col-lg-3">
-          <div class="card home-product-card h-100 shadow-sm">
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card home-product-card shadow-sm">
             <div class="home-product-img">
               {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}">
               {% else %}
-                <div class="bg-light d-flex align-items-center justify-content-center h-100 text-muted">No image</div>
+                <div class="bg-light d-flex align-items-center justify-content-center h-100 text-muted small">No image</div>
               {% endif %}
-              <a href="{% url 'add_to_wishlist' product.slug %}" class="home-wishlist-icon" title="Add to Wishlist">
-                <i class="bi bi-heart"></i>
-              </a>
-            </div>
-            <div class="card-body d-flex flex-column">
               {% if product.discount and product.discount > 0 %}
                 <span class="home-product-badge">{{ product.discount }}% OFF</span>
               {% endif %}
-              <h6 class="card-title">{{ product.name }}</h6>
-              <p class="small text-muted mb-2">{% if product.category %}{{ product.category.name }}{% endif %}</p>
-              <p class="small text-muted mb-3">SKU: {{ product.sku|default:'Not assigned' }}</p>
-              <div class="mt-2 d-flex gap-2">
+              <a href="{% url 'add_to_wishlist' product.slug %}" class="home-wishlist-icon" title="Add to Wishlist">
+                <i class="bi bi-heart-fill"></i>
+              </a>
+            </div>
+            <div class="card-body">
+              <h6 class="card-title">
+                <a href="{% url 'product_detail' product.slug %}" class="text-dark text-decoration-none">{{ product.name }}</a>
+              </h6>
+              <p class="small text-muted mb-2">{% if product.category %}{{ product.category.name }}{% else %}General{% endif %}</p>
+              <div class="mb-2 mt-auto">
+                {% if product.discount and product.discount > 0 %}
+                  <span class="fw-bold text-danger">${{ product.get_discounted_price|floatformat:2 }}</span>
+                  <span class="small text-muted text-decoration-line-through ms-1">${{ product.price|floatformat:2 }}</span>
+                {% else %}
+                  <span class="fw-bold text-primary">${{ product.price|floatformat:2 }}</span>
+                {% endif %}
+              </div>
+              <div class="d-flex gap-1 gap-sm-2">
                 <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-primary btn-sm flex-grow-1">View</a>
                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-sm flex-grow-1">Add</a>
               </div>
@@ -510,4 +378,3 @@
     </div>
   </section>
 {% endblock %}
-

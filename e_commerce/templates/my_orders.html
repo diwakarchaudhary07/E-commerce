@@ -2,47 +2,31 @@
 
 {% block title %}My Orders | Easy Kart{% endblock %}
 
-{% block extra_head %}
-<style>
-    .orders-banner {
-        background: linear-gradient(90deg, #0047AB 0%, #FF6B35 100%);
-        color: #fff;
-        border-radius: 1rem;
-        padding: 2rem 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 16px 36px rgba(13,110,253,0.16);
-    }
-    .orders-banner h1 {
-        font-size: 2.4rem;
-        font-weight: 700;
-        margin-bottom: 0.3rem;
-    }
-    .orders-banner p {
-        color: rgba(255,255,255,0.9);
-        font-size: 1rem;
-        max-width: 640px;
-    }
-</style>
+{% block header_banner %}
+<section class="orders-banner position-relative mb-4">
+    <div class="container position-relative hero-inner-content" style="z-index: 3;">
+        <div class="py-3 py-md-4">
+            <h1 class="display-5 text-white fw-bold mb-2">My Orders</h1>
+            <p class="lead text-white-75 mb-0" style="max-width: 640px;">Review all of your recent orders, check status updates, and manage order invoices in one place.</p>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
 {% block content %}
-<div class="py-5">
-    <div class="orders-banner">
-        <h1>My Orders</h1>
-        <p>Review all of your recent orders, check status updates, and manage order invoices in one place.</p>
-    </div>
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+<div class="py-2 py-md-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
         <div>
-            <h2 class="h5 mb-1">{{ heading }}</h2>
-            <p class="text-muted mb-0">Search, filter, and manage your orders and invoices.</p>
+            <h2 class="h4 fw-bold mb-1">{{ heading }}</h2>
+            <p class="text-muted small mb-0">Search, filter, and manage your orders and invoices.</p>
         </div>
     </div>
 
-    <form method="get" class="row g-2 mb-4">
-        <div class="col-md-4">
-            <input type="text" name="q" class="form-control" placeholder="Search by keyword or order number" value="{{ query }}">
+    <form method="get" class="row g-2 mb-4 bg-white p-3 rounded-3 shadow-sm border">
+        <div class="col-12 col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Search by order # or keyword" value="{{ query }}">
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <select name="date_filter" class="form-select">
                 <option value="">All Time</option>
                 <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
@@ -50,81 +34,87 @@
                 <option value="month" {% if date_filter == 'month' %}selected{% endif %}>This Month</option>
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <input type="text" name="product_name" class="form-control" placeholder="Product name" value="{{ product_name }}">
         </div>
-        <div class="col-md-2 d-grid">
+        <div class="col-12 col-md-2 d-grid">
             <button type="submit" class="btn btn-primary">Filter</button>
         </div>
     </form>
 
     {% if orders %}
-        <div class="table-responsive">
-            <table class="table table-hover align-middle shadow-sm rounded overflow-hidden">
-                <thead class="table-light">
-                    <tr>
-                        <th>Order</th>
-                        <th>Products</th>
-                        <th>Date</th>
-                        <th>Customer</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                    {% with order.order_items.all|first as first_item %}
-                    <tr>
-                        <td>
-                            <div class="fw-semibold">#{{ order.order_number }}</div>
-                            <div class="small text-muted">{{ order.item_count }} item(s)</div>
-                        </td>
-                        <td>
-                            {% if first_item and first_item.product %}
-                                <div class="d-flex align-items-center gap-3">
-                                    {% if first_item.product.image %}
-                                        <img src="{{ first_item.product.image.url }}" alt="{{ first_item.product.name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;" />
-                                    {% else %}
-                                        <div class="rounded bg-light border d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                            <span class="text-muted small">No Image</span>
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="min-width: 110px;">Order</th>
+                                <th style="min-width: 200px;">Products</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th class="text-end" style="min-width: 180px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            {% with order.order_items.all|first as first_item %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-primary">#{{ order.order_number }}</div>
+                                    <div class="small text-muted">{{ order.item_count }} item(s)</div>
+                                </td>
+                                <td>
+                                    {% if first_item and first_item.product %}
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if first_item.product.image %}
+                                                <img src="{{ first_item.product.image.url }}" alt="{{ first_item.product.name }}" class="rounded img-cover" style="width: 48px; height: 48px; min-width: 48px;" />
+                                            {% else %}
+                                                <div class="rounded bg-light border d-flex align-items-center justify-content-center text-muted small" style="width: 48px; height: 48px; min-width: 48px;">
+                                                    No Img
+                                                </div>
+                                            {% endif %}
+                                            <div class="text-truncate" style="max-width: 180px;">
+                                                <div class="fw-semibold small text-truncate">{{ first_item.product.name }}</div>
+                                                {% if order.item_count > 1 %}
+                                                    <div class="small text-muted">+ {{ order.item_count|add:'-1' }} more</div>
+                                                {% endif %}
+                                            </div>
                                         </div>
+                                    {% else %}
+                                        <div class="small text-muted">No product available</div>
                                     {% endif %}
-                                    <div>
-                                        <div class="fw-semibold">{{ first_item.product.name }}</div>
-                                        {% if order.item_count > 1 %}
-                                            <div class="small text-muted">+ {{ order.item_count|add:'-1' }} more</div>
-                                        {% endif %}
+                                </td>
+                                <td class="small">{{ order.created_at|date:'M d, Y' }}</td>
+                                <td class="fw-bold">${{ order.total_amount|floatformat:2 }}</td>
+                                <td><span class="badge bg-secondary text-capitalize">{{ order.status }}</span></td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+                                        <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-primary btn-sm py-1 px-2" title="View details">View</a>
+                                        <a href="{% url 'order_invoice' order.id %}" class="btn btn-outline-info btn-sm py-1 px-2" title="Preview invoice">Invoice</a>
+                                        <a href="{% url 'download_invoice' order.id %}" class="btn btn-outline-success btn-sm py-1 px-2" title="Download invoice"><i class="bi bi-download"></i></a>
+                                        <form method="post" action="{% url 'delete_order' order.id %}" class="d-inline m-0">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2" onclick="return confirm('Delete this order?')" title="Delete"><i class="bi bi-trash"></i></button>
+                                        </form>
                                     </div>
-                                </div>
-                            {% else %}
-                                <div class="small text-muted">No product available</div>
-                            {% endif %}
-                        </td>
-                        <td>{{ order.created_at|date:'M d, Y' }}</td>
-                        <td>{{ order.full_name|default:order.user.full_name }}</td>
-                        <td>${{ order.total_amount|floatformat:2 }}</td>
-                        <td><span class="badge bg-secondary text-capitalize">{{ order.status }}</span></td>
-                        <td>
-                            <div class="d-flex flex-wrap gap-2">
-                                <a href="{% url 'order_invoice' order.id %}" class="btn btn-outline-info btn-sm">Preview</a>
-                                <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-primary btn-sm">View</a>
-                                <a href="{% url 'download_invoice' order.id %}" class="btn btn-outline-success btn-sm">Download</a>
-                                <form method="post" action="{% url 'delete_order' order.id %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this order?')">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endwith %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                            {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     {% else %}
-        <div class="alert alert-info">No orders matched your filters.</div>
-        <a href="{% url 'product' %}" class="btn btn-primary">Shop Now</a>
+        <div class="alert alert-info py-4 text-center">
+            <i class="bi bi-receipt fs-1 d-block mb-2 text-primary"></i>
+            <h5>No orders found</h5>
+            <p class="text-muted mb-3">You haven't placed any orders matching the filters.</p>
+            <a href="{% url 'product' %}" class="btn btn-primary">Shop Now</a>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

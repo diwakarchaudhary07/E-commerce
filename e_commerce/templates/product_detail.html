@@ -1,79 +1,84 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="py-5">
-    <div class="row g-5">
+<div class="py-3 py-md-5">
+    <div class="row g-4 g-lg-5 align-items-start">
         <div class="col-lg-5">
-            <div class="home-card-image-wrapper" style="border-radius: 0.75rem; overflow: hidden;">
+            <div class="home-card-image-wrapper product-detail-image-wrapper shadow-sm">
                 {% if product.image %}
-                    <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+                    <img src="{{ product.image.url }}" class="img-fluid w-100" alt="{{ product.name }}">
                 {% else %}
-                    <div class="bg-light border rounded p-5 text-center">No image available</div>
+                    <div class="bg-light border rounded p-5 text-center text-muted">No image available</div>
                 {% endif %}
                 <a href="{% url 'add_to_wishlist' product.slug %}" class="home-wishlist-icon" title="Add to Wishlist" aria-label="Add to Wishlist">
                     <i class="bi bi-heart-fill"></i>
                 </a>
             </div>
         </div>
-        <div class="col-lg-6">
-            <h1 class="mb-3">{{ product.name }}</h1>
+        <div class="col-lg-7">
+            <h1 class="h2 fw-bold mb-2">{{ product.name }}</h1>
             <div class="mb-2 small text-muted">
                 Category:
                 {% if product.category %}
-                    <a href="{% url 'category_detail' product.category.slug %}" class="text-decoration-none product-category-link">{{ product.category.name }}</a>
+                    <a href="{% url 'category_detail' product.category.slug %}" class="text-decoration-none product-category-link fw-semibold">{{ product.category.name }}</a>
                 {% else %}
                     Unassigned
                 {% endif %}
             </div>
-            <div class="mb-2 small text-muted">SKU: {{ product.sku|default:'Not assigned' }}</div>
+            <div class="mb-2 small text-muted">SKU: <strong>{{ product.sku|default:'Not assigned' }}</strong></div>
 
-            <div class="mb-2">
+            <div class="mb-3">
                 {% if product.stock > 0 %}
-                    <span class="badge bg-info text-dark">In Stock: {{ product.stock }}</span>
+                    <span class="badge bg-success">In Stock: {{ product.stock }}</span>
                 {% else %}
                     <span class="badge bg-danger">Out of Stock</span>
                 {% endif %}
+                {% if product.size %}
+                    <span class="badge bg-light text-primary border ms-1">Size: {{ product.size }}</span>
+                {% endif %}
             </div>
-            <div class="product-rating-summary d-flex align-items-center gap-3 mb-3">
-                <div class="star-rating stars-readonly" aria-label="Average rating {{ average_rating }} out of 5">
+
+            <div class="product-rating-summary d-flex align-items-center gap-3 mb-3 flex-wrap">
+                <div class="star-rating stars-readonly text-warning fs-5" aria-label="Average rating {{ average_rating }} out of 5">
                     {% for i in full_star_range %}
-                        <i class="bi bi-star-fill text-ek-accent"></i>
+                        <i class="bi bi-star-fill"></i>
                     {% endfor %}
                     {% for i in half_star_range %}
-                        <i class="bi bi-star-half text-ek-accent"></i>
+                        <i class="bi bi-star-half"></i>
                     {% endfor %}
                     {% for i in empty_star_range %}
                         <i class="bi bi-star text-muted"></i>
                     {% endfor %}
                 </div>
-                <div class="product-rating-text">
-                    <span class="fw-semibold">{{ average_rating|floatformat:1 }}/5</span>
+                <div class="product-rating-text small">
+                    <span class="fw-bold">{{ average_rating|floatformat:1 }}/5</span>
                     <span class="text-muted">({{ total_feedbacks }} Review{% if total_feedbacks != 1 %}s{% endif %})</span>
                 </div>
             </div>
-            <p class="text-muted">{{ product.description|linebreaksbr }}</p>
+
+            <p class="text-muted mb-4">{{ product.description|linebreaksbr }}</p>
+
             <div class="mb-4">
                 {% if product.discount > 0 %}
-                    <span class="display-6 product-price-discounted">${{ product.get_discounted_price|floatformat:2 }}</span>
-                    <span class="product-price-original text-muted text-decoration-line-through ms-2">${{ product.price|floatformat:2 }}</span>
-                    <span class="badge badge-discount">{{ product.discount }}% off</span>
+                    <span class="display-6 fw-bold text-danger">${{ product.get_discounted_price|floatformat:2 }}</span>
+                    <span class="text-muted text-decoration-line-through fs-5 ms-2">${{ product.price|floatformat:2 }}</span>
+                    <span class="badge badge-discount ms-2">{{ product.discount }}% off</span>
                 {% else %}
-                    <span class="display-6 product-price">${{ product.price|floatformat:2 }}</span>
+                    <span class="display-6 fw-bold text-primary">${{ product.price|floatformat:2 }}</span>
                 {% endif %}
             </div>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-lg btn-add-cart">
-                    <i class="bi bi-cart-plus fs-5"></i>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-lg flex-grow-1 flex-sm-grow-0">
+                    <i class="bi bi-cart-plus me-1"></i> Add to Cart
                 </a>
                 {% if product.is_buy_now_available %}
-                <a href="{% url 'buy_now' product.slug %}" class="btn btn-warning btn-lg btn-buy-now">
-                    <i class="bi bi-bolt-fill fs-5"></i> Buy Now
+                <a href="{% url 'buy_now' product.slug %}" class="btn btn-warning btn-lg flex-grow-1 flex-sm-grow-0">
+                    <i class="bi bi-bolt-fill me-1"></i> Buy Now
                 </a>
                 {% endif %}
-            </div>
-            <div class="d-flex align-items-center gap-2 flex-wrap mt-2">
-                <a href="{% url 'need_help' %}?product={{ product.name|urlencode }}" class="btn btn-outline-primary btn-lg btn-need-help">
-                    <i class="bi bi-question-circle"></i> Need Help
+                <a href="{% url 'need_help' %}?product={{ product.name|urlencode }}" class="btn btn-outline-primary btn-lg flex-grow-1 flex-sm-grow-0">
+                    <i class="bi bi-question-circle me-1"></i> Need Help
                 </a>
             </div>
         </div>
@@ -81,45 +86,43 @@
 </div>
 
 <div class="card mt-4 shadow-sm product-feedback-section">
-    <div class="card-body">
-        <h3 class="h4 mb-3">Customer Reviews</h3>
+    <div class="card-body p-3 p-md-4">
+        <h3 class="h4 fw-bold mb-3">Customer Reviews</h3>
 
         <div class="mb-4 feedback-summary">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                 <div>
                     <div class="h6 mb-1">Average Rating</div>
                     <div class="d-flex align-items-center gap-2 mb-2 average-rating-holder">
-                        <span class="display-5 mb-0 average-rating">{{ average_rating|floatformat:1 }}</span>
-                        <span class="text-warning average-rating-stars" aria-label="Average rating">
+                        <span class="display-5 mb-0 fw-bold text-primary">{{ average_rating|floatformat:1 }}</span>
+                        <span class="text-warning fs-4" aria-label="Average rating">
                             {% for i in "12345" %}
                                 <i class="bi {% if forloop.counter <= average_rating|floatformat:0 %}bi-star-fill{% else %}bi-star{% endif %}"></i>
                             {% endfor %}
                         </span>
                     </div>
-                    <div class="text-muted">Based on {{ total_feedbacks }} review{% if total_feedbacks != 1 %}s{% endif %}</div>
+                    <div class="text-muted small">Based on {{ total_feedbacks }} review{% if total_feedbacks != 1 %}s{% endif %}</div>
                 </div>
             </div>
             <div class="rating-distribution mt-3">
                 {% for item in rating_distribution %}
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="text-nowrap" style="width: 120px;">
-                            <span class="text-warning">
-                                {% for i in "12345" %}
-                                    {% if forloop.counter <= item.rating %}
-                                        <i class="bi bi-star-fill"></i>
-                                    {% else %}
-                                        <i class="bi bi-star"></i>
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
+                    <div class="d-flex align-items-center gap-2 gap-sm-3 mb-2">
+                        <div class="rating-stars-col text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= item.rating %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% else %}
+                                    <i class="bi bi-star text-muted"></i>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="flex-fill">
-                            <div class="progress rounded-pill" style="height: 12px;">
+                        <div class="rating-bar-col flex-fill">
+                            <div class="progress rounded-pill" style="height: 10px;">
                                 <div class="progress-bar bg-primary rounded-pill" role="progressbar" style="width: {{ item.percentage }}%;" aria-valuenow="{{ item.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
-                        <div class="text-end" style="width: 140px;">
-                            <span class="fw-semibold">{{ item.percentage }}%</span> <span class="text-muted">({{ item.count }} Reviews)</span>
+                        <div class="rating-count-col text-muted small text-end">
+                            <strong>{{ item.percentage }}%</strong> ({{ item.count }})
                         </div>
                     </div>
                 {% endfor %}
@@ -127,7 +130,7 @@
         </div>
 
         {% if user.is_authenticated %}
-        <div class="feedback-form-header mb-3">
+        <div class="feedback-form-header mb-3 border-top pt-3">
             <h4 class="h5 mb-1">Write a Customer Review</h4>
             <p class="text-muted small mb-0">Share your experience to help other shoppers choose the right product.</p>
         </div>
@@ -135,35 +138,35 @@
             {% csrf_token %}
             <div class="row g-3">
                 <div class="col-12">
-                    <label class="form-label">Product</label>
-                    <input type="text" class="form-control bg-white" value="{{ product.name }}" readonly>
+                    <label class="form-label small fw-semibold">Product</label>
+                    <input type="text" class="form-control bg-light" value="{{ product.name }}" readonly>
                 </div>
 
                 <div class="col-12">
-                    <div class="reviewer-card d-flex align-items-center gap-3 p-3 rounded border bg-white shadow-sm">
+                    <div class="reviewer-card d-flex align-items-center gap-3 p-3 rounded border bg-light">
                         {% if user.profile.profile_image or user.profile_image %}
-                            <img src="{{ user.profile.profile_image.url|default:user.profile_image.url }}" alt="{{ user.full_name|default:user.profile.full_name|default:user.get_full_name|default:user.email }}" class="reviewer-avatar rounded-circle">
+                            <img src="{{ user.profile.profile_image.url|default:user.profile_image.url }}" alt="{{ user.full_name|default:user.profile.full_name|default:user.get_full_name|default:user.email }}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
                         {% else %}
-                            <div class="reviewer-avatar rounded-circle bg-light d-flex align-items-center justify-content-center text-ek-blue">
-                                <i class="bi bi-person-fill fs-4"></i>
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="bi bi-person-fill fs-5"></i>
                             </div>
                         {% endif %}
                         <div>
-                            <div class="small text-muted mb-1">Reviewer</div>
-                            <div class="fw-semibold text-ek-navy">{{ user.full_name|default:user.profile.full_name|default:user.get_full_name|default:user.email }}</div>
+                            <div class="small text-muted mb-0">Reviewing as</div>
+                            <div class="fw-semibold">{{ user.full_name|default:user.profile.full_name|default:user.get_full_name|default:user.email }}</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-12">
-                    <label for="id_title" class="form-label">Review Title</label>
+                    <label for="id_title" class="form-label small fw-semibold">Review Title</label>
                     {{ feedback_form.title }}
                     {% if feedback_form.title.errors %}
                         <div class="text-danger small mt-1">{{ feedback_form.title.errors|join:", " }}</div>
                     {% endif %}
                 </div>
                 <div class="col-12">
-                    <label for="id_message" class="form-label">Review Comment</label>
+                    <label for="id_message" class="form-label small fw-semibold">Review Comment</label>
                     {{ feedback_form.message }}
                     {% if feedback_form.message.errors %}
                         <div class="text-danger small mt-1">{{ feedback_form.message.errors|join:", " }}</div>
@@ -171,13 +174,13 @@
                 </div>
 
                 <div class="col-12">
-                    <label class="form-label">Star Rating</label>
+                    <label class="form-label small fw-semibold">Star Rating</label>
                     <div class="rating-group d-flex flex-wrap gap-2">
                         {% for value, label in feedback_form.fields.rating.choices %}
                             {% with field_name=feedback_form.rating.name selected_value=feedback_form.rating.value %}
                                 <input class="btn-check" type="radio" name="{{ field_name }}" id="rating-{{ forloop.counter }}" value="{{ value }}" autocomplete="off" required {% if selected_value|stringformat:"s" == value|stringformat:"s" %}checked{% endif %}>
-                                <label class="btn btn-outline-primary rating-btn" for="rating-{{ forloop.counter }}">
-                                    <i class="bi bi-star-fill"></i> {{ label }}
+                                <label class="btn btn-outline-primary btn-sm rating-btn" for="rating-{{ forloop.counter }}">
+                                    <i class="bi bi-star-fill text-warning"></i> {{ label }}
                                 </label>
                             {% endwith %}
                         {% endfor %}
@@ -188,52 +191,52 @@
                 </div>
 
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="bi bi-send-fill me-2"></i> Submit Feedback
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send-fill me-1"></i> Submit Feedback
                     </button>
                 </div>
             </div>
         </form>
         {% else %}
         <div class="alert alert-warning">
-            Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to submit feedback. All required fields are automatically filled from your profile.
+            Please <a href="{% url 'login' %}" class="fw-semibold">login</a> or <a href="{% url 'register' %}" class="fw-semibold">register</a> to submit feedback.
         </div>
         {% endif %}
 
-        <div class="row g-3">
+        <div class="row g-3 mt-2">
             {% for item in feedbacks %}
                 <div class="col-12">
-                    <div class="border rounded p-3 bg-light feedback-card">
-                        <div class="d-flex flex-column gap-3 mb-3">
-                            <div class="d-flex align-items-start justify-content-between gap-3 review-card-header">
-                                <div class="d-flex align-items-center gap-3">
+                    <div class="border rounded-3 p-3 bg-light feedback-card">
+                        <div class="d-flex flex-column gap-2 mb-2">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                                <div class="d-flex align-items-center gap-2">
                                     {% if item.customer_avatar_url %}
-                                        <img src="{{ item.customer_avatar_url }}" alt="{{ item.customer_name|default:'Guest' }}" class="review-avatar rounded-circle">
+                                        <img src="{{ item.customer_avatar_url }}" alt="{{ item.customer_name|default:'Guest' }}" class="rounded-circle" style="width: 38px; height: 38px; object-fit: cover;">
                                     {% else %}
-                                        <span class="review-avatar rounded-circle bg-ek-blue text-white d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-person-fill fs-5"></i>
+                                        <span class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                            <i class="bi bi-person-fill"></i>
                                         </span>
                                     {% endif %}
                                     <div>
-                                        <div class="fw-semibold text-ek-navy">{{ item.customer_name|default:'Guest' }}</div>
+                                        <div class="fw-semibold small">{{ item.customer_name|default:'Guest' }}</div>
                                         {% if item.title %}
-                                            <div class="h6 mb-0 text-ek-navy">{{ item.title }}</div>
+                                            <div class="fw-bold small">{{ item.title }}</div>
                                         {% endif %}
                                     </div>
                                 </div>
-                                <div class="text-muted small">{{ item.created_at|date:"M j, Y" }}</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">{{ item.created_at|date:"M j, Y" }}</div>
                             </div>
-                            <div class="review-rating-stars text-ek-accent">
+                            <div class="text-warning small">
                                 {% for i in "12345" %}
-                                    <i class="bi {% if forloop.counter <= item.rating %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                                    <i class="bi {% if forloop.counter <= item.rating %}bi-star-fill{% else %}bi-star text-muted{% endif %}"></i>
                                 {% endfor %}
                             </div>
                         </div>
-                        <p class="mb-0 review-message">{{ item.message }}</p>
+                        <p class="mb-0 small text-muted">{{ item.message }}</p>
                     </div>
                 </div>
             {% empty %}
-                <div class="col-12 text-muted">No approved feedback yet for this product.</div>
+                <div class="col-12 text-muted small">No approved feedback yet for this product.</div>
             {% endfor %}
         </div>
     </div>
@@ -241,49 +244,50 @@
 
 {% if related_products %}
 <div class="card mt-4 shadow-sm related-products-section">
-    <div class="card-body">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <div class="card-body p-3 p-md-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h3 class="h4 mb-1">Related Products</h3>
-                <p class="text-muted mb-0">Customers also viewed these items for {{ product.name }}.</p>
+                <h3 class="h4 fw-bold mb-1">Related Products</h3>
+                <p class="text-muted small mb-0">Customers also viewed these items</p>
             </div>
-            <span class="badge bg-ek-orange text-white py-2 px-3">{{ related_products_count }} item{% if related_products_count != 1 %}s{% endif %}</span>
+            <span class="badge bg-primary text-white px-3 py-2 rounded-pill">{{ related_products_count }} item{% if related_products_count != 1 %}s{% endif %}</span>
         </div>
 
         <div class="row g-3">
             {% for related in related_products %}
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card h-100 related-card border-0 shadow-sm">
-                        <div class="related-card-img overflow-hidden bg-light position-relative" style="min-height: 220px;">
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card h-100 home-product-card border shadow-sm">
+                        <div class="home-product-img" style="height: 180px;">
                             {% if related.image %}
-                                <img src="{{ related.image.url }}" alt="{{ related.name }}" class="img-fluid h-100 w-100 object-fit-cover">
+                                <img src="{{ related.image.url }}" alt="{{ related.name }}">
                             {% else %}
-                                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
-                                    <i class="bi bi-image fs-1"></i>
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted small">
+                                    <i class="bi bi-image fs-3"></i>
                                 </div>
                             {% endif %}
                             {% if related.discount > 0 %}
-                                <span class="badge bg-ek-orange text-white position-absolute top-3 end-3 related-discount-badge">-{{ related.discount }}%</span>
+                                <span class="home-product-badge">-{{ related.discount }}%</span>
                             {% endif %}
                         </div>
-                        <div class="card-body d-flex flex-column">
+                        <div class="card-body d-flex flex-column p-3">
                             {% if related.category %}
-                                <span class="badge bg-ek-blue text-white mb-2">{{ related.category.name }}</span>
+                                <span class="badge bg-light text-primary border mb-1 align-self-start small">{{ related.category.name }}</span>
                             {% endif %}
-                            <h5 class="card-title mb-2"><a href="{% url 'product_detail' related.slug %}" class="text-dark text-decoration-none">{{ related.name|truncatewords:7 }}</a></h5>
-                            <p class="card-text text-muted small mb-3">{{ related.description|truncatewords:12 }}</p>
-                            <div class="mb-3">
-                                <span class="fw-bold text-ek-blue">${{ related.get_discounted_price|floatformat:2 }}</span>
+                            <h6 class="card-title mb-1">
+                                <a href="{% url 'product_detail' related.slug %}" class="text-dark text-decoration-none">{{ related.name|truncatewords:6 }}</a>
+                            </h6>
+                            <div class="mb-2 mt-auto">
+                                <span class="fw-bold text-primary">${{ related.get_discounted_price|floatformat:2 }}</span>
                                 {% if related.discount > 0 %}
-                                    <span class="text-muted text-decoration-line-through ms-2">${{ related.price|floatformat:2 }}</span>
+                                    <span class="text-muted text-decoration-line-through small ms-1">${{ related.price|floatformat:2 }}</span>
                                 {% endif %}
                             </div>
-                            <div class="mt-auto d-grid gap-2">
-                                <a href="{% url 'product_detail' related.slug %}" class="btn btn-outline-ek-blue btn-sm">View</a>
+                            <div class="d-flex gap-1 gap-sm-2">
+                                <a href="{% url 'product_detail' related.slug %}" class="btn btn-outline-primary btn-sm flex-grow-1">View</a>
                                 {% if related.stock > 0 %}
-                                    <a href="{% url 'add_to_cart' related.id %}" class="btn btn-ek-orange btn-sm">Add to Cart</a>
+                                    <a href="{% url 'add_to_cart' related.id %}" class="btn btn-primary btn-sm flex-grow-1">Add</a>
                                 {% else %}
-                                    <button class="btn btn-secondary btn-sm" disabled>Out of Stock</button>
+                                    <button class="btn btn-secondary btn-sm flex-grow-1" disabled>Out</button>
                                 {% endif %}
                             </div>
                         </div>

@@ -3,115 +3,60 @@
 
 {% block title %}Register | Easy Kart{% endblock %}
 
-{% block extra_head %}
-<style>
-    .register-banner {
-        background: linear-gradient(90deg, #0047AB 0%, #FF6B35 100%);
-        color: #ffffff;
-        min-height: 220px;
-        border-radius: 1rem;
-        display: flex;
-        align-items: center;
-        box-shadow: 0 18px 40px rgba(0,71,171,0.15);
-        margin-bottom: 1.5rem;
-    }
-    .register-banner .banner-content {
-        padding: 2rem 1.5rem;
-    }
-    .register-banner h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-    .register-banner p {
-        color: rgba(255,255,255,0.9);
-        font-size: 1rem;
-        max-width: 680px;
-    }
-    .register-card {
-        border: none;
-        border-radius: 1rem;
-        overflow: hidden;
-    }
-    .register-card .card-body {
-        padding: 2rem;
-    }
-    .register-card .form-control {
-        border-radius: 0.75rem;
-        border: 1px solid #dee2e6;
-        padding: 0.95rem 1rem;
-    }
-    .register-card .form-control:focus {
-        border-color: #0047AB;
-        box-shadow: 0 0 0 0.2rem rgba(0,71,171,0.15);
-    }
-    .register-btn {
-        border-radius: 0.85rem;
-        padding: 0.95rem 1.5rem;
-        background: #0047AB;
-        border-color: #0047AB;
-        font-weight: 600;
-        box-shadow: 0 10px 24px rgba(0,71,171,0.12);
-    }
-    .register-btn:hover {
-        background: #003580;
-        border-color: #003580;
-    }
-    .register-link a {
-        color: #0047AB;
-    }
-    .register-link a:hover {
-        color: #003580;
-    }
-</style>
-{% endblock %}
-
 {% block header_banner %}
-<div class="register-banner">
-    <div class="container banner-content">
-        <h1>Create Your Account</h1>
-        <p>Join Easy Kart today to manage your orders, wishlist, and deliver faster with our secure shopping experience.</p>
+<section class="register-banner position-relative mb-4">
+    <div class="container position-relative hero-inner-content" style="z-index: 3;">
+        <div class="py-3 py-md-4">
+            <span class="badge bg-white text-primary mb-2 px-3 py-2 rounded-pill fw-semibold">New Account</span>
+            <h1 class="display-5 text-white fw-bold mb-2">Create Your Account</h1>
+            <p class="lead text-white-75 mb-0" style="max-width: 620px;">Join Easy Kart today to manage orders, build your wishlist, and check out securely.</p>
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow-sm register-card">
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    <h2 class="fw-bold">Register</h2>
-                    <p class="text-muted mb-0">Fill in your details to start shopping with Easy Kart.</p>
-                </div>
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {% for err in form.non_field_errors %}
-                            <div>{{ err }}</div>
-                        {% endfor %}
+<div class="py-2 py-md-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-3 p-sm-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h2 class="h4 fw-bold mb-1">Create an Account</h2>
+                        <p class="text-muted small mb-0">Fill in your details to start shopping</p>
                     </div>
-                {% endif %}
-                <form method="post" enctype="multipart/form-data" class="login-form">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.help_text %}
-                                <div class="form-text">{{ field.help_text }}</div>
-                            {% endif %}
-                            {% for error in field.errors %}
-                                <div class="text-danger small mt-1">{{ error }}</div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger small mb-3">
+                            {% for err in form.non_field_errors %}
+                                <div>{{ err }}</div>
                             {% endfor %}
                         </div>
-                    {% endfor %}
-                    <div class="d-grid mt-3">
-                        <button type="submit" class="btn btn-primary register-btn">Register</button>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <div class="form-text small">{{ field.help_text }}</div>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3 pt-3 border-top">
+                        <p class="mb-0 small text-muted">Already have an account? <a href="{% url 'login' %}" class="fw-bold text-decoration-none">Sign in</a></p>
                     </div>
-                </form>
-                <div class="text-center mt-4 register-link">
-                    <p class="mb-1 text-muted">Already have an account?</p>
-                    <a href="{% url 'login' %}">Sign in here</a>
                 </div>
             </div>
         </div>

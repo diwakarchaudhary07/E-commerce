@@ -22,49 +22,23 @@
 {% endif %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm easykart-navbar fixed-top">
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+    <div class="container-fluid px-2 px-md-3">
+        <a class="navbar-brand d-flex align-items-center me-2 me-md-3" href="{% url 'home' %}">
             <img src="{% static 'assets/Logo.png' %}" alt="Easy Kart" class="navbar-logo-pro">
         </a>
 
-        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#easyKartNavbar" aria-controls="easyKartNavbar" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse flex-grow-0" id="easyKartNavbar">
-            <ul class="navbar-nav align-items-center gap-1 easykart-menu">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}" title="Home">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'product' %}active{% endif %}" href="{% url 'product' %}" title="Shop Products">Products</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'category' %}active{% endif %}" href="{% url 'category' %}" title="Browse Categories">Category</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}" title="View Gallery">Gallery</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}" title="About Us">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}" title="Contact Us">Contact Us</a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="ms-auto">
-            <ul class="navbar-nav align-items-center gap-2 easykart-header-actions flex-row">
+        <div class="d-flex align-items-center order-lg-3 ms-auto gap-1 gap-sm-2">
+            <ul class="navbar-nav align-items-center easykart-header-actions flex-row mb-0">
                 <li class="nav-item">
                     <a class="nav-link easykart-icon-link" href="{% url 'wishlist' %}" title="My Wishlist">
-                        <i class="bi bi-heart-fill"></i>
-                        <span class="small">Wishlist</span>
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        <span class="small d-none d-sm-inline">Wishlist</span>
                     </a>
                 </li>
                 <li class="nav-item position-relative">
                     <a class="nav-link easykart-icon-link" href="{% url 'cart' %}" title="My Cart">
-                        <i class="bi bi-bag-fill"></i>
-                        <span class="small">Cart</span>
+                        <i class="bi bi-bag-fill text-primary"></i>
+                        <span class="small d-none d-sm-inline">Cart</span>
                         {% if cart_item_count %}
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">{{ cart_item_count }}</span>
                         {% endif %}
@@ -72,10 +46,10 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle easykart-icon-link" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="My Profile">
-                        <i class="bi bi-person-circle"></i>
-                        <span class="small">Profile</span>
+                        <i class="bi bi-person-circle text-primary"></i>
+                        <span class="small d-none d-sm-inline">Profile</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="profileDropdown">
                         {% if user.is_authenticated %}
                             <li><a class="dropdown-item" href="{% url 'my_profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
                             <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-bag-check me-2"></i>My Orders</a></li>
@@ -91,6 +65,33 @@
                             <li><a class="dropdown-item" href="{% url 'register' %}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
                         {% endif %}
                     </ul>
+                </li>
+            </ul>
+
+            <button class="navbar-toggler ms-1 ms-sm-2" type="button" data-bs-toggle="collapse" data-bs-target="#easyKartNavbar" aria-controls="easyKartNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse order-lg-2 flex-grow-1 justify-content-center" id="easyKartNavbar">
+            <ul class="navbar-nav align-items-center gap-1 easykart-menu">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}" title="Home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'product' %}active{% endif %}" href="{% url 'product' %}" title="Shop Products">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'category' or request.resolver_match.url_name == 'category_detail' %}active{% endif %}" href="{% url 'category' %}" title="Browse Categories">Category</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}" title="View Gallery">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}" title="About Us">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}" title="Contact Us">Contact Us</a>
                 </li>
             </ul>
         </div>

@@ -4,82 +4,98 @@
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
 
 {% block content %}
-  <div class="py-4">
-    <h1 class="h3 mb-3">{{ heading }}</h1>
+<div class="py-2 py-md-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-3 p-sm-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h1 class="h3 fw-bold mb-1">{{ heading }}</h1>
+                            <p class="text-muted small mb-0">Update your profile information and preferences</p>
+                        </div>
+                        <a href="{% url 'my_profile' %}" class="btn btn-outline-secondary btn-sm">Back</a>
+                    </div>
 
-    <form method="post" enctype="multipart/form-data" class="row g-3">
-      {% csrf_token %}
-      <div class="col-md-6">
-        {{ form.full_name.label_tag }}
-        {{ form.full_name }}
-        {% for err in form.full_name.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                    <form method="post" enctype="multipart/form-data" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-12 col-md-6">
+                            <label class="form-label small fw-semibold">Full Name</label>
+                            {{ form.full_name }}
+                            {% for err in form.full_name.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-md-6">
-        {{ form.email.label_tag }}
-        {{ form.email }}
-        {% for err in form.email.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label small fw-semibold">Email Address</label>
+                            {{ form.email }}
+                            {% for err in form.email.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-md-6">
-        {{ form.mobile_no.label_tag }}
-        {{ form.mobile_no }}
-        {% for err in form.mobile_no.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label small fw-semibold">Mobile Number</label>
+                            {{ form.mobile_no }}
+                            {% for err in form.mobile_no.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-md-6">
-        {{ form.alternate_mobile_no.label_tag }}
-        {{ form.alternate_mobile_no }}
-        {% for err in form.alternate_mobile_no.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label small fw-semibold">Alternate Mobile</label>
+                            {{ form.alternate_mobile_no }}
+                            {% for err in form.alternate_mobile_no.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-md-4">
-        {{ form.dob.label_tag }}
-        {{ form.dob }}
-        {% for err in form.dob.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small fw-semibold">Date of Birth</label>
+                            {{ form.dob }}
+                            {% for err in form.dob.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-md-4">
-        {{ form.gender.label_tag }}
-        {{ form.gender }}
-        {% for err in form.gender.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small fw-semibold">Gender</label>
+                            {{ form.gender }}
+                            {% for err in form.gender.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-md-4">
-        {{ form.profile_image.label_tag }}
-        {{ form.profile_image }}
-        {% if profile.profile_image %}
-          <div class="mt-2"><img src="{{ profile.profile_image.url }}" alt="current" style="max-height:80px;"></div>
-        {% endif %}
-        {% for err in form.profile_image.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small fw-semibold">Profile Photo</label>
+                            {{ form.profile_image }}
+                            {% if profile.profile_image %}
+                                <div class="mt-2">
+                                    <img src="{{ profile.profile_image.url }}" alt="current" class="rounded" style="max-height: 60px;">
+                                </div>
+                            {% endif %}
+                            {% for err in form.profile_image.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-12">
-        {{ form.address.label_tag }}
-        {{ form.address }}
-        {% for err in form.address.errors %}
-          <div class="text-danger small">{{ err }}</div>
-        {% endfor %}
-      </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Home Address</label>
+                            {{ form.address }}
+                            {% for err in form.address.errors %}
+                                <div class="text-danger small mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
 
-      <div class="col-12 d-flex gap-2">
-        <button class="btn btn-primary" type="submit">Save</button>
-        <a class="btn btn-secondary" href="{% url 'my_profile' %}">Cancel</a>
-      </div>
-    </form>
-  </div>
+                        <div class="col-12 d-flex gap-2 mt-4">
+                            <button class="btn btn-primary btn-lg" type="submit">Save Changes</button>
+                            <a class="btn btn-outline-secondary btn-lg" href="{% url 'my_profile' %}">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

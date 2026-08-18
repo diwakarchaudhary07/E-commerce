@@ -1,23 +1,36 @@
 {% extends 'base.html' %}
+
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
+
 {% block content %}
-  <div class="py-5">
-    <div class="container">
-      <h1 class="display-6 mb-4">{{ heading }}</h1>
-      <p class="text-muted">At Easy Kart, your privacy is important to us. This policy explains how we collect, use, and protect your personal data when you browse and shop with us.</p>
-      <h3 class="mt-4">Information We Collect</h3>
-      <p>We collect the information you provide when registering, placing orders, or contacting customer support. This may include your name, email address, phone number, shipping address, and payment details.</p>
-      <h3 class="mt-4">How We Use Your Information</h3>
-      <ul>
-        <li>Process and ship your orders.</li>
-        <li>Provide customer support and updates about your purchases.</li>
-        <li>Improve our product selection and shopping experience.</li>
-        <li>Send promotional offers only when you opt in.</li>
-      </ul>
-      <h3 class="mt-4">Your Privacy Rights</h3>
-      <p>You may review, update, or request deletion of your personal information by contacting our support team. We do not sell your personal data to third parties.</p>
-      <h3 class="mt-4">Data Security</h3>
-      <p>We use industry-standard measures to secure your data and protect it from unauthorized access. However, no system is completely secure, and we encourage you to use strong passwords.</p>
+<div class="py-2 py-md-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-3 p-sm-4 p-md-5">
+                    <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-2 rounded-pill fw-semibold">Legal</span>
+                    <h1 class="h2 fw-bold mb-3">{{ heading }}</h1>
+                    <p class="text-muted">At Easy Kart, your privacy is important to us. This policy explains how we collect, use, and protect your personal data when you browse and shop with us.</p>
+                    
+                    <h4 class="h5 fw-bold text-primary mt-4">Information We Collect</h4>
+                    <p class="text-muted">We collect the information you provide when registering, placing orders, or contacting customer support. This may include your name, email address, phone number, shipping address, and payment details.</p>
+                    
+                    <h4 class="h5 fw-bold text-primary mt-4">How We Use Your Information</h4>
+                    <ul class="text-muted">
+                        <li>Process and ship your orders promptly.</li>
+                        <li>Provide customer support and live tracking updates about your purchases.</li>
+                        <li>Improve our product selection, website performance, and user experience.</li>
+                        <li>Send promotional offers only when you opt in.</li>
+                    </ul>
+                    
+                    <h4 class="h5 fw-bold text-primary mt-4">Your Privacy Rights</h4>
+                    <p class="text-muted">You may review, update, or request deletion of your personal information by contacting our support team. We do not sell your personal data to third parties.</p>
+                    
+                    <h4 class="h5 fw-bold text-primary mt-4">Data Security</h4>
+                    <p class="text-muted mb-0">We use industry-standard encryption and safety measures to secure your data and protect it from unauthorized access. However, no system is completely immune, and we encourage using strong, unique account passwords.</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 {% endblock %}

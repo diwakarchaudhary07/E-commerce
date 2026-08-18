@@ -4,191 +4,385 @@
 {% block title %}Categories | Easy Kart{% endblock %}
 
 {% block header_banner %}
-<section class="category-hero position-relative mb-4">
-    <div class="category-hero-bg"></div>
-    <div class="category-hero-overlay"></div>
-    <div class="container position-relative" style="z-index:3;">
-        <div class="category-hero-inner">
-            <div>
-                <span class="badge bg-white text-primary mb-3">Categories</span>
-                <h1 class="display-3 fw-bold text-white">Browse Categories</h1>
-                <p class="lead text-white-75">Explore our curated categories and find the products you love.</p>
+<!-- ═══════════════════════════════════════════
+     CATEGORY HERO BANNER
+════════════════════════════════════════════ -->
+<section class="ek-cat-hero">
+    <div class="ek-cat-hero__inner">
+        <div class="container py-4 py-md-5">
+            <div class="row align-items-center gy-3">
+                <div class="col-lg-7">
+                    <span class="ek-cat-pill mb-3">
+                        <i class="bi bi-grid-fill me-1"></i> All Collections
+                    </span>
+                    <h1 class="ek-cat-hero__title">Shop by <span class="ek-cat-hero__accent">Category</span></h1>
+                    <p class="ek-cat-hero__sub">Explore our curated range of {{ categories|length }} collections — from everyday essentials to premium picks.</p>
+                </div>
+                <div class="col-lg-5 d-none d-lg-flex justify-content-end gap-3">
+                    <div class="ek-stat-chip">
+                        <span class="ek-stat-chip__num">{{ categories|length }}</span>
+                        <span class="ek-stat-chip__label">Categories</span>
+                    </div>
+                    <div class="ek-stat-chip">
+                        <span class="ek-stat-chip__num">{{ total_products }}</span>
+                        <span class="ek-stat-chip__label">Products</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search bar -->
+            <div class="row mt-4">
+                <div class="col-12 col-md-7 col-lg-6">
+                    <div class="ek-cat-search">
+                        <i class="bi bi-search ek-cat-search__icon"></i>
+                        <input
+                            type="text"
+                            id="categorySearchInput"
+                            class="ek-cat-search__input"
+                            placeholder="Search categories…"
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <style>
-        main.container {
-            max-width: 100% !important;
-            width: 100% !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-        .category-hero {
-            overflow: hidden;
-            border-radius: 1rem;
-            min-height: 240px;
-            height: auto;
-            box-shadow: 0 18px 40px rgba(0,71,171,0.15);
-            margin-bottom: 1.5rem;
-        }
-        .category-hero-inner {
-            min-height: clamp(220px, 35vh, 420px);
-            display: flex;
-            align-items: center;
-        }
-        .category-hero .container {
-            max-width: 100% !important;
-            width: 100% !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-        .category-hero-bg{ position: absolute; inset: 0; width:100%; min-height:100%; height:100%; background: linear-gradient(135deg, rgba(0, 71, 171, 0.95) 0%, rgba(255, 107, 53, 0.85) 100%); }
-        .category-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 71, 171, 0.45) 0%, rgba(255, 107, 53, 0.15) 100%); }
-        .category-grid-card {
-            border-radius: 1rem;
-            overflow: hidden;
-            border: 1px solid rgba(15, 23, 42, 0.08);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            background: rgba(255, 255, 255, 0.95);
-            height: 100%;
-            min-height: 360px;
-            display: flex;
-            flex-direction: column;
-        }
-        .category-grid-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 35px rgba(0, 71, 171, 0.12);
-        }
-        @media (max-width: 1199.98px) {
-            .category-grid-card { min-height: 330px; }
-        }
-        @media (max-width: 991.98px) {
-            .category-grid-card { min-height: 310px; }
-            .category-hero-inner { min-height: clamp(200px, 28vh, 300px); }
-        }
-        @media (max-width: 767.98px) {
-            .category-grid-card { min-height: 290px; }
-            .category-hero-inner { min-height: 200px; }
-            .category-hero { border-radius: 0.8rem; }
-        }
-        @media (max-width: 575.98px) {
-            .category-grid-card { min-height: 270px; }
-            .category-grid-card .card-body { padding-left: 0.85rem !important; padding-right: 0.85rem !important; }
-            .category-grid-card h5 { font-size: 1rem; }
-            .category-grid-card p { font-size: 0.8rem; }
-        }
-    </style>
 </section>
 {% endblock %}
 
+
 {% block content %}
-<div class="w-100 py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
-    <div class="container-fluid px-4">
-        <div class="d-flex justify-content-between align-items-center mb-5 flex-column flex-md-row gap-3">
-            <div>
-                <h1 class="h2 fw-bold">Categories</h1>
-                <p class="text-muted mb-0">Browse available shop categories.</p>
+<!-- ═══════════════════════════════════════════
+     STATS BAR
+════════════════════════════════════════════ -->
+<div class="ek-cat-statsbar d-lg-none border-bottom mb-4">
+    <div class="container py-3">
+        <div class="d-flex gap-4">
+            <div class="text-center">
+                <div class="fw-bold text-primary" style="font-size:1.3rem;">{{ categories|length }}</div>
+                <div class="text-muted" style="font-size:0.75rem;">Categories</div>
             </div>
-            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
+            <div class="text-center">
+                <div class="fw-bold text-primary" style="font-size:1.3rem;">{{ total_products }}</div>
+                <div class="text-muted" style="font-size:0.75rem;">Products</div>
+            </div>
         </div>
-
-        {% if categories %}
-        <section class="category-grid-section">
-            <div class="mb-4">
-                <p class="text-secondary mb-1">Explore by collection</p>
-                <h2 class="fw-bold">Browse All Categories</h2>
-            </div>
-
-            <div class="row g-4">
-                {% for category in categories %}
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <a href="{% url 'category_detail' category.slug %}" class="category-grid-card card h-100 shadow-sm border-0 text-decoration-none text-dark">
-                        <div class="category-card-circle mx-auto overflow-hidden position-relative mb-3">
-                            {% if category.image %}
-                            <img src="{{ category.image.url }}" alt="{{ category.name }}" class="w-100 h-100 object-fit-cover">
-                            {% else %}
-                            <div class="bg-secondary w-100 h-100 d-flex align-items-center justify-content-center text-white">No image</div>
-                            {% endif %}
-                            <div class="category-card-overlay"></div>
-                        </div>
-                        <div class="card-body px-0 pb-0 text-center">
-                            <h5 class="mb-2 fw-semibold">{{ category.name }}</h5>
-                            <p class="small text-muted mb-3">{{ category.description|truncatechars:72|default:'Explore products in this category.' }}</p>
-                            <span class="badge bg-success">{{ category.is_active|yesno:'Active,Inactive' }}</span>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% else %}
-        <div class="alert alert-info">No categories found.</div>
-        {% endif %}
     </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     CATEGORY GRID
+════════════════════════════════════════════ -->
+<div class="pb-4 pb-md-5">
+    {% if categories %}
+
+    <!-- Empty search state (hidden by default) -->
+    <div id="noResultsMsg" class="text-center py-5 d-none">
+        <i class="bi bi-search text-muted" style="font-size:3rem; opacity:.4;"></i>
+        <p class="mt-3 text-muted fw-semibold">No categories match your search.</p>
+    </div>
+
+    <div class="row g-3 g-md-4" id="categoryGrid">
+        {% for category in categories %}
+        <div class="col-6 col-md-4 col-xl-3 ek-cat-col" data-name="{{ category.name|lower }}">
+            <a href="{% url 'category_detail' category.slug %}" class="ek-cat-card text-decoration-none">
+                <!-- Image area -->
+                <div class="ek-cat-card__img-wrap">
+                    {% if category.image %}
+                        <img
+                            src="{{ category.image.url }}"
+                            alt="{{ category.name }}"
+                            class="ek-cat-card__img"
+                            loading="lazy"
+                        >
+                    {% else %}
+                        <div class="ek-cat-card__img-placeholder">
+                            <i class="bi bi-bag-heart-fill"></i>
+                        </div>
+                    {% endif %}
+                    <!-- Product count badge -->
+                    <span class="ek-cat-card__count-badge">
+                        {{ category.product_count }} item{{ category.product_count|pluralize }}
+                    </span>
+                </div>
+
+                <!-- Card body -->
+                <div class="ek-cat-card__body">
+                    <h2 class="ek-cat-card__name">{{ category.name }}</h2>
+                    {% if category.description %}
+                    <p class="ek-cat-card__desc">{{ category.description|truncatechars:55 }}</p>
+                    {% else %}
+                    <p class="ek-cat-card__desc">Explore our {{ category.name }} collection.</p>
+                    {% endif %}
+                    <div class="ek-cat-card__cta">
+                        <span>Explore</span>
+                        <i class="bi bi-arrow-right-short ms-1"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <div class="ek-empty-state mx-auto">
+            <i class="bi bi-grid text-muted ek-empty-state__icon"></i>
+            <h3 class="mt-3 fw-bold">No Categories Yet</h3>
+            <p class="text-muted">Check back soon — new collections are on their way!</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-2">
+                <i class="bi bi-house me-2"></i>Back to Home
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE STYLES
+════════════════════════════════════════════ -->
 <style>
-.category-grid-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background: rgba(255, 255, 255, 0.95);
+/* ── Hero ── */
+.ek-cat-hero {
+    background: linear-gradient(135deg, #0a2463 0%, #0047AB 60%, #1565c0 100%);
+    position: relative;
+    overflow: hidden;
 }
-.category-grid-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 45px rgba(15, 44, 83, 0.12);
+.ek-cat-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 80% 20%, rgba(255,107,53,.18) 0%, transparent 55%),
+        radial-gradient(circle at 10% 80%, rgba(255,255,255,.06) 0%, transparent 45%);
+    pointer-events: none;
 }
-.category-grid-card .category-card-circle {
+.ek-cat-hero__inner {
+    position: relative;
+    z-index: 1;
+}
+.ek-cat-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 99px;
+    padding: .35rem 1rem;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.ek-cat-hero__title {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin: .5rem 0;
+}
+.ek-cat-hero__accent {
+    color: #FF6B35;
+}
+.ek-cat-hero__sub {
+    color: rgba(255,255,255,.78);
+    font-size: clamp(.875rem, 2vw, 1.05rem);
+    max-width: 520px;
+    margin: 0;
+}
+
+/* Stat chips */
+.ek-stat-chip {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    backdrop-filter: blur(6px);
+    min-width: 100px;
+}
+.ek-stat-chip__num {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+.ek-stat-chip__label {
+    font-size: .75rem;
+    color: rgba(255,255,255,.7);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+/* Search bar */
+.ek-cat-search {
+    position: relative;
+}
+.ek-cat-search__icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,.6);
+    font-size: 1rem;
+    pointer-events: none;
+}
+.ek-cat-search__input {
     width: 100%;
-    max-width: 220px;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75));
-    border: 4px solid rgba(255,255,255,0.8);
-    margin: 0 auto 1rem;
+    background: rgba(255,255,255,.14);
+    border: 1.5px solid rgba(255,255,255,.28);
+    border-radius: 99px;
+    padding: .7rem 1.25rem .7rem 2.8rem;
+    color: #fff;
+    font-size: .95rem;
+    outline: none;
+    transition: background .2s, border-color .2s;
+}
+.ek-cat-search__input::placeholder { color: rgba(255,255,255,.55); }
+.ek-cat-search__input:focus {
+    background: rgba(255,255,255,.22);
+    border-color: rgba(255,255,255,.5);
+}
+
+/* ── Category Card ── */
+.ek-cat-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 2px 12px rgba(0,71,171,.06), 0 1px 3px rgba(0,0,0,.04);
+    transition: transform .22s ease, box-shadow .22s ease;
+    height: 100%;
+}
+.ek-cat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,71,171,.14), 0 4px 12px rgba(0,0,0,.06);
+}
+
+/* Image wrapper — fixed 3:2 aspect ratio */
+.ek-cat-card__img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: #f0f7ff;
     flex-shrink: 0;
 }
-.category-grid-card .category-card-circle img,
-.category-grid-card .category-card-circle .bg-secondary {
+.ek-cat-card__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform .4s ease;
 }
-.category-grid-card .category-card-overlay {
+.ek-cat-card:hover .ek-cat-card__img {
+    transform: scale(1.06);
+}
+.ek-cat-card__img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8f0fe, #f0f7ff);
+    font-size: 3rem;
+    color: #0047AB;
+    opacity: .35;
+}
+
+/* Count badge */
+.ek-cat-card__count-badge {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.22));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    top: .65rem;
+    right: .65rem;
+    background: rgba(0,0,0,.55);
+    color: #fff;
+    border-radius: 99px;
+    padding: .2rem .65rem;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    backdrop-filter: blur(4px);
 }
-.category-grid-card:hover .category-card-overlay {
-    opacity: 1;
-}
-.category-grid-card .card-body {
+
+/* Body */
+.ek-cat-card__body {
+    padding: 1rem 1.1rem 1.1rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     flex: 1;
-    padding-top: 0;
 }
-.category-grid-card h5 {
-    min-height: 2.5rem;
-    margin-bottom: 0.75rem;
+.ek-cat-card__name {
+    font-size: clamp(.9rem, 2.5vw, 1.1rem);
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 .35rem;
+    line-height: 1.25;
 }
-.category-grid-card p {
-    margin-bottom: 1rem;
+.ek-cat-card__desc {
+    font-size: .8rem;
+    color: #64748b;
     line-height: 1.5;
+    margin: 0 0 .75rem;
+    flex: 1;
 }
-@media (max-width: 1199.98px) {
-    .category-grid-card .category-card-circle { max-width: 200px; }
+.ek-cat-card__cta {
+    display: inline-flex;
+    align-items: center;
+    color: #FF6B35;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    border-top: 1px solid #f1f5f9;
+    padding-top: .65rem;
+    margin-top: auto;
+    transition: gap .18s ease, color .18s ease;
+    gap: 0;
 }
-@media (max-width: 991.98px) {
-    .category-grid-card .category-card-circle { max-width: 180px; }
+.ek-cat-card:hover .ek-cat-card__cta {
+    gap: .25rem;
+    color: #e55a25;
 }
-@media (max-width: 767.98px) {
-    .category-grid-card .category-card-circle { max-width: 160px; }
-}
-@media (max-width: 575.98px) {
-    .category-grid-card .category-card-circle { max-width: 150px; }
-    .category-grid-card h5 { min-height: auto; }
+
+/* Empty state */
+.ek-empty-state { max-width: 320px; }
+.ek-empty-state__icon { font-size: 3.5rem; opacity: .3; }
+
+/* ── Responsive tweaks ── */
+@media (max-width: 375px) {
+    .ek-cat-card__body { padding: .75rem .85rem .85rem; }
+    .ek-cat-card__name { font-size: .85rem; }
 }
 </style>
+
+
+<!-- ═══════════════════════════════════════════
+     LIVE SEARCH SCRIPT
+════════════════════════════════════════════ -->
+<script>
+(function () {
+    const input = document.getElementById('categorySearchInput');
+    const grid  = document.getElementById('categoryGrid');
+    const noMsg = document.getElementById('noResultsMsg');
+    if (!input || !grid) return;
+
+    input.addEventListener('input', function () {
+        const q = this.value.trim().toLowerCase();
+        const cols = grid.querySelectorAll('.ek-cat-col');
+        let visible = 0;
+        cols.forEach(col => {
+            const match = !q || col.dataset.name.includes(q);
+            col.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        if (noMsg) noMsg.classList.toggle('d-none', visible > 0);
+    });
+})();
+</script>
 {% endblock %}

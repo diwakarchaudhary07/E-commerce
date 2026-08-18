@@ -3,404 +3,171 @@
 
 {% block title %}Contact Us | Easy Kart{% endblock %}
 
-{% block extra_head %}
-<style>
-    .page-banner {
-        background: linear-gradient(90deg, #0047AB 0%, #FF6B35 100%);
-        min-height: 220px;
-        display: flex;
-        align-items: center;
-        color: #ffffff;
-        border-radius: 0.75rem;
-        box-shadow: 0 18px 40px rgba(0,71,171,0.15);
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
-    .page-banner .banner-content {
-        padding: 2rem 1.5rem;
-    }
-    .page-banner h1 {
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-    .page-banner p {
-        color: rgba(255,255,255,0.9);
-        font-size: 1.05rem;
-        max-width: 620px;
-    }
-    .contact-info-card .contact-icon i,
-    .info-section a {
-        color: #0047AB;
-    }
-</style>
-{% endblock %}
-
 {% block header_banner %}
-<div class="page-banner">
-    <div class="container banner-content">
-        <h1>Contact Us</h1>
-        <p>Need help? Reach out to Easy Kart and our support team will get back to you quickly.</p>
-        <a href="{% url 'need_help' %}" class="btn btn-light mt-3 px-4">Try AI Help Assistant</a>
+<section class="page-banner position-relative mb-4">
+    <div class="container position-relative hero-inner-content" style="z-index: 3;">
+        <div class="py-3 py-md-4">
+            <span class="badge bg-white text-primary mb-2 px-3 py-2 rounded-pill fw-semibold">24/7 Support</span>
+            <h1 class="display-5 text-white fw-bold mb-2">Contact Us</h1>
+            <p class="lead text-white-75 mb-3" style="max-width: 600px;">Need help with an order or product inquiry? Reach out to Easy Kart and our dedicated team will assist you.</p>
+            <a href="{% url 'need_help' %}" class="btn btn-light text-primary fw-semibold"><i class="bi bi-robot me-1"></i>Try AI Help Assistant</a>
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block content %}
-<style>
-    
-    .contact-header h1 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    
-    .contact-header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
-    
-    .contact-info-card {
-        background: white;
-        border: none;
-        border-radius: 10px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        height: 100%;
-    }
-    
-    .contact-info-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    }
-    
-    .contact-info-card .card-body {
-        padding: 25px;
-    }
-    
-    .contact-icon {
-        font-size: 2rem;
-        color: #0047AB;
-        margin-bottom: 10px;
-    }
-    
-    .contact-info-card h5 {
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 15px;
-    }
-    
-    .contact-form-card {
-        background: white;
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .contact-form-card .card-body {
-        padding: 35px;
-    }
-    
-    .form-control, .form-select {
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        padding: 10px 15px;
-        font-size: 0.95rem;
-        transition: border-color 0.3s ease;
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #0047AB;
-        box-shadow: 0 0 0 0.2rem rgba(0, 71, 171, 0.25);
-    }
-    
-    .form-label {
-        font-weight: 500;
-        color: #333;
-        margin-bottom: 8px;
-    }
-    
-    .submit-btn {
-        background: linear-gradient(135deg, #0047AB 0%, #FF6B35 100%);
-        border: none;
-        padding: 12px 30px;
-        font-weight: 600;
-        border-radius: 5px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .submit-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        color: white;
-    }
-    
-    .map-container {
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        margin-top: 50px;
-        margin-bottom: 50px;
-    }
-    
-    .map-container iframe {
-        width: 100%;
-        height: 400px;
-        border: none;
-    }
-    
-    .success-alert {
-        animation: slideIn 0.5s ease-out;
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .info-section {
-        margin-bottom: 30px;
-    }
-    
-    .info-section p {
-        color: #555;
-        margin-bottom: 5px;
-    }
-    
-    .info-section a {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 500;
-    }
-    
-    .info-section a:hover {
-        text-decoration: underline;
-    }
-</style>
-
-<!-- Main Contact Section -->
-<div class="container py-5">
-    <!-- Success Messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show success-alert" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
-
+<div class="py-2 py-md-4">
     <div class="row g-4">
         <!-- Contact Form Column -->
-        <div class="col-lg-8">
-            <div class="contact-form-card">
-                <div class="card-body">
-                    <h2 class="card-title mb-4" style="color: #333; font-weight: 600;">Send us a Message</h2>
-                    <form method="POST" novalidate>
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-3 p-sm-4 p-md-5">
+                    <h2 class="h4 fw-bold mb-1">Send us a Message</h2>
+                    <p class="text-muted small mb-4">We usually respond within 24 hours.</p>
+
+                    <form method="POST" action="{% url 'contact' %}">
                         {% csrf_token %}
-                        
-                        {% if form.non_field_errors %}
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Error!</strong>
-                            {{ form.non_field_errors }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                        {% endif %}
-
-                        <!-- Name and Email Row -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="{{ form.name.id_for_label }}" class="form-label">Full Name *</label>
-                                {{ form.name }}
-                                {% if form.name.errors %}
-                                    <div class="text-danger small mt-1">
-                                        <i class="bi bi-exclamation-circle"></i> {{ form.name.errors }}
-                                    </div>
-                                {% endif %}
+                        <div class="row g-3">
+                            <div class="col-12 col-sm-6">
+                                <label for="name" class="form-label small fw-semibold">Your Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required placeholder="John Doe">
                             </div>
-                            <div class="col-md-6">
-                                <label for="{{ form.email.id_for_label }}" class="form-label">Email Address *</label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="text-danger small mt-1">
-                                        <i class="bi bi-exclamation-circle"></i> {{ form.email.errors }}
-                                    </div>
-                                {% endif %}
+                            <div class="col-12 col-sm-6">
+                                <label for="email" class="form-label small fw-semibold">Your Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required placeholder="john@example.com">
                             </div>
-                        </div>
-
-                        <!-- Phone and Subject Row -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="{{ form.phone.id_for_label }}" class="form-label">Phone Number</label>
-                                {{ form.phone }}
-                                {% if form.phone.errors %}
-                                    <div class="text-danger small mt-1">
-                                        <i class="bi bi-exclamation-circle"></i> {{ form.phone.errors }}
-                                    </div>
-                                {% endif %}
+                            <div class="col-12 col-sm-6">
+                                <label for="phone" class="form-label small fw-semibold">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="+1 (234) 567-890">
                             </div>
-                            <div class="col-md-6">
-                                <label for="{{ form.subject.id_for_label }}" class="form-label">Subject *</label>
-                                {{ form.subject }}
-                                {% if form.subject.errors %}
-                                    <div class="text-danger small mt-1">
-                                        <i class="bi bi-exclamation-circle"></i> {{ form.subject.errors }}
-                                    </div>
-                                {% endif %}
+                            <div class="col-12 col-sm-6">
+                                <label for="subject" class="form-label small fw-semibold">Subject *</label>
+                                <input type="text" class="form-control" id="subject" name="subject" required placeholder="Inquiry about...">
                             </div>
-                        </div>
-
-                        <!-- Message -->
-                        <div class="mb-4">
-                            <label for="{{ form.message.id_for_label }}" class="form-label">Message *</label>
-                            {{ form.message }}
-                            {% if form.message.errors %}
-                                <div class="text-danger small mt-1">
-                                    <i class="bi bi-exclamation-circle"></i> {{ form.message.errors }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn submit-btn btn-lg">
-                                <i class="bi bi-send"></i> Send Message
-                            </button>
+                            <div class="col-12">
+                                <label for="message" class="form-label small fw-semibold">Message *</label>
+                                <textarea class="form-control" id="message" name="message" rows="5" required placeholder="How can we help you?"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-send-fill me-1"></i> Send Message
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Contact Info Column -->
-        <div class="col-lg-4">
-            <!-- Address Card -->
-            <div class="contact-info-card mb-4">
-                <div class="card-body">
-                    <div class="contact-icon">
-                        <i class="bi bi-geo-alt-fill"></i>
-                    </div>
-                    <h5 class="card-title">Address</h5>
-                    <div class="info-section">
-                        <p><strong>Easy Kart E-Commerce</strong></p>
-                        <p>123 Shopping Street<br>Commerce City, CC 12345<br>Country</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Phone Card -->
-            <div class="contact-info-card mb-4">
-                <div class="card-body">
-                    <div class="contact-icon">
-                        <i class="bi bi-telephone-fill"></i>
-                    </div>
-                    <h5 class="card-title">Phone</h5>
-                    <div class="info-section">
-                        <p><a href="tel:+1234567890">+1 (234) 567-890</a></p>
-                        <p><small style="color: #999;">Mon-Fri, 9 AM - 6 PM</small></p>
+        <!-- Contact Information Column -->
+        <div class="col-lg-5">
+            <div class="d-flex flex-column gap-3">
+                <div class="card shadow-sm border-0 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
+                            <i class="bi bi-geo-alt-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Our Location</h6>
+                            <p class="text-muted small mb-0">123 Shopping Street, Sydney NSW 2000, Australia</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Email Card -->
-            <div class="contact-info-card mb-4">
-                <div class="card-body">
-                    <div class="contact-icon">
-                        <i class="bi bi-envelope-fill"></i>
-                    </div>
-                    <h5 class="card-title">Email</h5>
-                    <div class="info-section">
-                        <p><a href="mailto:support@easykart.com">support@easykart.com</a></p>
-                        <p><a href="mailto:info@easykart.com">info@easykart.com</a></p>
+                <div class="card shadow-sm border-0 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
+                            <i class="bi bi-telephone-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Phone</h6>
+                            <p class="text-muted small mb-0"><a href="tel:+1234567890" class="text-decoration-none">+1 (234) 567-890</a> (Mon-Fri 9AM-6PM)</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Hours Card -->
-            <div class="contact-info-card">
-                <div class="card-body">
-                    <div class="contact-icon">
-                        <i class="bi bi-clock-fill"></i>
+                <div class="card shadow-sm border-0 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
+                            <i class="bi bi-envelope-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Email Support</h6>
+                            <p class="text-muted small mb-0"><a href="mailto:support@easykart.com" class="text-decoration-none">support@easykart.com</a></p>
+                        </div>
                     </div>
-                    <h5 class="card-title">Business Hours</h5>
-                    <div class="info-section">
-                        <p><strong>Monday - Friday:</strong><br>9:00 AM - 6:00 PM</p>
-                        <p><strong>Saturday:</strong><br>10:00 AM - 4:00 PM</p>
-                        <p><strong>Sunday:</strong><br>Closed</p>
+                </div>
+
+                <div class="card shadow-sm border-0 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
+                            <i class="bi bi-clock-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Business Hours</h6>
+                            <p class="text-muted small mb-0">Mon - Fri: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Google Map Section -->
-<div class="map-container" id="map">
-    <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354517766016!2d-33.8688197!3d151.2092955!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12a3c4e6c1a05d%3A0x8e8c8c8c8c8c8c8c!2s123%20Shopping%20Street%2C%20Sydney%20NSW%202000%2C%20Australia!5e0!3m2!1sen!2sin!4v1234567890"
-        allowfullscreen="" 
-        loading="lazy" 
-        referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
-</div>
+    <!-- Map & FAQ Section -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="card-body p-0" style="height: 300px;">
+                    <iframe
+                        src="https://maps.google.com/maps?q=123%20Shopping%20Street%2C%20Sydney&z=15&output=embed"
+                        class="w-100 h-100 border-0"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Easy Kart Location">
+                    </iframe>
+                </div>
+            </div>
+        </div>
 
-<!-- FAQ Section -->
-<div class="container py-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <h2 class="text-center mb-5" style="color: #333; font-weight: 600;">Frequently Asked Questions</h2>
-            <div class="accordion" id="faqAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                            <strong>What is the response time?</strong>
-                        </button>
-                    </h2>
-                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            We typically respond to all inquiries within 24 business hours. For urgent matters, please call us directly at +1 (234) 567-890.
+        <div class="col-12">
+            <div class="card shadow-sm border-0 p-3 p-sm-4 p-md-5">
+                <h3 class="h4 fw-bold text-center mb-4">Frequently Asked Questions</h3>
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item border-0 mb-2 rounded-3 overflow-hidden shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                <strong>What is the typical response time?</strong>
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                We typically respond to all inquiries within 24 business hours. For urgent matters, please call us directly.
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                            <strong>Can I reach you via social media?</strong>
-                        </button>
-                    </h2>
-                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Yes! We're active on all major social media platforms. Follow us for updates, promotions, and special offers.
+                    <div class="accordion-item border-0 mb-2 rounded-3 overflow-hidden shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                <strong>How can I track my order status?</strong>
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                You can track your order directly in real time from your account by visiting the <a href="{% url 'my_orders' %}">My Orders</a> page.
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                            <strong>Do you offer live chat support?</strong>
-                        </button>
-                    </h2>
-                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Yes, our live chat support is available Monday to Friday from 10 AM to 5 PM. You can access it from the bottom right corner of our website.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                            <strong>How can I track my order?</strong>
-                        </button>
-                    </h2>
-                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            You can track your order in real-time from your account dashboard. Simply log in and navigate to "My Orders" to view the latest status.
+                    <div class="accordion-item border-0 rounded-3 overflow-hidden shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                <strong>What is your return & refund policy?</strong>
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                We offer a 30-day return policy on most items. Please visit our <a href="{% url 'refund_policy' %}">Refund Policy</a> page for complete details.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -408,16 +175,4 @@
         </div>
     </div>
 </div>
-
-<!-- Bottom CTA Section -->
-<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px 0; margin-top: 50px;">
-    <div class="container text-center">
-        <h2 class="mb-3" style="font-weight: 600;">Need Help? We're Here for You</h2>
-        <p class="mb-4" style="font-size: 1.1rem;">Can't find what you're looking for? Contact our support team today.</p>
-        <a href="#" class="btn btn-light btn-lg" style="font-weight: 600;">
-            <i class="bi bi-chat-dots"></i> Start a Chat
-        </a>
-    </div>
-</div>
-
 {% endblock %}

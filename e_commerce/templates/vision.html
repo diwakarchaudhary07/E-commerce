@@ -1,15 +1,47 @@
 {% extends 'base.html' %}
+
 {% block title %}{{ page_title }} — Easy Kart{% endblock %}
+
 {% block content %}
-  <div class="py-5">
-    <div class="container">
-      <h1 class="display-6 mb-4">{{ heading }}</h1>
-      <p class="lead text-muted">Our vision is to be the most trusted online shopping destination by combining great products, exceptional service, and a seamless digital experience.</p>
-      <ul class="mt-4">
-        <li>Build long-term customer trust through transparency and reliability.</li>
-        <li>Continuously improve our platform to make shopping easier and faster.</li>
-        <li>Bring inspiring products to customers across every home.</li>
-      </ul>
+<div class="py-2 py-md-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0 border-start border-success border-4 mb-4">
+                <div class="card-body p-3 p-sm-4 p-md-5">
+                    <span class="badge bg-success-subtle text-success mb-2 px-3 py-2 rounded-pill fw-semibold">Easy Kart Vision</span>
+                    <h1 class="h2 fw-bold mb-3">{{ heading }}</h1>
+                    <p class="lead text-muted mb-4">Our vision is to become India's most loved and trusted digital shopping brand by fusing top-tier products, intuitive interface design, and seamless customer care.</p>
+                    
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <div class="p-3 bg-light rounded-3 h-100">
+                                <i class="bi bi-shield-lock fs-3 text-success mb-2 d-block"></i>
+                                <h6 class="fw-bold mb-1">Long-term Trust</h6>
+                                <p class="text-muted small mb-0">Building lasting relationships through uncompromising security and transparency.</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="p-3 bg-light rounded-3 h-100">
+                                <i class="bi bi-stars fs-3 text-success mb-2 d-block"></i>
+                                <h6 class="fw-bold mb-1">Modern Innovation</h6>
+                                <p class="text-muted small mb-0">Continuously innovating our technology to provide lightning-fast shopping.</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="p-3 bg-light rounded-3 h-100">
+                                <i class="bi bi-globe fs-3 text-success mb-2 d-block"></i>
+                                <h6 class="fw-bold mb-1">Every Home Reach</h6>
+                                <p class="text-muted small mb-0">Delivering value and happiness to households nationwide.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="{% url 'about_us' %}" class="btn btn-outline-success me-2">About Us</a>
+                <a href="{% url 'product' %}" class="btn btn-success">Explore Catalog</a>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 {% endblock %}

@@ -1,111 +1,124 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}My Cart | Easy Kart{% endblock %}
+
 {% block header_banner %}
 <section class="cart-hero position-relative mb-4">
     <div class="cart-hero-bg"></div>
     <div class="cart-hero-overlay"></div>
-    <div class="container position-relative" style="z-index: 3;">
-        <div style="min-height:60vh; display:flex; align-items:center;">
-            <div>
-                <h2 class="text-white fw-bold display-4">My Cart</h2>
-                <p class="text-white-75">Review your selected items and proceed to checkout.</p>
-                <div class="mt-3">
-                    <span class="badge bg-white text-primary py-2 px-3 rounded-pill">Easy Kart</span>
-                </div>
-            </div>
+    <div class="container position-relative hero-inner-content" style="z-index: 3;">
+        <div class="py-3 py-md-4">
+            <span class="badge bg-white text-primary mb-2 px-3 py-2 rounded-pill fw-semibold">Easy Kart</span>
+            <h1 class="display-5 text-white fw-bold mb-2">My Shopping Cart</h1>
+            <p class="lead text-white-75 mb-0" style="max-width: 550px;">Review your selected items, update quantities, and proceed to secure checkout.</p>
         </div>
     </div>
-    <style>
-        .cart-hero{ overflow: hidden; border-radius: 0; }
-        .cart-hero-bg{ position: absolute; inset: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0, 71, 171, 0.95) 0%, rgba(255, 107, 53, 0.85) 100%); }
-        .cart-hero-overlay{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 71, 171, 0.35) 0%, rgba(255, 107, 53, 0.15) 100%); }
-        .cart-hero h2{ color:#ffffff; }
-        .cart-hero p{ color:#f0f4ff; }
-        .cart-hero .badge{ background: rgba(255,255,255,0.95); color:#0047ab; font-weight: 600; }
-        @media (min-width: 1200px) { .cart-hero .container { padding-top: 2rem; padding-bottom: 2rem; } }
-    </style>
 </section>
 {% endblock %}
 
 {% block content %}
-<div class="py-5">
-    <h1 class="mb-4">{{ heading }}</h1>
+<div class="py-2 py-md-4">
+    <h2 class="h4 fw-bold mb-3">{{ heading }}</h2>
     {% if cart_items %}
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Qty</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_items %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center gap-3">
-                                    <div style="width: 80px; min-width: 80px;">
-                                        {% if item.product.image %}
-                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" style="max-height: 80px; object-fit: cover; width: 100%;">
-                                        {% else %}
-                                            <img src="{% static 'assets/placeholder.png' %}" alt="No image" class="img-fluid rounded" style="max-height: 80px; object-fit: cover; width: 100%;">
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        <a href="{% url 'product_detail' item.product.slug %}" class="text-decoration-none fw-semibold">{{ item.product.name }}</a>
-                                        {% if item.product.category %}
-                                        <div class="small text-muted">{{ item.product.category.name }}</div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </td>
-                            <td>${{ item.price|floatformat:2 }}</td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <form method="post" action="{% url 'update_cart' item.product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="quantity" value="-1">
-                                        <button type="submit" class="btn btn-outline-primary btn-sm">-</button>
-                                    </form>
-                                    <span class="fw-bold">{{ item.quantity }}</span>
-                                    <form method="post" action="{% url 'update_cart' item.product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-outline-primary btn-sm">+</button>
-                                    </form>
-                                </div>
-                            </td>
-                            <td>${{ item.item_total|floatformat:2 }}</td>
-                            <td>
-                                <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-primary btn-sm">Remove</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="d-flex justify-content-end">
-            <div class="card p-4" style="min-width: 250px;">
-                <h5 class="mb-3">Cart Total</h5>
-                <p class="fs-4 mb-2">${{ cart_total|floatformat:2 }}</p>
-                <a href="{% url 'product' %}" class="btn btn-outline-primary w-100 mb-2">Continue Shopping</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'checkout' %}" class="btn btn-warning w-100">Proceed to Checkout</a>
-                {% else %}
-                    <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-warning w-100">Login to Checkout</a>
-                {% endif %}
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 180px;">Product</th>
+                                        <th>Price</th>
+                                        <th style="min-width: 110px;">Qty</th>
+                                        <th>Total</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in cart_items %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2 gap-sm-3">
+                                                    <div style="width: 60px; min-width: 60px; height: 60px;">
+                                                        {% if item.product.image %}
+                                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded img-cover" style="height: 60px;">
+                                                        {% else %}
+                                                            <div class="bg-light rounded d-flex align-items-center justify-content-center h-100 text-muted small">No img</div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <a href="{% url 'product_detail' item.product.slug %}" class="text-decoration-none fw-semibold text-dark d-block text-truncate" style="max-width: 180px;">{{ item.product.name }}</a>
+                                                        {% if item.product.category %}
+                                                        <div class="small text-muted">{{ item.product.category.name }}</div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="fw-semibold">${{ item.price|floatformat:2 }}</td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center gap-1 border rounded-pill p-1 bg-light">
+                                                    <form method="post" action="{% url 'update_cart' item.product.id %}" class="m-0">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="quantity" value="-1">
+                                                        <button type="submit" class="btn btn-sm btn-light rounded-circle p-0" style="width: 26px; height: 26px; min-height: 26px;" aria-label="Decrease quantity">-</button>
+                                                    </form>
+                                                    <span class="fw-bold px-2 small">{{ item.quantity }}</span>
+                                                    <form method="post" action="{% url 'update_cart' item.product.id %}" class="m-0">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        <button type="submit" class="btn btn-sm btn-light rounded-circle p-0" style="width: 26px; height: 26px; min-height: 26px;" aria-label="Increase quantity">+</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                            <td class="fw-bold text-primary">${{ item.item_total|floatformat:2 }}</td>
+                                            <td class="text-end">
+                                                <form method="post" action="{% url 'remove_from_cart' item.product.id %}" class="m-0">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm p-1 px-2" title="Remove item">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 p-3 p-md-4">
+                    <h5 class="fw-bold mb-3">Order Summary</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total Items</span>
+                        <span class="fw-semibold">{{ cart_items|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fs-4 fw-bold text-primary">${{ cart_total|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'checkout' %}" class="btn btn-warning btn-lg">Proceed to Checkout</a>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-warning btn-lg">Login to Checkout</a>
+                        {% endif %}
+                        <a href="{% url 'product' %}" class="btn btn-outline-primary">Continue Shopping</a>
+                    </div>
+                </div>
             </div>
         </div>
     {% else %}
-        <div class="alert alert-info">Your cart is empty.</div>
-        <a href="{% url 'product' %}" class="btn btn-primary">Browse Products</a>
+        <div class="alert alert-info py-4 text-center">
+            <i class="bi bi-bag-x fs-1 d-block mb-2 text-primary"></i>
+            <h5>Your cart is currently empty</h5>
+            <p class="text-muted mb-3">Explore our latest arrivals and add items to your cart.</p>
+            <a href="{% url 'product' %}" class="btn btn-primary">Browse Products</a>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

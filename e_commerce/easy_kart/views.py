@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import hmac
 import random
 import uuid
@@ -717,9 +717,14 @@ def delete_order(request, order_id):
 
 
 def category_page(request):
-    categories = Category.objects.filter(is_active=True).order_by('name')
+    from django.db.models import Count as DjCount
+    categories = Category.objects.filter(is_active=True).annotate(
+        product_count=DjCount('products', filter=Q(products__is_active=True))
+    ).order_by('name')
+    total_products = sum(c.product_count for c in categories)
     return render(request, 'categories.html', {
         'categories': categories,
+        'total_products': total_products,
     })
 
 
