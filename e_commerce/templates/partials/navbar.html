@@ -74,6 +74,13 @@
         </div>
 
         <div class="collapse navbar-collapse order-lg-2 flex-grow-1 justify-content-center" id="easyKartNavbar">
+            <form class="easykart-search-form" action="{% url 'product' %}" method="get" role="search">
+                <label class="visually-hidden" for="navbarSearch">Search products</label>
+                <input id="navbarSearch" class="form-control" type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search products" autocomplete="off">
+                <button class="btn btn-primary" type="submit" aria-label="Search products" title="Search products">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                </button>
+            </form>
             <ul class="navbar-nav align-items-center gap-1 easykart-menu">
                 <li class="nav-item">
                     <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}" title="Home">Home</a>

@@ -144,11 +144,21 @@ def home(request):
 
 
 def product_page(request):
-    products = Product.objects.filter(is_active=True).order_by('-created_at')
+    query = (request.GET.get('q') or '').strip()
+    products = Product.objects.filter(is_active=True)
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(sku__icontains=query) |
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        )
+    products = products.order_by('-created_at')
     return render(request, 'product_list.html', {
         'page_title': 'Products',
         'heading': 'Products',
         'products': products,
+        'query': query,
     })
 
 
@@ -862,8 +872,13 @@ def register(request):
 @ensure_csrf_cookie
 def verify_otp(request):
     """Verify OTP for registration email verification only."""
+    session_email = request.session.get('email_for_verification', '').strip().lower()
     posted_email = request.POST.get('email', '').strip().lower() if request.method == 'POST' else ''
-    email = posted_email or request.session.get('email_for_verification', '').strip().lower()
+    email = session_email or posted_email
+
+    if session_email and posted_email and posted_email != session_email:
+        messages.error(request, 'This verification link belongs to a different email address.')
+        return redirect('verify_otp')
 
     if not email:
         messages.error(request, 'Invalid verification request.')
@@ -914,7 +929,12 @@ def verify_otp(request):
 def resend_otp(request):
     """Resend OTP to user email"""
     if request.method == 'POST':
-        email = request.POST.get('email', '').strip().lower() or request.session.get('email_for_verification', '').strip().lower()
+        session_email = request.session.get('email_for_verification', '').strip().lower()
+        posted_email = request.POST.get('email', '').strip().lower()
+        if session_email and posted_email and posted_email != session_email:
+            messages.error(request, 'This verification request belongs to a different email address.')
+            return redirect('verify_otp')
+        email = session_email or posted_email
 
         if not email:
             messages.error(request, 'Please enter your email.')
@@ -922,8 +942,18 @@ def resend_otp(request):
         try:
             # Only allow resending OTP for registration verification
             user = CustomUser.objects.get(email=email, is_email_verified=False)
+            previous_code = user.email_otp_code
+            previous_expiry = user.email_otp_expires_at
             otp_code = user.generate_email_otp()
-            send_otp_email(user, otp_code)
+            try:
+                send_otp_email(user, otp_code)
+            except Exception:
+                user.email_otp_code = previous_code
+                user.email_otp_expires_at = previous_expiry
+                user.save(update_fields=['email_otp_code', 'email_otp_expires_at'])
+                messages.error(request, 'Unable to send the OTP email. Please try again later.')
+                request.session['email_for_verification'] = email
+                return redirect('verify_otp')
             messages.success(request, 'OTP resent successfully. Check your email.')
             request.session['email_for_verification'] = email
             return redirect('verify_otp')
@@ -1194,6 +1224,8 @@ def login(request):
         post_data = request.POST.copy()
         if 'identifier' not in post_data and 'email' in post_data:
             post_data['identifier'] = post_data['email']
+        if 'identifier' not in post_data and 'username' in post_data:
+            post_data['identifier'] = post_data['username']
         form = LoginForm(post_data)
     else:
         form = LoginForm()
@@ -1216,7 +1248,7 @@ def login(request):
                 return redirect('verify_otp')
             else:
                 # Our USERNAME_FIELD is still 'email' so authenticate with email kwarg
-                authenticated_user = authenticate(request, email=user.email, password=password)
+                authenticated_user = authenticate(request, username=user.email, password=password)
                 if authenticated_user is not None:
                     auth_login(request, authenticated_user)
                     if remember_me:

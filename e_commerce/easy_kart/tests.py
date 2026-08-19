@@ -385,6 +385,21 @@ class OTPRegistrationTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(user.email_otp_code, mail.outbox[0].body)
 
+    def test_register_accepts_valid_email_from_any_domain(self):
+        response = self.client.post(
+            reverse('register'),
+            data={
+                'full_name': 'Domain User',
+                'email': 'domain.user@shop.example.co.uk',
+                'password': 'StrongPass123!',
+                'confirm_password': 'StrongPass123!',
+            }
+        )
+
+        self.assertRedirects(response, reverse('verify_otp'))
+        self.assertTrue(CustomUser.objects.filter(email='domain.user@shop.example.co.uk').exists())
+        self.assertEqual(len(mail.outbox), 1)
+
     def test_verify_otp_with_valid_code_verifies_user(self):
         user = CustomUser.objects.create_user(
             username='testuser1',
@@ -430,6 +445,29 @@ class OTPRegistrationTests(TestCase):
         self.assertFalse(user.is_active)
         self.assertFalse(user.is_email_verified)
 
+    def test_verify_otp_uses_session_email_instead_of_posted_email(self):
+        response = self.client.post(
+            reverse('register'),
+            data={
+                'full_name': 'Session User',
+                'email': 'session@example.com',
+                'password': 'StrongPass123!',
+                'confirm_password': 'StrongPass123!',
+            },
+        )
+        self.assertRedirects(response, reverse('verify_otp'))
+        user = CustomUser.objects.get(email='session@example.com')
+        user.generate_email_otp()
+
+        response = self.client.post(
+            reverse('verify_otp'),
+            data={'email': 'other@example.com', 'otp_code': user.email_otp_code},
+        )
+
+        self.assertRedirects(response, reverse('verify_otp'))
+        user.refresh_from_db()
+        self.assertFalse(user.is_email_verified)
+
     def test_resend_otp_updates_expiry_and_sends_new_email(self):
         user = CustomUser.objects.create_user(
             username='testuser3',
@@ -455,6 +493,26 @@ class OTPRegistrationTests(TestCase):
         self.assertNotEqual(user.email_otp_code, None)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(user.email_otp_code, mail.outbox[0].body)
+
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend')
+    def test_resend_otp_keeps_previous_code_when_delivery_fails(self):
+        user = CustomUser.objects.create_user(
+            username='failedresend',
+            email='failed-resend@example.com',
+            password='StrongPass123!',
+            full_name='Failed Resend User',
+            is_active=False,
+            is_email_verified=False,
+        )
+        old_code = user.generate_email_otp()
+        old_expiry = user.email_otp_expires_at
+
+        response = self.client.post(reverse('resend_otp'), {'email': user.email}, follow=True)
+
+        user.refresh_from_db()
+        self.assertEqual(user.email_otp_code, old_code)
+        self.assertEqual(user.email_otp_expires_at, old_expiry)
+        self.assertContains(response, 'Unable to send the OTP email')
 
     def test_full_registration_otp_verification_and_login_flow(self):
         response = self.client.post(

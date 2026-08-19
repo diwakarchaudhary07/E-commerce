@@ -192,6 +192,9 @@ class LoginForm(forms.Form):
         label='Remember me',
     )
 
+    def clean_identifier(self):
+        return self.cleaned_data['identifier'].strip()
+
 
 class OTPVerificationForm(forms.Form):
     email = forms.EmailField(

@@ -16,7 +16,7 @@
 
                     <form method="post" class="text-start">
                         {% csrf_token %}
-                        {{ form.email }}
+                        <input type="hidden" name="email" value="{{ email }}">
                         {% for field in form %}
                             {% if field.name != 'email' %}
                                 <div class="mb-3">
