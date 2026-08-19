@@ -7,10 +7,9 @@
    1. GLOBAL RESPONSIVE RESET & VARIABLES
    ===================================================== */
 :root {
-    --ek-nav-height-desktop: 72px;
-    --ek-nav-height-mobile: 62px;
     --ek-announcement-height: 36px;
-    --ek-page-padding-top: calc(var(--ek-nav-height-desktop) + var(--ek-announcement-height) + 16px);
+    --ek-navbar-height: 70px;
+    --ek-total-offset: calc(var(--ek-announcement-height) + var(--ek-navbar-height) + 12px);
 }
 
 *,
@@ -26,8 +25,8 @@ html {
 }
 
 body.theme-easykart {
-    padding-top: var(--ek-page-padding-top) !important;
-    overflow-x: hidden;
+    padding-top: var(--ek-total-offset) !important;
+    overflow-x: hidden !important;
     width: 100%;
     min-height: 100vh;
     display: flex;
