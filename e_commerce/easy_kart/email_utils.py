@@ -38,7 +38,9 @@ def send_otp_email(user, otp_code):
 
     logger = logging.getLogger(__name__)
     try:
-        msg.send(fail_silently=False)
+        sent_count = msg.send(fail_silently=False)
+        if sent_count != 1:
+            raise ValueError('The SMTP provider did not accept the OTP message.')
         return True
     except Exception as e:
         logger.exception("Failed to send OTP email to %s: %s", recipient_email, e)
@@ -52,11 +54,12 @@ def send_welcome_email(user):
         'full_name': user.full_name,
     })
     plain_message = strip_tags(html_message)
+    from_email = get_default_sender()
 
     send_mail(
         subject,
         plain_message,
-        settings.EMAIL_HOST_USER,
+        from_email,
         [user.email],
         html_message=html_message,
         fail_silently=False,

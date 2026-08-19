@@ -32,8 +32,8 @@ urlpatterns = [
     path('accounts/password_reset/done/', password_reset_done, name='password_reset_done'),
     path('accounts/reset/<uidb64>/<token>/', password_reset_confirm, name='password_reset_confirm'),
     path('accounts/reset/done/', password_reset_complete, name='password_reset_complete'),
-    # Include Django auth views (login/logout/password change/reset)
-    path('accounts/', include('django.contrib.auth.urls')),
+    # Keep built-in auth route names separate from EasyKart's email login view.
+    path('accounts/', include(('django.contrib.auth.urls', 'accounts'), namespace='accounts')),
 ]
 
 if settings.DEBUG:
