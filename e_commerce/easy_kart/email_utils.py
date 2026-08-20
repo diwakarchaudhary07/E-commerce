@@ -78,7 +78,7 @@ def send_password_reset_email(user, reset_link):
     send_mail(
         subject,
         plain_message,
-        settings.EMAIL_HOST_USER,
+        get_default_sender(),
         [user.email],
         html_message=html_message,
         fail_silently=False,
@@ -97,7 +97,7 @@ def send_order_confirmation_email(user, order_details):
     send_mail(
         subject,
         plain_message,
-        settings.EMAIL_HOST_USER,
+        get_default_sender(),
         [user.email],
         html_message=html_message,
         fail_silently=False,
@@ -112,7 +112,7 @@ def send_notification_email(recipient_email, subject, template_name, context):
     send_mail(
         subject,
         plain_message,
-        settings.EMAIL_HOST_USER,
+        get_default_sender(),
         [recipient_email],
         html_message=html_message,
         fail_silently=False,

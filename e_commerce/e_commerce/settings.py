@@ -13,6 +13,25 @@ RAZORPAY_KEY_SECRET = '3x1OPftgLFZH5UGUMn3ouzBQ'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _load_env_file(path):
+    """Load simple KEY=VALUE entries without overwriting real environment variables."""
+    if not path.is_file():
+        return
+
+    for line in path.read_text(encoding='utf-8').splitlines():
+        line = line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+        key, value = line.split('=', 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key:
+            os.environ.setdefault(key, value)
+
+
+_load_env_file(BASE_DIR / '.env')
+
+
 # Quick-start development settings - unsuitable for production
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-8!q5m)3%zpg@2xb4wsanebd)=%lru%e#2&90jlvf-30_86%w@e'
@@ -87,7 +106,7 @@ DATABASES = {
 }
 
 # Email settings
-# # Configure these environment variables for real OTP delivery:
+# Configure these environment variables in e_commerce/.env or the host environment:
 #   EMAIL_HOST_USER=your-account@gmail.com
 #   EMAIL_HOST_PASSWORD=your-16-character-gmail-app-password
 #   DEFAULT_FROM_EMAIL=your-account@gmail.com
@@ -98,20 +117,22 @@ EMAIL_BACKEND = os.getenv(
 )
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '').strip()
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'boyroyal4853@gmail.com').strip()
 # Gmail displays App Passwords with spaces; SMTP expects the 16 characters without them.
-EMAIL_HOST_PASSWORD = ''.join(os.getenv('EMAIL_HOST_PASSWORD', '').split())
+EMAIL_HOST_PASSWORD = ''.join(os.getenv('EMAIL_HOST_PASSWORD', 'nqykbpcpcrugdxpt').split())
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in {'1', 'true', 'yes', 'on'}
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() in {'1', 'true', 'yes', 'on'}
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@localhost')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'boyroyal4853@gmail.com').strip()
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '20'))
 
 if EMAIL_USE_TLS and EMAIL_USE_SSL:
     raise ValueError('EMAIL_USE_TLS and EMAIL_USE_SSL cannot both be enabled.')
 
-# Without SMTP credentials, use console output for local development only.
+# Without SMTP credentials, use console output during local development only.
 if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+    if not DEBUG and EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend':
+        raise ValueError('SMTP credentials are required when DEBUG is False.')
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
