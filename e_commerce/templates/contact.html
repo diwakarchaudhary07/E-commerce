@@ -4,24 +4,23 @@
 {% block title %}Contact Us | Easy Kart{% endblock %}
 
 {% block header_banner %}
-<section class="page-banner position-relative mb-4">
-    <div class="container position-relative hero-inner-content" style="z-index: 3;">
-        <div class="py-3 py-md-4">
-            <span class="badge bg-white text-primary mb-2 px-3 py-2 rounded-pill fw-semibold">24/7 Support</span>
-            <h1 class="display-5 text-white fw-bold mb-2">Contact Us</h1>
-            <p class="lead text-white-75 mb-3" style="max-width: 600px;">Need help with an order or product inquiry? Reach out to Easy Kart and our dedicated team will assist you.</p>
-            <a href="{% url 'need_help' %}" class="btn btn-light text-primary fw-semibold"><i class="bi bi-robot me-1"></i>Try AI Help Assistant</a>
-        </div>
-    </div>
+<section class="contact-page-heading">
+    <div class="contact-breadcrumb"><a href="{% url 'home' %}"><i class="bi bi-house-fill"></i> Home</a><i class="bi bi-chevron-right"></i><span>Contact Us</span></div>
+    <h1>Contact <span>Us</span></h1>
+    <p>We're here to help! Fill out the form or reach us using the contact details below.</p>
 </section>
 {% endblock %}
 
 {% block content %}
-<div class="py-2 py-md-4">
-    <div class="row g-4">
+<div class="contact-page py-2 py-md-4">
+    <div class="row g-4 contact-top-grid">
         <!-- Contact Form Column -->
         <div class="col-lg-7">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="contact-help-visual">
+                <div class="contact-visual-glow"><i class="bi bi-headset"></i></div>
+                <div class="contact-visual-copy"><strong>We're Here to Help!</strong><span>Questions, orders, or product support</span></div>
+            </div>
+            <div class="card shadow-sm border-0 h-100 contact-form-panel">
                 <div class="card-body p-3 p-sm-4 p-md-5">
                     <h2 class="h4 fw-bold mb-1">Send us a Message</h2>
                     <p class="text-muted small mb-4">We usually respond within 24 hours.</p>
@@ -60,59 +59,25 @@
             </div>
         </div>
 
-        <!-- Contact Information Column -->
-        <div class="col-lg-5">
-            <div class="d-flex flex-column gap-3">
-                <div class="card shadow-sm border-0 p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
-                            <i class="bi bi-geo-alt-fill fs-5"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Our Location</h6>
-                            <p class="text-muted small mb-0">123 Shopping Street, Sydney NSW 2000, Australia</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm border-0 p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
-                            <i class="bi bi-telephone-fill fs-5"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Phone</h6>
-                            <p class="text-muted small mb-0"><a href="tel:+1234567890" class="text-decoration-none">+1 (234) 567-890</a> (Mon-Fri 9AM-6PM)</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm border-0 p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
-                            <i class="bi bi-envelope-fill fs-5"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Email Support</h6>
-                            <p class="text-muted small mb-0"><a href="mailto:support@easykart.com" class="text-decoration-none">support@easykart.com</a></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm border-0 p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
-                            <i class="bi bi-clock-fill fs-5"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Business Hours</h6>
-                            <p class="text-muted small mb-0">Mon - Fri: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
+
+    <section class="contact-info-strip">
+        <div><i class="bi bi-headset"></i><strong>Customer Support</strong><span>support@easykart.com<br>+91 98765 43210</span></div>
+        <div><i class="bi bi-clock"></i><strong>Business Hours</strong><span>Monday - Saturday<br>10:00 AM - 6:00 PM</span></div>
+        <div><i class="bi bi-geo-alt-fill"></i><strong>Store Address</strong><span>EasyKart Store<br>City, State, India</span></div>
+        <div><i class="bi bi-envelope"></i><strong>Email Us</strong><span>support@easykart.com<br>We reply within 24 hrs</span></div>
+    </section>
+
+    <section class="contact-topic-section">
+        <h2>How Can <span>We</span> Help?</h2>
+        <div class="contact-heading-rule"></div>
+        <div class="contact-topic-grid">
+            <a href="{% url 'need_help' %}"><i class="bi bi-box-seam"></i><strong>Order Support</strong><p>Need help with your order, delivery status, cancellation, or returns? We're here to assist.</p></a>
+            <a href="{% url 'need_help' %}"><i class="bi bi-credit-card"></i><strong>Payment Support</strong><p>Having trouble with payment or need help with a transaction? Contact our support team.</p></a>
+            <a href="{% url 'refund_policy' %}"><i class="bi bi-arrow-repeat"></i><strong>Returns &amp; Refunds</strong><p>Questions about returns, exchanges, or refunds? We'll guide you through the process.</p></a>
+            <a href="{% url 'need_help' %}"><i class="bi bi-chat-dots-fill"></i><strong>General Questions</strong><p>For product information, availability, or any other questions, feel free to reach out.</p></a>
+        </div>
+    </section>
 
     <!-- Map & FAQ Section -->
     <div class="row g-4 mt-2">
@@ -130,9 +95,9 @@
             </div>
         </div>
 
-        <div class="col-12">
+        <div class="col-lg-6">
             <div class="card shadow-sm border-0 p-3 p-sm-4 p-md-5">
-                <h3 class="h4 fw-bold text-center mb-4">Frequently Asked Questions</h3>
+                <div class="contact-faq-heading"><h3 class="h4 fw-bold mb-1">Frequently <span>Asked Questions</span></h3><a href="{% url 'need_help' %}"><i class="bi bi-robot"></i> Ask AI Assistant</a></div>
                 <div class="accordion" id="faqAccordion">
                     <div class="accordion-item border-0 mb-2 rounded-3 overflow-hidden shadow-sm">
                         <h2 class="accordion-header">
@@ -170,8 +135,26 @@
                             </div>
                         </div>
                     </div>
+                    <div class="accordion-item border-0 rounded-3 overflow-hidden shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                <strong>What payment methods do you accept?</strong>
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                We support secure online payments through Razorpay and cash on delivery where available. <a href="{% url 'need_help' %}">Ask our AI Assistant</a> if you need checkout help.
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="col-lg-6">
+            <section class="contact-still-help">
+                <i class="bi bi-chat-square-dots-fill contact-still-help__icon"></i>
+                <div><h3>Still Have <span>Questions?</span></h3><p>We're always happy to help. Reach out to our AI assistant and get clear answers about orders, payments, returns, and products.</p><a href="{% url 'need_help' %}"><i class="bi bi-robot"></i> Ask AI Assistant</a></div>
+            </section>
         </div>
     </div>
 </div>

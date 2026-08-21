@@ -602,8 +602,8 @@ h6,
 
 .footer-main {
     display: grid;
-    grid-template-columns: 1.35fr repeat(3, 1fr) 1.55fr;
-    gap: 2.5rem;
+    grid-template-columns: 1.25fr 0.9fr 0.9fr 1.05fr 1.35fr;
+    gap: 1.75rem;
     padding-top: 4rem;
     padding-bottom: 3.5rem;
 }
@@ -777,9 +777,9 @@ h6,
     border: 0;
 }
 
-@media (max-width: 1199.98px) {
+@media (max-width: 991.98px) {
     .footer-main {
-        grid-template-columns: 1.3fr repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .footer-contact-column:last-child {

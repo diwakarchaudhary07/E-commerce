@@ -16,7 +16,7 @@
                         <i class="bi bi-grid-fill me-1"></i> All Collections
                     </span>
                     <h1 class="ek-cat-hero__title">Shop by <span class="ek-cat-hero__accent">Category</span></h1>
-                    <p class="ek-cat-hero__sub">Explore our curated range of {{ categories|length }} collections — from everyday essentials to premium picks.</p>
+                    <p class="ek-cat-hero__sub">Explore our handpicked collections<br class="d-none d-md-inline"> crafted for your everyday needs.</p>
                 </div>
                 <div class="col-lg-5 d-none d-lg-flex justify-content-end gap-3">
                     <div class="ek-stat-chip">
@@ -108,7 +108,19 @@
 
                 <!-- Card body -->
                 <div class="ek-cat-card__body">
-                    <h2 class="ek-cat-card__name">{{ category.name }}</h2>
+                    <h2 class="ek-cat-card__name">
+                        <span class="ek-cat-card__name-icon" aria-hidden="true">
+                            {% if 'elect' in category.name|lower %}<i class="bi bi-phone"></i>
+                            {% elif 'drink' in category.name|lower %}<i class="bi bi-lightning-charge-fill"></i>
+                            {% elif 'food' in category.name|lower %}<i class="bi bi-egg-fried"></i>
+                            {% elif 'fruit' in category.name|lower %}<i class="bi bi-apple"></i>
+                            {% elif 'veget' in category.name|lower %}<i class="bi bi-basket2-fill"></i>
+                            {% elif 'cloth' in category.name|lower or 'fashion' in category.name|lower %}<i class="bi bi-handbag-fill"></i>
+                            {% elif 'shoe' in category.name|lower %}<i class="bi bi-bootstrap-fill"></i>
+                            {% else %}<i class="bi bi-grid-fill"></i>{% endif %}
+                        </span>
+                        {{ category.name }}
+                    </h2>
                     {% if category.description %}
                     <p class="ek-cat-card__desc">{{ category.description|truncatechars:55 }}</p>
                     {% else %}
@@ -146,17 +158,20 @@
 <style>
 /* ── Hero ── */
 .ek-cat-hero {
-    background: linear-gradient(135deg, #0a2463 0%, #0047AB 60%, #1565c0 100%);
+    background: linear-gradient(112deg, #f6f9ff 0%, #dceaff 39%, #1f67ed 72%, #103fd1 100%);
     position: relative;
     overflow: hidden;
+    border-radius: 22px;
+    box-shadow: 0 12px 28px rgba(0, 71, 171, .14);
+    margin-bottom: 1.1rem;
 }
 .ek-cat-hero::before {
     content: '';
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at 80% 20%, rgba(255,107,53,.18) 0%, transparent 55%),
-        radial-gradient(circle at 10% 80%, rgba(255,255,255,.06) 0%, transparent 45%);
+        radial-gradient(circle at 77% 22%, rgba(255,255,255,.2) 0%, transparent 35%),
+        radial-gradient(circle at 58% 100%, rgba(255,255,255,.25) 0%, transparent 32%);
     pointer-events: none;
 }
 .ek-cat-hero__inner {
@@ -166,9 +181,9 @@
 .ek-cat-pill {
     display: inline-flex;
     align-items: center;
-    background: rgba(255,255,255,.15);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.72);
+    color: #2346b7;
+    border: 1px solid #7a9cff;
     border-radius: 99px;
     padding: .35rem 1rem;
     font-size: .8rem;
@@ -179,16 +194,16 @@
 .ek-cat-hero__title {
     font-size: clamp(1.8rem, 5vw, 3rem);
     font-weight: 800;
-    color: #fff;
+    color: #10204d;
     line-height: 1.15;
     letter-spacing: -.02em;
     margin: .5rem 0;
 }
 .ek-cat-hero__accent {
-    color: #FF6B35;
+    color: #1557e8;
 }
 .ek-cat-hero__sub {
-    color: rgba(255,255,255,.78);
+    color: #244187;
     font-size: clamp(.875rem, 2vw, 1.05rem);
     max-width: 520px;
     margin: 0;
@@ -196,8 +211,8 @@
 
 /* Stat chips */
 .ek-stat-chip {
-    background: rgba(255,255,255,.12);
-    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(15, 84, 218, .28);
+    border: 1px solid rgba(255,255,255,.42);
     border-radius: 1rem;
     padding: 1rem 1.5rem;
     text-align: center;
@@ -213,7 +228,7 @@
 }
 .ek-stat-chip__label {
     font-size: .75rem;
-    color: rgba(255,255,255,.7);
+    color: #fff;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: .06em;
@@ -228,25 +243,25 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba(255,255,255,.6);
+    color: #1557e8;
     font-size: 1rem;
     pointer-events: none;
 }
 .ek-cat-search__input {
     width: 100%;
-    background: rgba(255,255,255,.14);
-    border: 1.5px solid rgba(255,255,255,.28);
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(101,139,224,.18);
     border-radius: 99px;
     padding: .7rem 1.25rem .7rem 2.8rem;
-    color: #fff;
+    color: #243d82;
     font-size: .95rem;
     outline: none;
     transition: background .2s, border-color .2s;
 }
-.ek-cat-search__input::placeholder { color: rgba(255,255,255,.55); }
+.ek-cat-search__input::placeholder { color: #7183b5; }
 .ek-cat-search__input:focus {
-    background: rgba(255,255,255,.22);
-    border-color: rgba(255,255,255,.5);
+    background: #fff;
+    border-color: #789cff;
 }
 
 /* ── Category Card ── */
@@ -324,6 +339,27 @@
     color: #0f172a;
     margin: 0 0 .35rem;
     line-height: 1.25;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+}
+.ek-cat-card__name-icon {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    color: #fff;
+    background: #ffb700;
+    font-size: 1rem;
+}
+.ek-cat-col:nth-child(2n) .ek-cat-card__name-icon { background: #42a91b; }
+.ek-cat-col:nth-child(3n) .ek-cat-card__name-icon { background: #ff5a1f; }
+.ek-cat-col:nth-child(4n) .ek-cat-card__name-icon { background: #63b91e; }
+.ek-cat-card__name-icon i {
+    line-height: 1;
 }
 .ek-cat-card__desc {
     font-size: .8rem;

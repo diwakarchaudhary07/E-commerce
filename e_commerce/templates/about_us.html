@@ -4,15 +4,17 @@
 {% block title %}About Us | Easy Kart{% endblock %}
 
 {% block header_banner %}
-<section class="about-hero position-relative mb-4">
-    <div class="about-hero-bg"></div>
-    <div class="about-hero-overlay"></div>
-    <div class="container position-relative hero-inner-content" style="z-index:3;">
-        <div class="py-3 py-md-4">
-            <span class="badge bg-white text-primary mb-2 px-3 py-2 rounded-pill fw-semibold">About Us</span>
-            <h1 class="display-5 fw-bold text-white mb-2">{{ about.title|default:'About Easy Kart' }}</h1>
-            <p class="lead text-white-75 mb-0" style="max-width: 600px;">{{ about.content|truncatewords:25|default:'Your trusted destination for online shopping.' }}</p>
-        </div>
+<section class="about-page-hero">
+    <div class="about-page-hero__copy">
+        <div class="about-breadcrumb"><a href="{% url 'home' %}"><i class="bi bi-house-fill"></i> Home</a><i class="bi bi-chevron-right"></i><span>About Us</span></div>
+        <h1>About <span>Easy Kart</span></h1>
+        <div class="about-rule"></div>
+        <h2>We make shopping simple &amp; better.</h2>
+        <p>Welcome to Easy Kart - your trusted destination for quality products, great value, and a smooth online shopping experience.</p>
+        <div class="about-promises"><span><i class="bi bi-check-circle"></i>Quality Products</span><span><i class="bi bi-check-circle"></i>Best Prices</span><span><i class="bi bi-check-circle"></i>Trusted Service</span></div>
+    </div>
+    <div class="about-page-hero__visual" aria-hidden="true">
+        {% if about and about.image %}<img src="{{ about.image.url }}" alt="">{% else %}<i class="bi bi-cart-check-fill"></i>{% endif %}
     </div>
 </section>
 {% endblock %}
@@ -20,76 +22,41 @@
 {% block content %}
 {% with default_about_short='Easy Kart is an online storefront that makes shopping simple and enjoyable with curated products, secure checkout, and responsive order support.' default_about='Easy Kart is an online storefront built to make shopping simple, secure, and enjoyable. We bring customers curated products across categories like fashion, electronics, lifestyle, and home, with clear inventory, easy checkout, and responsive order tracking.' default_mission='To connect customers with quality products through an intuitive, reliable online shopping experience.' default_vision='To become a trusted destination for shoppers seeking great value and a seamless e-commerce journey.' %}
 <div class="py-2 py-md-4">
-    <div class="row g-4">
-        <!-- Main Content Column -->
-        <div class="col-lg-8">
-            {% if about and about.image %}
-            <div class="mb-4 rounded-3 overflow-hidden shadow-sm">
-                <img src="{{ about.image.url }}" class="img-fluid w-100" alt="{{ about.title|default:'About Easy Kart' }}" style="max-height: 380px; object-fit: cover;">
-            </div>
-            {% endif %}
+    <div class="about-benefits">
+        <div><i class="bi bi-shield-check"></i><strong>Quality Assured</strong><span>We ensure the best quality for you</span></div>
+        <div><i class="bi bi-truck"></i><strong>Fast Delivery</strong><span>Quick &amp; safe delivery at your doorstep</span></div>
+        <div><i class="bi bi-headset"></i><strong>Customer Support</strong><span>We're here to help you 24/7</span></div>
+        <div><i class="bi bi-lock"></i><strong>Secure Shopping</strong><span>100% secure &amp; safe payments</span></div>
+    </div>
 
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body p-3 p-sm-4 p-md-5">
-                    <h2 class="h3 fw-bold mb-3">{{ about.title|default:'About Easy Kart' }}</h2>
-                    <div class="text-muted leading-relaxed">
-                        {{ about.content|default:default_about|linebreaksbr }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="card shadow-sm border-0 border-start border-primary border-4 mb-4">
-                <div class="card-body p-3 p-sm-4">
-                    <h4 class="h5 fw-bold text-primary mb-2"><i class="bi bi-target me-2"></i>Our Mission</h4>
-                    <p class="text-muted mb-0">{{ about.mission|default:default_mission|linebreaksbr }}</p>
-                </div>
-            </div>
-
-            <div class="card shadow-sm border-0 border-start border-success border-4">
-                <div class="card-body p-3 p-sm-4">
-                    <h4 class="h5 fw-bold text-success mb-2"><i class="bi bi-eye me-2"></i>Our Vision</h4>
-                    <p class="text-muted mb-0">{{ about.vision|default:default_vision|linebreaksbr }}</p>
-                </div>
-            </div>
+    <div class="about-layout">
+        <div class="about-story-column">
+            <section class="about-panel about-panel--orange">
+                <div class="about-panel__icon"><i class="bi bi-cart-check"></i></div>
+                <div><h2>We Make Shopping Simple &amp; Better</h2><div class="about-rule"></div><p>{{ about.content|default:default_about|linebreaksbr }}</p></div>
+            </section>
+            <section class="about-panel about-panel--blue">
+                <div class="about-panel__icon"><i class="bi bi-bullseye"></i></div>
+                <div><h2>Our Mission</h2><div class="about-rule"></div><p>{{ about.mission|default:default_mission|linebreaksbr }}</p></div>
+            </section>
+            <section class="about-panel about-panel--green">
+                <div class="about-panel__icon"><i class="bi bi-shield-fill-check"></i></div>
+                <div><h2>Our Promise</h2><div class="about-rule"></div><p>We're not just here to sell products - we're here to build a shopping experience you can trust.</p><strong>Quality products. Honest service. Happy customers.</strong></div>
+            </section>
+            <section class="about-panel about-panel--orange">
+                <div class="about-panel__icon"><i class="bi bi-patch-check"></i></div>
+                <div><h2>Shop With Confidence</h2><div class="about-rule"></div><p>Discover products you'll love and experience a better way to shop online.</p></div>
+            </section>
         </div>
 
-        <!-- Sidebar Column -->
-        <div class="col-lg-4">
-            <div class="d-flex flex-column gap-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-3 p-md-4">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-link-45deg me-1"></i>Quick Links</h5>
-                        <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
-                            <li><a href="{% url 'home' %}" class="text-decoration-none text-dark d-flex align-items-center justify-content-between"><span>Home</span><i class="bi bi-chevron-right text-muted small"></i></a></li>
-                            <li><a href="{% url 'product' %}" class="text-decoration-none text-dark d-flex align-items-center justify-content-between"><span>Products</span><i class="bi bi-chevron-right text-muted small"></i></a></li>
-                            <li><a href="{% url 'category' %}" class="text-decoration-none text-dark d-flex align-items-center justify-content-between"><span>Categories</span><i class="bi bi-chevron-right text-muted small"></i></a></li>
-                            <li><a href="{% url 'gallery' %}" class="text-decoration-none text-dark d-flex align-items-center justify-content-between"><span>Gallery</span><i class="bi bi-chevron-right text-muted small"></i></a></li>
-                            <li><a href="{% url 'contact' %}" class="text-decoration-none text-dark d-flex align-items-center justify-content-between"><span>Contact Us</span><i class="bi bi-chevron-right text-muted small"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
+        <aside class="about-sidebar">
+            <section class="about-side-panel"><h2><i class="bi bi-link-45deg"></i>Quick Links</h2><ul><li><a href="{% url 'home' %}">Home <i class="bi bi-chevron-right"></i></a></li><li><a href="{% url 'product' %}">Products <i class="bi bi-chevron-right"></i></a></li><li><a href="{% url 'category' %}">Categories <i class="bi bi-chevron-right"></i></a></li><li><a href="{% url 'gallery' %}">Blog <i class="bi bi-chevron-right"></i></a></li><li><a href="{% url 'contact' %}">Contact Us <i class="bi bi-chevron-right"></i></a></li></ul></section>
+            <section class="about-side-panel about-why"><h2><i class="bi bi-star-fill"></i>Why Choose Us?</h2><div><i class="bi bi-award-fill"></i><p><strong>Quality Products</strong><br>We focus on bringing you reliable and carefully selected products.</p></div><div><i class="bi bi-tag-fill"></i><p><strong>Great Value</strong><br>Competitive prices with outstanding quality.</p></div><div><i class="bi bi-cart-check-fill"></i><p><strong>Easy Shopping</strong><br>A simple and user-friendly experience.</p></div><div><i class="bi bi-headset"></i><p><strong>Customer First</strong><br>Helpful support whenever you need us.</p></div></section>
+        </aside>
+    </div>
 
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-3 p-md-4">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-1"></i>Store Highlights</h5>
-                        <div class="small text-muted d-flex flex-column gap-2">
-                            <div class="d-flex gap-2">
-                                <i class="bi bi-shield-check text-primary fs-5"></i>
-                                <div><strong>100% Secure Checkout</strong><br>Protected payment processing</div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <i class="bi bi-truck text-primary fs-5"></i>
-                                <div><strong>Fast Delivery</strong><br>Reliable doorstep shipping</div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <i class="bi bi-headset text-primary fs-5"></i>
-                                <div><strong>Dedicated Support</strong><br>AI assistant + human team</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="about-service-strip"><span><i class="bi bi-truck"></i><strong>Fast Delivery</strong><small>Quick and reliable shipping</small></span><span><i class="bi bi-shield-fill-check"></i><strong>Secure Payments</strong><small>100% trusted payment methods</small></span><span><i class="bi bi-box-seam"></i><strong>Easy Returns</strong><small>Hassle-free return policy</small></span><span><i class="bi bi-headset"></i><strong>24/7 Support</strong><small>We're here to help anytime</small></span></div>
+    <section class="about-cta"><div><h2>Ready to start shopping?</h2><p>Explore our wide range of products and enjoy a better shopping experience with Easy Kart.</p></div><a href="{% url 'product' %}">Shop Now <i class="bi bi-arrow-right"></i></a><i class="bi bi-bag-fill about-cta__bag"></i></section>
     </div>
 </div>
 {% endwith %}
