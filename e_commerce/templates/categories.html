@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-lg-5 d-none d-lg-flex justify-content-end gap-3">
                     <div class="ek-stat-chip">
-                        <span class="ek-stat-chip__num">{{ categories|length }}</span>
+                        <span class="ek-stat-chip__num">{{ total_categories }}</span>
                         <span class="ek-stat-chip__label">Categories</span>
                     </div>
                     <div class="ek-stat-chip">
@@ -31,20 +31,30 @@
             </div>
 
             <!-- Search bar -->
+            <form method="get" action="{% url 'category' %}">
             <div class="row mt-4">
                 <div class="col-12 col-md-7 col-lg-6">
                     <div class="ek-cat-search">
                         <i class="bi bi-search ek-cat-search__icon"></i>
-                        <input
-                            type="text"
-                            id="categorySearchInput"
-                            class="ek-cat-search__input"
-                            placeholder="Search categories…"
-                            autocomplete="off"
-                        >
+                        <input type="search" name="q" value="{{ search_query }}" class="ek-cat-search__input" placeholder="Search categories..." autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-12 col-md-5 col-lg-6">
+                    <div class="ek-cat-filter-actions">
+                        <select name="products" class="ek-cat-filter-select" aria-label="Filter categories by products">
+                            <option value="">All categories</option>
+                            <option value="available"{% if product_filter == 'available' %} selected{% endif %}>With products</option>
+                        </select>
+                        <select name="sort" class="ek-cat-filter-select" aria-label="Sort categories">
+                            <option value="name"{% if sort_order == 'name' %} selected{% endif %}>Name A-Z</option>
+                            <option value="newest"{% if sort_order == 'newest' %} selected{% endif %}>Newest</option>
+                            <option value="products"{% if sort_order == 'products' %} selected{% endif %}>Most products</option>
+                        </select>
+                        <button type="submit" class="ek-cat-filter-button"><i class="bi bi-funnel-fill"></i><span>Apply</span></button>
                     </div>
                 </div>
             </div>
+            </form>
         </div>
     </div>
 </section>
@@ -59,7 +69,7 @@
     <div class="container py-3">
         <div class="d-flex gap-4">
             <div class="text-center">
-                <div class="fw-bold text-primary" style="font-size:1.3rem;">{{ categories|length }}</div>
+                <div class="fw-bold text-primary" style="font-size:1.3rem;">{{ total_categories }}</div>
                 <div class="text-muted" style="font-size:0.75rem;">Categories</div>
             </div>
             <div class="text-center">
@@ -138,7 +148,7 @@
 
     {% else %}
     <!-- Empty State -->
-    <div class="text-center py-5">
+                <div class="text-center py-5">
         <div class="ek-empty-state mx-auto">
             <i class="bi bi-grid text-muted ek-empty-state__icon"></i>
             <h3 class="mt-3 fw-bold">No Categories Yet</h3>
@@ -147,7 +157,18 @@
                 <i class="bi bi-house me-2"></i>Back to Home
             </a>
         </div>
+
     </div>
+    {% endif %}
+
+    {% if categories.paginator.num_pages > 1 %}
+    <nav class="ek-category-pagination" aria-label="Category pages">
+        {% if categories.has_previous %}<a href="?page={{ categories.previous_page_number }}&q={{ search_query|urlencode }}&products={{ product_filter|urlencode }}&sort={{ sort_order|urlencode }}" aria-label="Previous page"><i class="bi bi-chevron-left"></i></a>{% else %}<span class="is-disabled"><i class="bi bi-chevron-left"></i></span>{% endif %}
+        {% for page_number in categories.paginator.page_range %}
+            {% if page_number == categories.number %}<span class="is-current">{{ page_number }}</span>{% elif page_number <= 3 or page_number > categories.paginator.num_pages|add:'-2' %}<a href="?page={{ page_number }}&q={{ search_query|urlencode }}&products={{ product_filter|urlencode }}&sort={{ sort_order|urlencode }}">{{ page_number }}</a>{% elif page_number == 4 %}<span class="pagination-ellipsis">...</span>{% endif %}
+        {% endfor %}
+        {% if categories.has_next %}<a href="?page={{ categories.next_page_number }}&q={{ search_query|urlencode }}&products={{ product_filter|urlencode }}&sort={{ sort_order|urlencode }}" aria-label="Next page"><i class="bi bi-chevron-right"></i></a>{% else %}<span class="is-disabled"><i class="bi bi-chevron-right"></i></span>{% endif %}
+    </nav>
     {% endif %}
 </div>
 
@@ -389,11 +410,23 @@
 /* Empty state */
 .ek-empty-state { max-width: 320px; }
 .ek-empty-state__icon { font-size: 3.5rem; opacity: .3; }
+.ek-cat-filter-actions { display: flex; justify-content: flex-end; gap: .6rem; }
+.ek-cat-filter-select { min-height: 42px; min-width: 125px; padding: 0 .7rem; color: #243d82; background: rgba(255,255,255,.92); border: 1px solid rgba(101,139,224,.35); border-radius: 8px; font-size: .78rem; }
+.ek-cat-filter-button { min-height: 42px; padding: 0 .9rem; color: #fff; background: #1557e8; border: 0; border-radius: 8px; font-size: .78rem; font-weight: 700; }
+.ek-category-pagination { display: flex; justify-content: center; align-items: center; gap: .45rem; margin: 1.8rem 0 .5rem; }
+.ek-category-pagination a, .ek-category-pagination span { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 .55rem; color: #244187; background: #fff; border: 1px solid #dce5f5; border-radius: 8px; font-size: .8rem; text-decoration: none; }
+.ek-category-pagination a:hover, .ek-category-pagination .is-current { color: #fff; background: #1557e8; border-color: #1557e8; }
+.ek-category-pagination .is-disabled, .ek-category-pagination .pagination-ellipsis { color: #9ba8bd; background: transparent; border-color: transparent; }
 
 /* ── Responsive tweaks ── */
 @media (max-width: 375px) {
     .ek-cat-card__body { padding: .75rem .85rem .85rem; }
     .ek-cat-card__name { font-size: .85rem; }
+}
+@media (max-width: 767px) {
+    .ek-cat-filter-actions { justify-content: stretch; }
+    .ek-cat-filter-select { flex: 1; min-width: 0; }
+    .ek-cat-filter-button { flex: 0 0 auto; }
 }
 </style>
 
@@ -401,24 +434,4 @@
 <!-- ═══════════════════════════════════════════
      LIVE SEARCH SCRIPT
 ════════════════════════════════════════════ -->
-<script>
-(function () {
-    const input = document.getElementById('categorySearchInput');
-    const grid  = document.getElementById('categoryGrid');
-    const noMsg = document.getElementById('noResultsMsg');
-    if (!input || !grid) return;
-
-    input.addEventListener('input', function () {
-        const q = this.value.trim().toLowerCase();
-        const cols = grid.querySelectorAll('.ek-cat-col');
-        let visible = 0;
-        cols.forEach(col => {
-            const match = !q || col.dataset.name.includes(q);
-            col.style.display = match ? '' : 'none';
-            if (match) visible++;
-        });
-        if (noMsg) noMsg.classList.toggle('d-none', visible > 0);
-    });
-})();
-</script>
 {% endblock %}

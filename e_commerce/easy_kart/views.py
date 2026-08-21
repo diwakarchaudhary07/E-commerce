@@ -13,6 +13,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse
 from collections import Counter
 
@@ -145,6 +146,10 @@ def home(request):
 
 def product_page(request):
     query = (request.GET.get('q') or '').strip()
+    category_slug = (request.GET.get('category') or '').strip()
+    price_range = (request.GET.get('price') or '').strip()
+    availability = (request.GET.get('availability') or '').strip()
+    sort_order = (request.GET.get('sort') or 'newest').strip()
     products = Product.objects.filter(is_active=True)
     if query:
         products = products.filter(
@@ -153,12 +158,38 @@ def product_page(request):
             Q(description__icontains=query) |
             Q(category__name__icontains=query)
         )
-    products = products.order_by('-created_at')
+    if category_slug:
+        products = products.filter(category__slug=category_slug)
+    if price_range == 'under-25':
+        products = products.filter(price__lt=25)
+    elif price_range == '25-50':
+        products = products.filter(price__gte=25, price__lte=50)
+    elif price_range == 'over-50':
+        products = products.filter(price__gt=50)
+    if availability == 'stock':
+        products = products.filter(stock__gt=0)
+    elif availability == 'discount':
+        products = products.filter(discount__gt=0)
+
+    sort_options = {
+        'newest': '-created_at',
+        'price-low': 'price',
+        'price-high': '-price',
+        'name': 'name',
+        'discount': '-discount',
+    }
+    sort_order = sort_order if sort_order in sort_options else 'newest'
+    products = products.order_by(sort_options[sort_order])
     return render(request, 'product_list.html', {
         'page_title': 'Products',
         'heading': 'Products',
         'products': products,
         'query': query,
+        'categories': Category.objects.filter(is_active=True).order_by('name'),
+        'category_slug': category_slug,
+        'price_range': price_range,
+        'availability': availability,
+        'sort_order': sort_order,
     })
 
 
@@ -728,13 +759,38 @@ def delete_order(request, order_id):
 
 def category_page(request):
     from django.db.models import Count as DjCount
-    categories = Category.objects.filter(is_active=True).annotate(
+    categories_queryset = Category.objects.filter(is_active=True).annotate(
         product_count=DjCount('products', filter=Q(products__is_active=True))
-    ).order_by('name')
-    total_products = sum(c.product_count for c in categories)
+    )
+    search_query = request.GET.get('q', '').strip()
+    product_filter = request.GET.get('products', '').strip()
+    sort_order = request.GET.get('sort', 'name').strip()
+
+    if search_query:
+        categories_queryset = categories_queryset.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
+    if product_filter == 'available':
+        categories_queryset = categories_queryset.filter(product_count__gt=0)
+
+    sort_options = {
+        'name': 'name',
+        'newest': '-created_at',
+        'products': '-product_count',
+    }
+    sort_order = sort_order if sort_order in sort_options else 'name'
+    categories_queryset = categories_queryset.order_by(sort_options[sort_order])
+
+    total_products = sum(category.product_count for category in categories_queryset)
+    paginator = Paginator(categories_queryset, 8)
+    categories = paginator.get_page(request.GET.get('page', 1))
     return render(request, 'categories.html', {
         'categories': categories,
         'total_products': total_products,
+        'total_categories': paginator.count,
+        'search_query': search_query,
+        'product_filter': product_filter,
+        'sort_order': sort_order,
     })
 
 

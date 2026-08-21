@@ -28,6 +28,38 @@
         </div>
         <span class="badge bg-primary text-white px-3 py-2 rounded-pill">{{ products|length }} Items</span>
     </div>
+    <form method="get" action="{% url 'product' %}" class="product-filter-bar mb-4">
+        <div class="product-filter-search">
+            <i class="bi bi-search"></i>
+            <input type="search" name="q" value="{{ query }}" placeholder="Search products..." aria-label="Search products">
+        </div>
+        <select name="category" class="product-filter-select" aria-label="Filter by category">
+            <option value="">All categories</option>
+            {% for category in categories %}
+                <option value="{{ category.slug }}"{% if category_slug == category.slug %} selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="price" class="product-filter-select" aria-label="Filter by price">
+            <option value="">Any price</option>
+            <option value="under-25"{% if price_range == 'under-25' %} selected{% endif %}>Under $25</option>
+            <option value="25-50"{% if price_range == '25-50' %} selected{% endif %}>$25 - $50</option>
+            <option value="over-50"{% if price_range == 'over-50' %} selected{% endif %}>Over $50</option>
+        </select>
+        <select name="availability" class="product-filter-select" aria-label="Filter product availability">
+            <option value="">All products</option>
+            <option value="stock"{% if availability == 'stock' %} selected{% endif %}>In stock</option>
+            <option value="discount"{% if availability == 'discount' %} selected{% endif %}>On sale</option>
+        </select>
+        <select name="sort" class="product-filter-select" aria-label="Sort products">
+            <option value="newest"{% if sort_order == 'newest' %} selected{% endif %}>Newest</option>
+            <option value="price-low"{% if sort_order == 'price-low' %} selected{% endif %}>Price: low to high</option>
+            <option value="price-high"{% if sort_order == 'price-high' %} selected{% endif %}>Price: high to low</option>
+            <option value="name"{% if sort_order == 'name' %} selected{% endif %}>Name A-Z</option>
+            <option value="discount"{% if sort_order == 'discount' %} selected{% endif %}>Biggest discount</option>
+        </select>
+        <button type="submit" class="product-filter-button"><i class="bi bi-funnel-fill"></i><span>Filter</span></button>
+        {% if query or category_slug or price_range or availability or sort_order != 'newest' %}<a href="{% url 'product' %}" class="product-filter-reset">Reset</a>{% endif %}
+    </form>
     <div class="row g-3 g-md-4">
         {% for product in products %}
             <div class="col-6 col-md-4 col-lg-3">
