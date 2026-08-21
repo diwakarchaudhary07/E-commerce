@@ -34,55 +34,75 @@
     </main>
 
     <footer class="site-footer mt-5">
-        <div class="container py-5">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <img src="{% static 'assets/Logo.png' %}" alt="Easy Kart Logo" class="footer-logo">
-                    <p class="text-muted mb-3">Your trusted online destination for quality products, fast delivery, and a smooth shopping experience.</p>
-                    <div class="d-flex gap-3">
-                        <a href="{% url 'contact' %}" class="text-white social-link"><i class="bi bi-envelope-fill"></i></a>
-                        <a href="{% url 'contact' %}" class="text-white social-link"><i class="bi bi-telephone-fill"></i></a>
-                        <a href="{% url 'contact' %}" class="text-white social-link"><i class="bi bi-geo-alt-fill"></i></a>
-                    </div>
+        <div class="container footer-main">
+            <div class="footer-brand">
+                <img src="{% static 'assets/Logo.png' %}" alt="Easy Kart Logo" class="footer-logo">
+                <p>Your trusted online destination for quality products, fast delivery, and a smooth shopping experience.</p>
+                <div class="footer-socials" aria-label="Social media links">
+                    <a href="{% url 'contact' %}" class="social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="{% url 'contact' %}" class="social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="{% url 'contact' %}" class="social-link" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+                    <a href="{% url 'contact' %}" class="social-link" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
                 </div>
+            </div>
 
-                <div class="col-lg-4 col-md-6">
-                    <h6 class="footer-title">Quick Links</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{% url 'quick_links' %}">Quick Links</a></li>
-                        <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
-                        <li><a href="{% url 'refund_policy' %}">Refund Policy</a></li>
-                        <li><a href="{% url 'shipping_policy' %}">Shipping Policy</a></li>
-                        <li><a href="{% url 'terms_and_conditions' %}">Terms &amp; Conditions</a></li>
-                        <li><a href="{% url 'our_mission' %}">Our Mission</a></li>
-                        <li><a href="{% url 'our_vision' %}">Our Vision</a></li>
-                        <li><a href="{% url 'team_members' %}">Our Team</a></li>
-                    </ul>
-                </div>
+            <div>
+                <h6 class="footer-title">Shop</h6>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="{% url 'product' %}"><i class="bi bi-bag"></i>All Products</a></li>
+                    <li><a href="{% url 'category' %}"><i class="bi bi-grid"></i>Categories</a></li>
+                    <li><a href="{% url 'product' %}"><i class="bi bi-tag"></i>Deals &amp; Offers</a></li>
+                    <li><a href="{% url 'wishlist' %}"><i class="bi bi-heart"></i>Wishlist</a></li>
+                    <li><a href="{% url 'my_orders' %}"><i class="bi bi-cart3"></i>Track Order</a></li>
+                    <li><a href="{% url 'refund_policy' %}"><i class="bi bi-arrow-left-right"></i>Returns &amp; Refunds</a></li>
+                </ul>
+            </div>
 
-                <div class="col-lg-4 col-md-6">
-                    <h6 class="footer-title">Contact</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><i class="bi bi-geo-alt-fill me-2"></i>123 Shopping Street, Sydney</li>
-                        <li><i class="bi bi-telephone-fill me-2"></i>+1 (234) 567-890</li>
-                        <li><i class="bi bi-envelope-fill me-2"></i>support@easykart.com</li>
-                    </ul>
-                    <h6 class="footer-title mt-4">Find Us</h6>
-                    <div class="footer-map">
-                        <iframe
-                            src="https://maps.google.com/maps?q=123%20Shopping%20Street%2C%20Sydney&z=15&output=embed"
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            title="Easy Kart Location">
-                        </iframe>
-                    </div>
-                </div>
+            <div>
+                <h6 class="footer-title">Company</h6>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="{% url 'about_us' %}"><i class="bi bi-people"></i>About Us</a></li>
+                    <li><a href="{% url 'our_mission' %}"><i class="bi bi-gear"></i>Our Mission</a></li>
+                    <li><a href="{% url 'our_vision' %}"><i class="bi bi-eye"></i>Our Vision</a></li>
+                    <li><a href="{% url 'team_members' %}"><i class="bi bi-people"></i>Our Team</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="bi bi-file-text"></i>Blogs</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="bi bi-briefcase"></i>Careers</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact-column">
+                <h6 class="footer-title">Help &amp; Support</h6>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="{% url 'need_help' %}"><i class="bi bi-question-circle"></i>FAQ</a></li>
+                    <li><a href="{% url 'privacy_policy' %}"><i class="bi bi-shield-check"></i>Privacy Policy</a></li>
+                    <li><a href="{% url 'refund_policy' %}"><i class="bi bi-shield-check"></i>Refund Policy</a></li>
+                    <li><a href="{% url 'shipping_policy' %}"><i class="bi bi-truck"></i>Shipping Policy</a></li>
+                    <li><a href="{% url 'terms_and_conditions' %}"><i class="bi bi-file-text"></i>Terms &amp; Conditions</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="bi bi-headset"></i>Contact Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact-column">
+                <h6 class="footer-title">Contact Us</h6>
+                <ul class="list-unstyled footer-links footer-contact">
+                    <li><i class="bi bi-geo-alt"></i>123 Shopping Street,<br> Sydney, NSW 2000, Australia</li>
+                    <li><i class="bi bi-telephone"></i>+1 (234) 567-890</li>
+                    <li><i class="bi bi-envelope"></i>support@easykart.com</li>
+                    <li><i class="bi bi-clock"></i>Mon - Sat: 9:00 AM - 6:00 PM<br> (Sunday Closed)</li>
+                </ul>
+                <h6 class="footer-title footer-newsletter-title">Subscribe To Our Newsletter</h6>
+                <p class="footer-newsletter-copy">Get the latest updates on new arrivals, offers, and exclusive deals.</p>
+                <form class="footer-newsletter" action="{% url 'contact' %}" method="get">
+                    <input type="email" name="email" placeholder="Enter your email" aria-label="Email address">
+                    <button type="submit" aria-label="Subscribe"><i class="bi bi-send-fill"></i></button>
+                </form>
             </div>
         </div>
         <div class="footer-bottom">
-            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center py-3">
-                <span>&copy; {% now "Y" %} Easy Kart. All rights reserved.</span>
-                <span>Fast Delivery • Secure Checkout • 24/7 Support</span>
+            <div class="container footer-bottom-inner">
+                <span>&copy; {% now "Y" %} <strong>EasyKart.</strong> All rights reserved.</span>
+                <div class="payment-badges" aria-label="Accepted payment methods"><span>VISA</span><span class="mastercard">MC</span><span>PayPal</span><span>AMEX</span><span>Apple Pay</span><span>G Pay</span></div>
+                <div class="footer-legal"><a href="{% url 'quick_links' %}">Sitemap</a><a href="{% url 'privacy_policy' %}">Privacy Policy</a><a href="{% url 'terms_and_conditions' %}">Terms &amp; Conditions</a></div>
             </div>
         </div>
     </footer>

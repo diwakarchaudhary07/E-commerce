@@ -589,9 +589,9 @@ h6,
    11. FOOTER RESPONSIVE STYLING
    ===================================================== */
 .site-footer {
-    background: #0b1120 !important;
+    background: linear-gradient(135deg, #020d1e 0%, #00152d 100%) !important;
     color: #f1f5f9 !important;
-    padding: 2.5rem 0 0 0;
+    padding: 0;
     margin-top: auto;
     overflow: hidden;
 }
@@ -600,8 +600,16 @@ h6,
     width: 100%;
 }
 
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.35fr repeat(3, 1fr) 1.55fr;
+    gap: 2.5rem;
+    padding-top: 4rem;
+    padding-bottom: 3.5rem;
+}
+
 .footer-logo {
-    max-height: 46px;
+    max-height: 48px;
     max-width: 100%;
     width: auto;
     margin-bottom: 1rem;
@@ -615,6 +623,67 @@ h6,
     justify-content: center;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
+    color: #ffffff;
+}
+
+.footer-brand p,
+.footer-newsletter-copy {
+    color: #c2cedd;
+    line-height: 1.8;
+    font-size: 0.9rem;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.7rem;
+}
+
+.footer-newsletter-title {
+    margin-top: 2.25rem;
+    margin-bottom: 0.7rem;
+}
+
+.footer-newsletter-copy {
+    margin-bottom: 1.15rem;
+}
+
+.footer-newsletter {
+    display: flex;
+    height: 50px;
+}
+
+.footer-newsletter input {
+    min-width: 0;
+    flex: 1;
+    color: #fff;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-right: 0;
+    padding: 0 0.8rem;
+}
+
+.footer-newsletter input::placeholder {
+    color: #98a8bb;
+}
+
+.footer-newsletter button {
+    width: 48px;
+    border: 0;
+    color: #fff;
+    background: #ff6b00;
+}
+
+.footer-contact li {
+    display: flex;
+    gap: 0.75rem;
+    line-height: 1.7;
+}
+
+.footer-contact li>i {
+    color: #ff6b00;
+    flex: 0 0 1rem;
+    margin-top: 0.25rem;
 }
 
 .footer-links {
@@ -630,7 +699,7 @@ h6,
 }
 
 .footer-links a {
-    color: #cbd5e1;
+    color: #dce5f1;
     text-decoration: none;
     transition: color 0.2s ease;
 }
@@ -640,7 +709,7 @@ h6,
 }
 
 .footer-bottom {
-    background: #060911;
+    background: rgba(0, 0, 0, 0.16);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     font-size: 0.85rem;
     color: #94a3b8;
@@ -649,6 +718,52 @@ h6,
 .footer-bottom .container {
     gap: 0.5rem 1rem;
     text-align: center;
+}
+
+.footer-bottom-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-top: 1.8rem;
+    padding-bottom: 1.8rem;
+}
+
+.footer-bottom strong {
+    color: #ff6b00;
+}
+
+.payment-badges,
+.footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.payment-badges span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 34px;
+    padding: 0 0.35rem;
+    color: #1252a1;
+    background: #fff;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.payment-badges .mastercard {
+    color: #ed1c24;
+    font-size: 1.05rem;
+    letter-spacing: -0.3rem;
+    padding-right: 0.65rem;
+}
+
+.footer-legal a+a {
+    border-left: 1px solid rgba(255, 255, 255, 0.22);
+    padding-left: 0.8rem;
 }
 
 .footer-map {
@@ -660,6 +775,42 @@ h6,
     width: 100%;
     max-width: 100%;
     border: 0;
+}
+
+@media (max-width: 1199.98px) {
+    .footer-main {
+        grid-template-columns: 1.3fr repeat(3, 1fr);
+    }
+
+    .footer-contact-column:last-child {
+        grid-column: 1 / -1;
+        max-width: 430px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .footer-main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem 1.5rem;
+        padding-top: 2.75rem;
+        padding-bottom: 2.5rem;
+    }
+
+    .footer-brand,
+    .footer-contact-column:last-child {
+        grid-column: 1 / -1;
+        max-width: none;
+    }
+
+    .footer-bottom-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-legal {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
 
 /* =====================================================
