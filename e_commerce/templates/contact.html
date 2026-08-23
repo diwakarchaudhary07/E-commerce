@@ -6,20 +6,32 @@
 {% block header_banner %}
 <section class="contact-page-heading">
     <div class="contact-breadcrumb"><a href="{% url 'home' %}"><i class="bi bi-house-fill"></i> Home</a><i class="bi bi-chevron-right"></i><span>Contact Us</span></div>
-    <h1>Contact <span>Us</span></h1>
-    <p>We're here to help! Fill out the form or reach us using the contact details below.</p>
+    <div class="contact-hero-content">
+        <div class="contact-hero-copy">
+            <span class="contact-kicker">Need help?</span>
+            <h1>Contact <span>Us</span></h1>
+            <p>We are here to help with product questions, order support, returns, payments, and general customer needs.</p>
+            <div class="contact-pills">
+                <span><i class="bi bi-check-circle"></i> Fast replies</span>
+                <span><i class="bi bi-check-circle"></i> Order support</span>
+                <span><i class="bi bi-check-circle"></i> Secure help</span>
+            </div>
+        </div>
+        <div class="contact-hero-visual" aria-hidden="true">
+            <div class="contact-visual-card">
+                <i class="bi bi-headset"></i>
+                <strong>24/7 Support</strong>
+                <span>Friendly team ready to assist</span>
+            </div>
+        </div>
+    </div>
 </section>
 {% endblock %}
 
 {% block content %}
 <div class="contact-page py-2 py-md-4">
     <div class="row g-4 contact-top-grid">
-        <!-- Contact Form Column -->
         <div class="col-lg-7">
-            <div class="contact-help-visual">
-                <div class="contact-visual-glow"><i class="bi bi-headset"></i></div>
-                <div class="contact-visual-copy"><strong>We're Here to Help!</strong><span>Questions, orders, or product support</span></div>
-            </div>
             <div class="card shadow-sm border-0 h-100 contact-form-panel">
                 <div class="card-body p-3 p-sm-4 p-md-5">
                     <h2 class="h4 fw-bold mb-1">Send us a Message</h2>
@@ -57,6 +69,47 @@
                     </form>
                 </div>
             </div>
+        </div>
+
+        <div class="col-lg-5">
+            <aside class="contact-side-panel">
+                <div class="contact-side-head">
+                    <i class="bi bi-life-preserver"></i>
+                    <h3>Customer support</h3>
+                </div>
+
+                <div class="contact-side-item">
+                    <i class="bi bi-telephone-fill"></i>
+                    <div>
+                        <strong>Call us</strong>
+                        <span>+91 98765 43210</span>
+                    </div>
+                </div>
+
+                <div class="contact-side-item">
+                    <i class="bi bi-envelope-fill"></i>
+                    <div>
+                        <strong>Email us</strong>
+                        <span>support@easykart.com</span>
+                    </div>
+                </div>
+
+                <div class="contact-side-item">
+                    <i class="bi bi-clock-fill"></i>
+                    <div>
+                        <strong>Business hours</strong>
+                        <span>Mon - Sat, 10:00 AM - 6:00 PM</span>
+                    </div>
+                </div>
+
+                <div class="contact-side-item">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <div>
+                        <strong>Visit us</strong>
+                        <span>EasyKart Store, City, State, India</span>
+                    </div>
+                </div>
+            </aside>
         </div>
 
     </div>
