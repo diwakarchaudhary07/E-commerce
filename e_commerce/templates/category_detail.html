@@ -53,10 +53,10 @@
                             <p class="card-text text-muted small mb-2 text-truncate">{{ product.description|truncatewords:10 }}</p>
                             <div class="mb-3 mt-auto">
                                 {% if product.discount > 0 %}
-                                    <span class="fw-bold text-danger fs-6">${{ product.get_discounted_price|floatformat:2 }}</span>
-                                    <span class="small text-muted text-decoration-line-through ms-1">${{ product.price|floatformat:2 }}</span>
+                                    <span class="fw-bold text-danger fs-6">₹{{ product.get_discounted_price|floatformat:2 }}</span>
+                                    <span class="small text-muted text-decoration-line-through ms-1">₹{{ product.price|floatformat:2 }}</span>
                                 {% else %}
-                                    <span class="fw-bold text-primary fs-6">${{ product.price|floatformat:2 }}</span>
+                                    <span class="fw-bold text-primary fs-6">₹{{ product.price|floatformat:2 }}</span>
                                 {% endif %}
                             </div>
                             <div class="gap-1 gap-sm-2 d-flex flex-wrap mt-auto">

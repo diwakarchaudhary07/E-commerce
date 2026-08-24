@@ -56,7 +56,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="fw-semibold">${{ item.price|floatformat:2 }}</td>
+                                            <td class="fw-semibold">₹{{ item.price|floatformat:2 }}</td>
                                             <td>
                                                 <div class="d-inline-flex align-items-center gap-1 border rounded-pill p-1 bg-light">
                                                     <form method="post" action="{% url 'update_cart' item.product.id %}" class="m-0">
@@ -72,7 +72,7 @@
                                                     </form>
                                                 </div>
                                             </td>
-                                            <td class="fw-bold text-primary">${{ item.item_total|floatformat:2 }}</td>
+                                            <td class="fw-bold text-primary">₹{{ item.item_total|floatformat:2 }}</td>
                                             <td class="text-end">
                                                 <form method="post" action="{% url 'remove_from_cart' item.product.id %}" class="m-0">
                                                     {% csrf_token %}
@@ -99,7 +99,7 @@
                     </div>
                     <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
                         <span class="text-muted">Subtotal</span>
-                        <span class="fs-4 fw-bold text-primary">${{ cart_total|floatformat:2 }}</span>
+                        <span class="fs-4 fw-bold text-primary">₹{{ cart_total|floatformat:2 }}</span>
                     </div>
                     <div class="d-grid gap-2">
                         {% if user.is_authenticated %}

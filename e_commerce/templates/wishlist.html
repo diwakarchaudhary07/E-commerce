@@ -58,10 +58,10 @@
                         <!-- Price Section -->
                         <div class="mb-3 mt-auto">
                             {% if item.product.discount > 0 %}
-                                <span class="fw-bold text-danger fs-6">${{ item.product.get_discounted_price|floatformat:2 }}</span>
-                                <span class="text-muted text-decoration-line-through small ms-1">${{ item.product.price|floatformat:2 }}</span>
+                                <span class="fw-bold text-danger fs-6">₹{{ item.product.get_discounted_price|floatformat:2 }}</span>
+                                <span class="text-muted text-decoration-line-through small ms-1">₹{{ item.product.price|floatformat:2 }}</span>
                             {% else %}
-                                <span class="fw-bold text-primary fs-6">${{ item.product.price|floatformat:2 }}</span>
+                                <span class="fw-bold text-primary fs-6">₹{{ item.product.price|floatformat:2 }}</span>
                             {% endif %}
                         </div>
 

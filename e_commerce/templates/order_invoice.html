@@ -46,8 +46,8 @@
                         <tr>
                             <td class="fw-semibold">{{ item.product.name }}</td>
                             <td class="text-center">{{ item.quantity }}</td>
-                            <td class="text-end">${{ item.unit_price|floatformat:2 }}</td>
-                            <td class="text-end fw-bold">${{ item.total_price|floatformat:2 }}</td>
+                            <td class="text-end">₹{{ item.unit_price|floatformat:2 }}</td>
+                            <td class="text-end fw-bold">₹{{ item.total_price|floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -58,7 +58,7 @@
                 <span class="text-muted small">Status: <span class="badge bg-secondary text-capitalize">{{ order.status }}</span></span>
                 <div class="text-end">
                     <span class="text-muted me-2">Grand Total:</span>
-                    <span class="fs-4 fw-bold text-primary">${{ order.total_amount|floatformat:2 }}</span>
+                            <span class="fs-4 fw-bold text-primary">₹{{ order.total_amount|floatformat:2 }}</span>
                 </div>
             </div>
         </div>

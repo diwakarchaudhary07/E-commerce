@@ -32,7 +32,7 @@ from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, Te
 from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 
 def _verify_razorpay_signature(order_id, payment_id, signature, key_secret=None):
@@ -464,6 +464,7 @@ def cart_page(request):
     })
 
 
+@ensure_csrf_cookie
 @login_required(login_url='login')
 def checkout(request):
     cart_items, total, cart = _build_cart_context(request)
@@ -544,6 +545,7 @@ def checkout(request):
                 'success': True,
                 'order_id': razorpay_order['id'],
                 'db_order_id': order.id,
+                'callback_url': request.build_absolute_uri(reverse('razorpay_payment_callback')),
                 'key': settings.RAZORPAY_KEY_ID,
                 'amount': int(order.total_amount * Decimal('100')),
                 'currency': 'INR',
@@ -611,7 +613,7 @@ def verify_razorpay_payment(request):
 
     order.razorpay_payment_id = razorpay_payment_id
     order.razorpay_signature = razorpay_signature
-    order.status = 'processing'
+    order.status = 'completed'
     order.save(update_fields=['razorpay_payment_id', 'razorpay_signature', 'status'])
 
     cart = _get_or_create_user_cart(request)
@@ -621,6 +623,42 @@ def verify_razorpay_payment(request):
         request.session['cart'] = {}
 
     return JsonResponse({'success': True, 'redirect_url': reverse('my_orders')})
+
+
+@csrf_exempt
+@login_required(login_url='login')
+@require_POST
+def razorpay_payment_callback(request):
+    """Handle Razorpay redirect-based methods such as Pay Later/X Postpaid."""
+    razorpay_order_id = request.POST.get('razorpay_order_id')
+    razorpay_payment_id = request.POST.get('razorpay_payment_id')
+    razorpay_signature = request.POST.get('razorpay_signature')
+
+    if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+        messages.error(request, 'Payment details were not returned by Razorpay.')
+        return redirect('checkout')
+
+    order = get_object_or_404(
+        Order,
+        user=request.user,
+        razorpay_order_id=razorpay_order_id,
+    )
+    if not _verify_razorpay_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature):
+        messages.error(request, 'Payment verification failed. Please contact support if money was deducted.')
+        return redirect('checkout')
+
+    order.razorpay_payment_id = razorpay_payment_id
+    order.razorpay_signature = razorpay_signature
+    order.status = 'completed'
+    order.save(update_fields=['razorpay_payment_id', 'razorpay_signature', 'status'])
+
+    cart = _get_or_create_user_cart(request)
+    if cart:
+        cart.items.all().delete()
+    else:
+        request.session['cart'] = {}
+    messages.success(request, f'Your order {order.order_number} was paid successfully.')
+    return redirect('my_orders')
 
 
 @require_POST
@@ -895,8 +933,11 @@ def register(request):
             # Attempt to create user inside a transaction to avoid partial state
             try:
                 with transaction.atomic():
+                    is_new_user = not form.instance.pk
                     user = form.save(commit=False)
                     user.is_active = False # Keep user inactive until OTP verification
+                    user.is_staff = False
+                    user.is_superuser = False
                     user.save()
             except IntegrityError:
                 form.add_error('email', 'A user with this email already exists.')
@@ -910,10 +951,8 @@ def register(request):
                 otp_code = user.generate_email_otp()
                 send_otp_email(user, otp_code)
             except Exception:
-                try:
+                if is_new_user:
                     user.delete()
-                except Exception:
-                    pass
                 messages.error(request, 'Unable to send OTP email. Please try again later.')
                 return render(request, 'register.html', {'form': form})
 

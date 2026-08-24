@@ -87,7 +87,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="small">{{ order.created_at|date:'M d, Y' }}</td>
-                                <td class="fw-bold">${{ order.total_amount|floatformat:2 }}</td>
+                                <td class="fw-bold">₹{{ order.total_amount|floatformat:2 }}</td>
                                 <td><span class="badge bg-secondary text-capitalize">{{ order.status }}</span></td>
                                 <td class="text-end">
                                     <div class="d-inline-flex gap-1 flex-wrap justify-content-end">

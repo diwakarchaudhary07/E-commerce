@@ -28,8 +28,8 @@
         </div>
         <span class="badge bg-primary text-white px-3 py-2 rounded-pill">{{ products|length }} Items</span>
     </div>
-    <form method="get" action="{% url 'product' %}" class="product-filter-bar mb-4">
-        <div class="product-filter-search">
+    <form method="get" action="{% url 'product' %}" class="product-filter-bar mb-4" aria-label="Product filters">
+        <div class="product-filter-search" role="search">
             <i class="bi bi-search"></i>
             <input type="search" name="q" value="{{ query }}" placeholder="Search products..." aria-label="Search products">
         </div>
@@ -41,9 +41,9 @@
         </select>
         <select name="price" class="product-filter-select" aria-label="Filter by price">
             <option value="">Any price</option>
-            <option value="under-25"{% if price_range == 'under-25' %} selected{% endif %}>Under $25</option>
-            <option value="25-50"{% if price_range == '25-50' %} selected{% endif %}>$25 - $50</option>
-            <option value="over-50"{% if price_range == 'over-50' %} selected{% endif %}>Over $50</option>
+            <option value="under-25"{% if price_range == 'under-25' %} selected{% endif %}>Under ₹25</option>
+            <option value="25-50"{% if price_range == '25-50' %} selected{% endif %}>₹25 - ₹50</option>
+            <option value="over-50"{% if price_range == 'over-50' %} selected{% endif %}>Over ₹50</option>
         </select>
         <select name="availability" class="product-filter-select" aria-label="Filter product availability">
             <option value="">All products</option>
@@ -96,10 +96,10 @@
                         </div>
                         <div class="mb-3 mt-auto">
                             {% if product.discount > 0 %}
-                                <span class="fw-bold text-danger fs-6">${{ product.get_discounted_price|floatformat:2 }}</span>
-                                <span class="small text-muted text-decoration-line-through ms-1">${{ product.price|floatformat:2 }}</span>
+                                <span class="fw-bold text-danger fs-6">₹{{ product.get_discounted_price|floatformat:2 }}</span>
+                                <span class="small text-muted text-decoration-line-through ms-1">₹{{ product.price|floatformat:2 }}</span>
                             {% else %}
-                                <span class="fw-bold text-primary fs-6">${{ product.price|floatformat:2 }}</span>
+                                <span class="fw-bold text-primary fs-6">₹{{ product.price|floatformat:2 }}</span>
                             {% endif %}
                         </div>
                         <div class="gap-1 gap-sm-2 d-flex flex-wrap mt-auto">

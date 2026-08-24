@@ -1,4 +1,5 @@
 import uuid
+import secrets
 from datetime import timedelta
 from decimal import Decimal
 
@@ -69,8 +70,13 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def generate_email_otp(self):
-        import random
-        self.email_otp_code = f"{random.randint(100000, 999999):06d}"
+        existing_codes = set(
+            self.__class__.objects.exclude(pk=self.pk).values_list('email_otp_code', flat=True)
+        )
+        otp_code = f"{secrets.randbelow(900000) + 100000:06d}"
+        while otp_code in existing_codes:
+            otp_code = f"{secrets.randbelow(900000) + 100000:06d}"
+        self.email_otp_code = otp_code
         self.email_otp_expires_at = timezone.now() + timedelta(minutes=10)
         self.save(update_fields=['email_otp_code', 'email_otp_expires_at'])
         return self.email_otp_code

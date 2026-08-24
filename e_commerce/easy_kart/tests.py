@@ -288,6 +288,55 @@ class OrdersModuleTests(TestCase):
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class OTPRegistrationTests(TestCase):
+    def test_register_reuses_incomplete_registration(self):
+        user = CustomUser.objects.create_user(
+            email='retry@example.com',
+            password='OldPass123!',
+            full_name='Old Name',
+            mobile_no='',
+            address='',
+            is_active=False,
+            is_email_verified=False,
+        )
+
+        response = self.client.post(
+            reverse('register'),
+            data={
+                'full_name': 'New Name',
+                'email': user.email,
+                'password': 'NewPass123!',
+                'confirm_password': 'NewPass123!',
+            },
+        )
+
+        self.assertRedirects(response, reverse('verify_otp'))
+        user.refresh_from_db()
+        self.assertEqual(user.full_name, 'New Name')
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.is_email_verified)
+        self.assertIsNotNone(user.email_otp_code)
+
+    def test_register_creates_frontend_only_customer(self):
+        response = self.client.post(
+            reverse('register'),
+            data={
+                'full_name': 'Frontend Customer',
+                'email': 'frontend-customer@example.com',
+                'password': 'StrongPass123!',
+                'confirm_password': 'StrongPass123!',
+            },
+        )
+
+        self.assertRedirects(response, reverse('verify_otp'))
+        user = CustomUser.objects.get(email='frontend-customer@example.com')
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.is_email_verified)
+
+        self.client.force_login(user)
+        self.assertEqual(self.client.get('/admin/').status_code, 302)
+
     def test_checkout_creates_order_with_customer_details(self):
         user = CustomUser.objects.create_user(
             email='checkout@example.com',

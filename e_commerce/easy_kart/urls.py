@@ -25,6 +25,7 @@ urlpatterns = [
     path('wishlist/remove/<int:product_id>/', remove_from_wishlist, name='remove_from_wishlist'),
     path('checkout/', checkout, name='checkout'),
     path('checkout/verify-payment/', verify_razorpay_payment, name='verify_razorpay_payment'),
+    path('checkout/payment-callback/', razorpay_payment_callback, name='razorpay_payment_callback'),
     path('orders/', my_orders, name='my_orders'),
     path('orders/<int:order_id>/', order_detail, name='order_detail'),
     path('orders/<int:order_id>/invoice/', order_invoice, name='order_invoice'),

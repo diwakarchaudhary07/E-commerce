@@ -112,8 +112,11 @@ class RegisterForm(forms.ModelForm):
                 validate_email(email)
             except ValidationError:
                 raise ValidationError('Enter a valid email address.')
-            if CustomUser.objects.filter(email__iexact=email).exists():
+            existing_user = CustomUser.objects.filter(email__iexact=email).first()
+            if existing_user and (existing_user.is_active or existing_user.is_email_verified):
                 raise ValidationError('Email is already registered.')
+            if existing_user:
+                self.instance = existing_user
         return email
 
     def clean(self):
@@ -139,6 +142,11 @@ class RegisterForm(forms.ModelForm):
         email = (self.cleaned_data.get('email') or '').strip().lower()
         password = self.cleaned_data.get('password')
 
+        user.is_staff = False
+        user.is_superuser = False
+        user.is_active = False
+        user.is_email_verified = False
+
         # Ensure a username exists; make it unique using a short uuid suffix.
         if not getattr(user, 'username', None):
             base_username = email.split('@')[0] if email else 'user'
@@ -158,10 +166,6 @@ class RegisterForm(forms.ModelForm):
             user.mobile_no = ''
         if not getattr(user, 'address', None):
             user.address = ''
-
-        # Mark user inactive until email verification completes
-        user.is_active = False
-        user.is_email_verified = False
 
         if commit:
             user.save()

@@ -359,10 +359,10 @@
               <p class="small text-muted mb-2">{% if product.category %}{{ product.category.name }}{% else %}General{% endif %}</p>
               <div class="mb-2 mt-auto">
                 {% if product.discount and product.discount > 0 %}
-                  <span class="fw-bold text-danger">${{ product.get_discounted_price|floatformat:2 }}</span>
-                  <span class="small text-muted text-decoration-line-through ms-1">${{ product.price|floatformat:2 }}</span>
+                  <span class="fw-bold text-danger">₹{{ product.get_discounted_price|floatformat:2 }}</span>
+                  <span class="small text-muted text-decoration-line-through ms-1">₹{{ product.price|floatformat:2 }}</span>
                 {% else %}
-                  <span class="fw-bold text-primary">${{ product.price|floatformat:2 }}</span>
+                  <span class="fw-bold text-primary">₹{{ product.price|floatformat:2 }}</span>
                 {% endif %}
               </div>
               <div class="d-flex gap-1 gap-sm-2">
