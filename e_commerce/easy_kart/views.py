@@ -426,7 +426,8 @@ def need_help_page(request):
             messages.error(request, 'Please enter a question or concern before sending.')
 
     product_name = request.GET.get('product', '').strip()
-    return render(request, 'need_help.html', {
+    template_name = 'need_help_embed.html' if request.GET.get('embedded') == '1' else 'need_help.html'
+    return render(request, template_name, {
         'page_title': 'Need Help',
         'heading': 'AI Help Assistant',
         'conversation': conversation,
