@@ -81,12 +81,6 @@ body.theme-easykart .btn-outline-primary {
 body.theme-easykart .btn-secondary {
   background: #f8fbff;
   color: var(--ek-navy);
-  border-color: rgba(25, 98, 255, 0.16);
-}
-
-body.theme-easykart .btn-secondary:hover {
-  background: #e8f0ff;
-  color: var(--ek-navy-dark);
 }
 
 body.theme-easykart .btn-outline-success {
@@ -150,6 +144,21 @@ body.theme-easykart .badge.bg-danger {
 
 .product-feedback-section .feedback-summary .average-rating {
   color: var(--ek-accent);
+}
+
+.product-feedback-section .feedback-form {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  border-color: #198754;
+  box-shadow: none;
+}
+
+.contact-ai-first iframe {
+  display: block;
+  width: 100%;
+  height: 690px;
+  border: 0;
 }
 
 .product-feedback-section .feedback-summary .average-rating-stars .bi-star-fill,
@@ -1465,6 +1474,11 @@ body.theme-easykart .footer-logo {
 }
 
 /* Contact page */
+.contact-page {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+}
+
 .contact-page-heading {
   position: relative;
   overflow: hidden;
@@ -1638,6 +1652,12 @@ body.theme-easykart .footer-logo {
   margin-top: 1.2rem;
 }
 
+.contact-top-grid>[class*="col-"],
+.contact-page .row.g-4.mt-2>[class*="col-"] {
+  width: auto;
+  max-width: none;
+}
+
 .contact-form-panel {
   border: 1px solid rgba(0, 71, 171, 0.10) !important;
   border-radius: 1.1rem !important;
@@ -1775,7 +1795,7 @@ body.theme-easykart .footer-logo {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin: 1.6rem 0 2rem;
-  border: 1px solid rgba(0, 71, 171, 0.08);
+  border: 1px solid rgba(0, 71, 171, 0.12);
   border-radius: 1.1rem;
   background: #fff;
   box-shadow: 0 10px 28px rgba(17, 38, 83, 0.04);
@@ -1783,10 +1803,11 @@ body.theme-easykart .footer-logo {
 
 .contact-info-strip>div {
   display: grid;
-  justify-items: center;
-  text-align: center;
-  gap: .35rem;
-  padding: 1.2rem .8rem;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: .7rem;
+  min-width: 0;
+  padding: 1rem .9rem;
   border-right: 1px solid rgba(0, 71, 171, 0.08);
 }
 
@@ -1798,9 +1819,9 @@ body.theme-easykart .footer-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  border-radius: .8rem;
   color: var(--ek-accent);
   background: #fff1eb;
   font-size: 1.3rem;
@@ -1808,14 +1829,25 @@ body.theme-easykart .footer-logo {
 
 .contact-info-strip strong {
   color: var(--ek-navy);
+  min-width: 0;
   font-size: .92rem;
+  font-weight: 800;
   line-height: 1.4;
+  text-align: left;
 }
 
-.contact-info-strip span {
-  color: var(--ek-muted);
+.contact-info-content {
+  min-width: 0;
+}
+
+.contact-info-content p {
+  margin: .35rem 0 0;
+  color: var(--ek-navy);
   font-size: .8rem;
-  line-height: 1.6;
+  font-weight: 800;
+  line-height: 1.55;
+  text-align: left;
+  overflow-wrap: anywhere;
 }
 
 .contact-topic-section {
@@ -1892,8 +1924,22 @@ body.theme-easykart .footer-logo {
   margin: .7rem 0 0;
 }
 
-.contact-page .row.g-4.mt-2>.col-12:first-child {
-  display: none;
+.contact-page .row.g-4.mt-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.contact-page .row.g-4.mt-2>.col-12 {
+  grid-column: 1 / -1;
+}
+
+.contact-page .row.g-4.mt-2>.col-lg-6 {
+  grid-column: 1 / -1;
+}
+
+.contact-page .row.g-4.mt-2 .card-body[style*="height"] {
+  height: clamp(220px, 30vw, 320px) !important;
 }
 
 .contact-page .card {
@@ -1977,6 +2023,74 @@ body.theme-easykart .footer-logo {
   box-shadow: 0 10px 28px rgba(17, 38, 83, .04);
 }
 
+.contact-ai-first {
+  min-height: 180px;
+  margin-bottom: 1.2rem;
+  padding: 1.5rem 1.8rem;
+  background: linear-gradient(115deg, var(--ek-navy) 0%, var(--ek-blue) 58%, var(--ek-accent) 100%);
+  border: 0;
+  color: #fff;
+  box-shadow: var(--ek-shadow);
+}
+
+.contact-ai-first::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.18), transparent 25%);
+  pointer-events: none;
+}
+
+.contact-ai-first>* {
+  position: relative;
+  z-index: 1;
+}
+
+.contact-ai-first .contact-still-help__icon {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.contact-ai-label {
+  display: inline-block;
+  margin-bottom: .35rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.contact-ai-first h2 {
+  margin: 0 0 .55rem;
+  color: #fff;
+  font-size: 1.65rem;
+  line-height: 1.2;
+}
+
+.contact-ai-first h2 span {
+  color: #ffd7c5;
+}
+
+.contact-ai-first p {
+  max-width: 660px;
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: .9rem;
+}
+
+.contact-ai-first a {
+  color: var(--ek-navy);
+  background: #fff;
+  border: 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .12);
+}
+
+.contact-ai-first a:hover {
+  color: var(--ek-navy);
+  background: #fff5f1;
+}
+
 .contact-still-help__icon {
   display: flex;
   align-items: center;
@@ -2052,11 +2166,21 @@ body.theme-easykart .footer-logo {
   .contact-still-help {
     align-items: flex-start;
   }
+
+  .contact-page .row.g-4.mt-2 {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 767.98px) {
   .contact-page-heading {
     padding: 1rem 1rem 1.3rem;
+  }
+
+  .contact-ai-first,
+  .contact-ai-first iframe {
+    min-height: 700px;
+    height: 700px;
   }
 
   .contact-form-panel .card-body {
@@ -2089,6 +2213,98 @@ body.theme-easykart .footer-logo {
 
   .contact-topic-section h2 {
     font-size: 1.6rem;
+  }
+
+  .contact-page {
+    width: 100%;
+  }
+
+  .contact-page-heading {
+    border-radius: 1rem;
+  }
+
+  .contact-page-heading h1 {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .contact-page-heading p {
+    font-size: .9rem;
+  }
+
+  .contact-hero-content {
+    gap: 1rem;
+  }
+
+  .contact-visual-card {
+    padding: 1rem;
+  }
+
+  .contact-info-strip>div {
+    min-width: 0;
+  }
+
+  .contact-topic-grid {
+    padding: 0 .7rem;
+  }
+
+  .contact-topic-grid>a {
+    padding: 1.15rem .9rem;
+  }
+
+  .contact-faq-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .contact-page-heading {
+    padding: .9rem .8rem 1.1rem;
+  }
+
+  .contact-breadcrumb {
+    justify-content: flex-start;
+    margin-bottom: .8rem;
+  }
+
+  .contact-hero-copy {
+    text-align: left;
+  }
+
+  .contact-pills {
+    justify-content: flex-start;
+    gap: .45rem;
+  }
+
+  .contact-pills span {
+    padding: .4rem .6rem;
+    font-size: .68rem;
+  }
+
+  .contact-form-panel .card-body,
+  .contact-page .row.g-4.mt-2>.col-lg-6 .card {
+    padding: 1rem !important;
+  }
+
+  .contact-side-panel {
+    padding: 1rem;
+    gap: .7rem;
+  }
+
+  .contact-info-strip {
+    margin: 1rem 0 1.3rem;
+  }
+
+  .contact-info-strip>div {
+    padding: .8rem;
+  }
+
+  .contact-topic-section {
+    padding: 1.4rem 0;
+  }
+
+  .contact-page .accordion-button {
+    padding: .8rem .75rem;
   }
 }
 

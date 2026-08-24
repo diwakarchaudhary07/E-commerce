@@ -30,6 +30,10 @@
 
 {% block content %}
 <div class="contact-page py-2 py-md-4">
+    <section class="contact-ai-first" aria-label="AI Help Assistant">
+        <iframe src="{% url 'need_help' %}?embedded=1" title="AI Help Assistant" loading="eager"></iframe>
+    </section>
+
     <div class="row g-4 contact-top-grid">
         <div class="col-lg-7">
             <div class="card shadow-sm border-0 h-100 contact-form-panel">
@@ -98,7 +102,7 @@
                     <i class="bi bi-clock-fill"></i>
                     <div>
                         <strong>Business hours</strong>
-                        <span>Mon - Sat, 10:00 AM - 6:00 PM</span>
+                        <span>Monday - Sunday<br>24/7 hours</span>
                     </div>
                 </div>
 
@@ -106,7 +110,7 @@
                     <i class="bi bi-geo-alt-fill"></i>
                     <div>
                         <strong>Visit us</strong>
-                        <span>EasyKart Store, City, State, India</span>
+                        <span>EasyKart Store<br>Meerut 250110, Uttar Pradesh, India</span>
                     </div>
                 </div>
             </aside>
@@ -115,10 +119,10 @@
     </div>
 
     <section class="contact-info-strip">
-        <div><i class="bi bi-headset"></i><strong>Customer Support</strong><span>support@easykart.com<br>+91 98765 43210</span></div>
-        <div><i class="bi bi-clock"></i><strong>Business Hours</strong><span>Monday - Saturday<br>10:00 AM - 6:00 PM</span></div>
-        <div><i class="bi bi-geo-alt-fill"></i><strong>Store Address</strong><span>EasyKart Store<br>City, State, India</span></div>
-        <div><i class="bi bi-envelope"></i><strong>Email Us</strong><span>support@easykart.com<br>We reply within 24 hrs</span></div>
+        <div><i class="bi bi-headset"></i><div class="contact-info-content"><strong>Customer Support</strong><p>support@easykart.com<br>+91 98765 43210</p></div></div>
+        <div><i class="bi bi-clock"></i><div class="contact-info-content"><strong>Business Hours</strong><p>Monday - Sunday<br>24/7 hours</p></div></div>
+        <div><i class="bi bi-geo-alt-fill"></i><div class="contact-info-content"><strong>Store Address</strong><p>EasyKart Store<br>Meerut 250110<br>Uttar Pradesh, India</p></div></div>
+        <div><i class="bi bi-envelope"></i><div class="contact-info-content"><strong>Email Us</strong><p>support@easykart.com<br>We reply within 24 hrs</p></div></div>
     </section>
 
     <section class="contact-topic-section">
@@ -202,12 +206,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-6">
-            <section class="contact-still-help">
-                <i class="bi bi-chat-square-dots-fill contact-still-help__icon"></i>
-                <div><h3>Still Have <span>Questions?</span></h3><p>We're always happy to help. Reach out to our AI assistant and get clear answers about orders, payments, returns, and products.</p><a href="{% url 'need_help' %}"><i class="bi bi-robot"></i> Ask AI Assistant</a></div>
-            </section>
         </div>
     </div>
 </div>
