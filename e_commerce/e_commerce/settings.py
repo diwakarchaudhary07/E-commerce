@@ -37,7 +37,7 @@ _load_env_file(BASE_DIR / '.env')
 SECRET_KEY = 'django-insecure-8!q5m)3%zpg@2xb4wsanebd)=%lru%e#2&90jlvf-30_86%w@e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in {'1', 'true', 'yes', 'on'}
 ALLOWED_HOSTS = ['*']  # Changed to allow all to prevent local connection blocks
 
 # Allow common local origins for CSRF checks during development
@@ -113,10 +113,7 @@ DATABASES = {
 #   EMAIL_HOST_PASSWORD=your-16-character-gmail-app-password
 #   DEFAULT_FROM_EMAIL=your-account@gmail.com
 #   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-EMAIL_BACKEND = os.getenv(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.smtp.EmailBackend',
-)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', '').strip()
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '').strip()
@@ -128,14 +125,20 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER).strip()
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '20'))
 
+if not EMAIL_BACKEND:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 if EMAIL_USE_TLS and EMAIL_USE_SSL:
     raise ValueError('EMAIL_USE_TLS and EMAIL_USE_SSL cannot both be enabled.')
 
 # Without SMTP credentials, use console output during local development only.
-if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
-    if not DEBUG and EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend':
-        raise ValueError('SMTP credentials are required when DEBUG is False.')
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend':
+    if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD or not DEFAULT_FROM_EMAIL:
+        if not DEBUG:
+            raise ValueError(
+                'SMTP requires EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, and DEFAULT_FROM_EMAIL.'
+            )
+        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Password validation
