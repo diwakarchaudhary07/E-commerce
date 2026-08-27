@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+from unittest.mock import patch
 
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
@@ -543,8 +544,8 @@ class OTPRegistrationTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(user.email_otp_code, mail.outbox[0].body)
 
-    @override_settings(EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend')
-    def test_resend_otp_keeps_previous_code_when_delivery_fails(self):
+    @patch('easy_kart.email_utils.EmailMultiAlternatives.send', side_effect=OSError('SMTP delivery failed'))
+    def test_resend_otp_keeps_previous_code_when_delivery_fails(self, mocked_send):
         user = CustomUser.objects.create_user(
             username='failedresend',
             email='failed-resend@example.com',
@@ -562,6 +563,7 @@ class OTPRegistrationTests(TestCase):
         self.assertEqual(user.email_otp_code, old_code)
         self.assertEqual(user.email_otp_expires_at, old_expiry)
         self.assertContains(response, 'Unable to send the OTP email')
+        mocked_send.assert_called_once()
 
     def test_full_registration_otp_verification_and_login_flow(self):
         response = self.client.post(

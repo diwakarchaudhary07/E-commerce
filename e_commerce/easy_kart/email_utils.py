@@ -43,7 +43,7 @@ def send_otp_email(user, otp_code):
             raise ValueError('The SMTP provider did not accept the OTP message.')
         return True
     except Exception as e:
-        logger.exception("Failed to send OTP email to %s: %s", recipient_email, e)
+        logger.error("Failed to send OTP email to %s: %s", recipient_email, e)
         raise ValueError('Unable to send the OTP email. Please verify the email address or SMTP configuration.') from e
 
 

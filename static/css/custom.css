@@ -263,7 +263,7 @@ body.theme-easykart .footer-logo {
 
 .easykart-navbar {
   position: fixed;
-  top: 28px;
+  top: var(--ek-ann-h);
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 1.5rem);
