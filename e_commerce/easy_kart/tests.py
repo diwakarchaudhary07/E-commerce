@@ -10,6 +10,12 @@ from django.core.exceptions import FieldDoesNotExist
 from django.conf import settings
 
 from .models import CustomUser, Product, Cart, CartItem, Order, ProductFeedback, Inventory, AIHelpChatMessage
+from .email_utils import (
+    send_notification_email,
+    send_order_confirmation_email,
+    send_password_reset_email,
+    send_welcome_email,
+)
 from .views import _verify_razorpay_signature
 
 
@@ -32,6 +38,66 @@ class RazorpaySignatureTests(SimpleTestCase):
         payment_id = 'pay_456'
 
         self.assertFalse(_verify_razorpay_signature(order_id, payment_id, 'invalid-signature'))
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class EmailUtilityTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            email='email-tests@example.com',
+            password='StrongPass123!',
+            full_name='Email Test User',
+            mobile_no='9876543210',
+            address='Test Address',
+            is_email_verified=True,
+        )
+
+    def test_otp_email_contains_code_and_recipient(self):
+        from .email_utils import send_otp_email
+
+        self.assertTrue(send_otp_email(self.user, '123456'))
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(message.subject, 'Email Verification OTP - EasyKart')
+        self.assertIn('123456', message.body)
+
+    def test_welcome_email_is_sent(self):
+        send_welcome_email(self.user)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(message.subject, 'Welcome to EasyKart!')
+        self.assertIn(self.user.full_name, message.body)
+
+    def test_password_reset_email_contains_reset_link(self):
+        reset_link = 'https://example.com/reset/test-token/'
+        send_password_reset_email(self.user, reset_link)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(message.subject, 'Reset Your EasyKart Password')
+        self.assertIn(reset_link, message.body)
+
+    def test_order_confirmation_email_contains_order_number(self):
+        send_order_confirmation_email(self.user, {'order_id': 'EK-1001'})
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(message.subject, 'Order Confirmation - Order #EK-1001')
+        self.assertIn('EK-1001', message.body)
+
+    def test_notification_email_is_sent(self):
+        send_notification_email(
+            self.user.email,
+            'EasyKart Notification',
+            'welcome_email.html',
+            {'full_name': self.user.full_name},
+        )
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(message.subject, 'EasyKart Notification')
+        self.assertIn(self.user.full_name, message.body)
 
 
 class ProductSkuTests(TestCase):
@@ -472,6 +538,34 @@ class OTPRegistrationTests(TestCase):
         self.assertTrue(user.is_email_verified)
         self.assertIsNone(user.email_otp_code)
         self.assertIsNone(user.email_otp_expires_at)
+
+    def test_verify_otp_accepts_spaces_in_copied_code(self):
+        user = CustomUser.objects.create_user(
+            username='spacedotp',
+            email='spaced-otp@example.com',
+            password='StrongPass123!',
+            full_name='Spaced OTP User',
+            is_active=False,
+            is_email_verified=False,
+        )
+        user.generate_email_otp()
+        spaced_code = f'{user.email_otp_code[:3]} {user.email_otp_code[3:]}'
+
+        self.client.session['email_for_verification'] = user.email
+        self.client.session.save()
+        response = self.client.post(
+            reverse('verify_otp'),
+            {'email': user.email, 'otp_code': spaced_code},
+        )
+
+        self.assertRedirects(response, reverse('login'))
+        user.refresh_from_db()
+        self.assertTrue(user.is_email_verified)
+
+    def test_resend_otp_rejects_get_requests(self):
+        response = self.client.get(reverse('resend_otp'))
+
+        self.assertEqual(response.status_code, 405)
 
     def test_verify_otp_with_invalid_code_shows_error(self):
         user = CustomUser.objects.create_user(

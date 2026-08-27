@@ -933,7 +933,6 @@ def register(request):
             # Attempt to create user inside a transaction to avoid partial state
             try:
                 with transaction.atomic():
-                    is_new_user = not form.instance.pk
                     user = form.save(commit=False)
                     user.is_active = False # Keep user inactive until OTP verification
                     user.is_staff = False
@@ -946,13 +945,11 @@ def register(request):
                 messages.error(request, f'Error creating account: {e}')
                 return render(request, 'register.html', {'form': form})
 
-            # Generate OTP and send email; if sending fails, delete the inactive user
+            # Keep the inactive account so the user can retry after SMTP is fixed.
             try:
                 otp_code = user.generate_email_otp()
                 send_otp_email(user, otp_code)
             except Exception:
-                if is_new_user:
-                    user.delete()
                 messages.error(request, 'Unable to send OTP email. Please try again later.')
                 return render(request, 'register.html', {'form': form})
 
@@ -1022,6 +1019,7 @@ def verify_otp(request):
     return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
 
+@require_POST
 def resend_otp(request):
     """Resend OTP to user email"""
     if request.method == 'POST':

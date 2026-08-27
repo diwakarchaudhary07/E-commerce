@@ -1,5 +1,6 @@
 import uuid
 import secrets
+import hmac
 from datetime import timedelta
 from decimal import Decimal
 
@@ -94,7 +95,10 @@ class CustomUser(AbstractUser):
     def verify_email_otp(self, code):
         if self.is_otp_expired() or not self.email_otp_code:
             return False
-        if self.email_otp_code == code:
+        normalized_code = ''.join(str(code or '').split())
+        if len(normalized_code) != 6 or not normalized_code.isdigit():
+            return False
+        if hmac.compare_digest(self.email_otp_code, normalized_code):
             self.clear_email_otp()
             return True
         return False

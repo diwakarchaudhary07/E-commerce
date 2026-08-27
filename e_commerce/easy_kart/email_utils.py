@@ -88,9 +88,10 @@ def send_password_reset_email(user, reset_link):
 def send_order_confirmation_email(user, order_details):
     """Send order confirmation email"""
     subject = f"Order Confirmation - Order #{order_details.get('order_id', 'N/A')}"
+    template_context = {'full_name': user.full_name, 'order_details': order_details}
+    template_context.update(order_details)
     html_message = render_to_string('order_confirmation_email.html', {
-        'full_name': user.full_name,
-        'order_details': order_details,
+        **template_context,
     })
     plain_message = strip_tags(html_message)
 

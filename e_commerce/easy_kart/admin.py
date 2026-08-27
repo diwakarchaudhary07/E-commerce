@@ -28,7 +28,7 @@ class CustomUserAdmin(UserAdmin):
     )
 
     # Fix 4: Remove 'username' from list displays and search fields
-    list_display = ('email', 'full_name', 'mobile_no', 'is_staff', 'email_verification_status')
+    list_display = ('email', 'full_name', 'mobile_no', 'is_staff', 'email_verification_status', 'otp_status')
     list_filter = ('is_email_verified', 'is_staff', 'is_active', 'date_joined')
     search_fields = ('email', 'full_name', 'mobile_no')
 
@@ -43,6 +43,15 @@ class CustomUserAdmin(UserAdmin):
                 '<span style="color: red; font-weight: bold;">✗ Not Verified</span>'
             )
     email_verification_status.short_description = 'Email Status'
+
+    def otp_status(self, obj):
+        if not obj.email_otp_code:
+            return 'No pending OTP'
+        if obj.is_otp_expired():
+            return 'Expired OTP'
+        return 'OTP pending'
+
+    otp_status.short_description = 'OTP Status'
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

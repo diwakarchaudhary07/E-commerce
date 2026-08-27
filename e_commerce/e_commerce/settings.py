@@ -125,20 +125,25 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER).strip()
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '20'))
 
-if not EMAIL_BACKEND:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 if EMAIL_USE_TLS and EMAIL_USE_SSL:
     raise ValueError('EMAIL_USE_TLS and EMAIL_USE_SSL cannot both be enabled.')
 
-# Without SMTP credentials, use console output during local development only.
-if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend':
-    if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD or not DEFAULT_FROM_EMAIL:
-        if not DEBUG:
-            raise ValueError(
-                'SMTP requires EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, and DEFAULT_FROM_EMAIL.'
-            )
-        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Use SMTP only when it is fully configured. Console email keeps local
+# development and automated tests from attempting a real provider login.
+smtp_is_configured = all((EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL))
+if not EMAIL_BACKEND:
+    EMAIL_BACKEND = (
+        'django.core.mail.backends.smtp.EmailBackend'
+        if smtp_is_configured
+        else 'django.core.mail.backends.console.EmailBackend'
+    )
+
+if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not smtp_is_configured:
+    if not DEBUG:
+        raise ValueError(
+            'SMTP requires EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, and DEFAULT_FROM_EMAIL.'
+        )
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Password validation
