@@ -501,6 +501,34 @@ class OTPRegistrationTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(user.email_otp_code, mail.outbox[0].body)
 
+    def test_register_send_failure_keeps_user_available_for_resend(self):
+        with patch('easy_kart.email_utils.EmailMultiAlternatives.send', side_effect=OSError('SMTP delivery failed')) as mocked_send:
+            response = self.client.post(
+                reverse('register'),
+                data={
+                    'full_name': 'Pending User',
+                    'email': 'pending@example.com',
+                    'password': 'StrongPass123!',
+                    'confirm_password': 'StrongPass123!',
+                },
+            )
+
+        self.assertRedirects(response, reverse('verify_otp'))
+        user = CustomUser.objects.get(email='pending@example.com')
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.is_email_verified)
+        self.assertIsNotNone(user.email_otp_code)
+        self.assertEqual(self.client.session['email_for_verification'], user.email)
+        self.assertEqual(len(mail.outbox), 0)
+        mocked_send.assert_called_once()
+
+        resend_response = self.client.post(reverse('resend_otp'))
+
+        self.assertRedirects(resend_response, reverse('verify_otp'))
+        self.assertEqual(len(mail.outbox), 1)
+        user.refresh_from_db()
+        self.assertIn(user.email_otp_code, mail.outbox[0].body)
+
     def test_register_accepts_valid_email_from_any_domain(self):
         response = self.client.post(
             reverse('register'),
