@@ -948,12 +948,12 @@ def register(request):
             # Keep the inactive account so the user can retry after SMTP is fixed.
             try:
                 otp_code = user.generate_email_otp()
+                request.session['email_for_verification'] = user.email.lower()
                 send_otp_email(user, otp_code)
             except Exception:
-                messages.error(request, 'Unable to send OTP email. Please try again later.')
-                return render(request, 'register.html', {'form': form})
+                messages.error(request, 'Unable to send OTP email. Please use Resend OTP to try again.')
+                return redirect('verify_otp')
 
-            request.session['email_for_verification'] = user.email.lower()
             messages.success(request, 'Registration successful! Enter the OTP sent to your email.')
             return redirect('verify_otp')
     else:
