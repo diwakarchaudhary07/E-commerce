@@ -29,7 +29,10 @@ def _load_env_file(path):
             os.environ.setdefault(key, value)
 
 
+# Load the project file first, while also accepting a workspace-level .env for
+# local setups that run Django from the repository root.
 _load_env_file(BASE_DIR / '.env')
+_load_env_file(BASE_DIR.parent / '.env')
 
 
 # Quick-start development settings - unsuitable for production

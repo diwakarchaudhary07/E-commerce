@@ -46,7 +46,6 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('verify-otp/', verify_otp, name='verify_otp'),
     path('resend-otp/', resend_otp, name='resend_otp'),
-    path('send-login-otp/', send_login_otp, name='send_login_taotp'),
     path('password-reset/', password_reset, name='password_reset'),
     path('password-reset/done/', password_reset_done, name='password_reset_done'),
     path('password-reset/<uidb64>/<token>/', password_reset_confirm, name='password_reset_confirm'),
