@@ -29,7 +29,7 @@ from django.utils.html import strip_tags
 from .email_utils import send_otp_email, send_welcome_email, send_password_reset_email
 
 from .forms import RegisterForm, LoginForm, OTPVerificationForm, ProfileForm, TestEmailForm, ContactForm, ProductFeedbackForm, ProductHelpRequestForm, PasswordResetRequestForm, PasswordResetConfirmCaptchaForm
-from .models import CustomUser, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
+from .models import CustomUser, RegistrationOTP, Category, Profile, Product, Gallery, AboutUs, Contact, WishlistItem, Order, OrderItem, TeamMember, Cart, CartItem, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
@@ -930,31 +930,42 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            # Attempt to create user inside a transaction to avoid partial state
+            if settings.EMAIL_BACKEND == 'django.core.mail.backends.console.EmailBackend':
+                messages.error(
+                    request,
+                    'Gmail SMTP is not configured. Add EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, '
+                    'and DEFAULT_FROM_EMAIL to e_commerce/.env, then restart the server.',
+                )
+                return render(request, 'register.html', {'form': form})
+
+            email = form.cleaned_data['email']
+            otp_code = RegistrationOTP.new_otp()
+            now = timezone.now()
             try:
-                with transaction.atomic():
-                    user = form.save(commit=False)
-                    user.is_active = False # Keep user inactive until OTP verification
-                    user.is_staff = False
-                    user.is_superuser = False
-                    user.save()
+                RegistrationOTP.objects.filter(email=email).delete()
+                pending = RegistrationOTP.objects.create(
+                    email=email,
+                    full_name=form.cleaned_data['full_name'],
+                    password_hash=make_password(form.cleaned_data['password']),
+                    otp_hash='',
+                    otp_expires_at=now,
+                    last_sent_at=now,
+                    resend_window_started_at=now,
+                )
+                pending.set_otp(otp_code, sent_at=now)
+                send_otp_email(pending, otp_code)
+                pending.save(update_fields=['otp_hash', 'otp_expires_at', 'last_sent_at'])
             except IntegrityError:
-                form.add_error('email', 'A user with this email already exists.')
+                form.add_error('email', 'Email is already registered.')
                 return render(request, 'register.html', {'form': form})
-            except Exception as e:
-                messages.error(request, f'Error creating account: {e}')
-                return render(request, 'register.html', {'form': form})
-
-            # Keep the inactive account so the user can retry after SMTP is fixed.
-            try:
-                otp_code = user.generate_email_otp()
-                request.session['email_for_verification'] = user.email.lower()
-                send_otp_email(user, otp_code)
             except Exception:
-                messages.error(request, 'Unable to send OTP email. Please use Resend OTP to try again.')
-                return redirect('verify_otp')
+                if 'pending' in locals():
+                    pending.delete()
+                messages.error(request, 'Unable to send OTP email. Please check the Gmail SMTP configuration and try again.')
+                return render(request, 'register.html', {'form': form})
 
-            messages.success(request, 'Registration successful! Enter the OTP sent to your email.')
+            request.session['email_for_verification'] = email
+            messages.success(request, 'OTP sent successfully. Enter the 6-digit code sent to your Gmail address.')
             return redirect('verify_otp')
     else:
         form = RegisterForm()
@@ -978,14 +989,10 @@ def verify_otp(request):
         return redirect('register')
 
     try:
-        user = CustomUser.objects.get(email=email)
-    except CustomUser.DoesNotExist:
-        messages.error(request, 'User not found.')
+        pending = RegistrationOTP.objects.get(email=email)
+    except RegistrationOTP.DoesNotExist:
+        messages.error(request, 'This registration has expired. Please register again.')
         return redirect('register')
-
-    if user.is_email_verified:
-        messages.info(request, 'Email already verified. You can log in now.')
-        return redirect('login')
 
     form = OTPVerificationForm(request.POST or None, initial={'email': email})
 
@@ -996,23 +1003,35 @@ def verify_otp(request):
             messages.error(request, 'Please enter the OTP.')
             return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
-        if not user.email_otp_code:
-            messages.error(request, 'No OTP was sent to this account. Please register again.')
-            return redirect('register')
-
-        if user.is_otp_expired():
+        result = pending.verify_otp(otp_code)
+        if result == 'expired':
             messages.error(request, 'OTP has expired. Please resend a new one.')
             return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
-        if user.verify_email_otp(otp_code):
-            user.is_email_verified = True
-            user.is_active = True
-            user.save()
-            send_welcome_email(user)
+        if result == 'valid':
+            username = f"{email.split('@')[0]}_{uuid.uuid4().hex[:6]}"
+            with transaction.atomic():
+                user = CustomUser(
+                    username=username,
+                    email=pending.email,
+                    full_name=pending.full_name,
+                    password=pending.password_hash,
+                    mobile_no='',
+                    address='',
+                    is_active=True,
+                    is_email_verified=True,
+                )
+                user.save(force_insert=True)
+                pending.delete()
+            try:
+                send_welcome_email(user)
+            except Exception:
+                pass
             request.session.pop('email_for_verification', None)
             messages.success(request, 'Registration successful! Your email has been verified and you can now log in.')
             return redirect('login')
         else:
+            pending.save(update_fields=['verification_attempts'])
             messages.error(request, 'Invalid OTP. Please try again.')
             return render(request, 'verify_otp.html', {'email': email, 'form': form})
 
@@ -1034,35 +1053,31 @@ def resend_otp(request):
             messages.error(request, 'Please enter your email.')
             return redirect('verify_otp')
         try:
-            # Only allow resending OTP for registration verification
-            user = CustomUser.objects.get(email=email, is_email_verified=False)
-            previous_code = user.email_otp_code
-            previous_expiry = user.email_otp_expires_at
-            otp_code = user.generate_email_otp()
-            try:
-                send_otp_email(user, otp_code)
-            except Exception:
-                user.email_otp_code = previous_code
-                user.email_otp_expires_at = previous_expiry
-                user.save(update_fields=['email_otp_code', 'email_otp_expires_at'])
-                messages.error(request, 'Unable to send the OTP email. Please try again later.')
-                request.session['email_for_verification'] = email
-                return redirect('verify_otp')
-            messages.success(request, 'OTP resent successfully. Check your email.')
-            request.session['email_for_verification'] = email
-            return redirect('verify_otp')
-        except CustomUser.DoesNotExist:
-            messages.error(request, 'Email not found or already verified.')
+            pending = RegistrationOTP.objects.get(email=email)
+        except RegistrationOTP.DoesNotExist:
+            messages.error(request, 'Registration not found. Please register again.')
             return redirect('register')
 
-    return redirect('verify_otp')
+        now = timezone.now()
+        if not pending.can_resend(now):
+            remaining = max(1, int((pending.last_sent_at + RegistrationOTP.RESEND_COOLDOWN - now).total_seconds()))
+            messages.error(request, f'Please wait {remaining} seconds before requesting another OTP.')
+            return redirect('verify_otp')
 
-
-def send_login_otp(request):
-    """Send OTP specifically for login flow (separate endpoint used by URLs)."""
-    # Login-by-OTP flow is disabled. Users should log in with email/password.
-    messages.error(request, 'Login via OTP is disabled. Please use your password to log in.')
-    return redirect('login')
+        if now - pending.resend_window_started_at >= RegistrationOTP.RESEND_WINDOW:
+            pending.resend_window_started_at = now
+            pending.resend_count = 0
+        otp_code = RegistrationOTP.new_otp()
+        try:
+            send_otp_email(pending, otp_code)
+        except Exception:
+            messages.error(request, 'Unable to send the OTP email. Please try again later.')
+            return redirect('verify_otp')
+        pending.set_otp(otp_code, sent_at=now, increment_resend=True)
+        pending.save(update_fields=['otp_hash', 'otp_expires_at', 'last_sent_at', 'resend_count', 'resend_window_started_at'])
+        messages.success(request, 'OTP resent successfully. Check your Gmail inbox.')
+        request.session['email_for_verification'] = email
+        return redirect('verify_otp')
 
 
 def password_reset(request):
