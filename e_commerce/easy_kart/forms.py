@@ -113,10 +113,8 @@ class RegisterForm(forms.ModelForm):
             except ValidationError:
                 raise ValidationError('Enter a valid email address.')
             existing_user = CustomUser.objects.filter(email__iexact=email).first()
-            if existing_user and (existing_user.is_active or existing_user.is_email_verified):
-                raise ValidationError('Email is already registered.')
             if existing_user:
-                self.instance = existing_user
+                raise ValidationError('Email is already registered.')
         return email
 
     def clean(self):

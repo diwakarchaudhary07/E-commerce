@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
-from .models import CustomUser, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
+from .models import CustomUser, RegistrationOTP, Category, Announcement, Product, Gallery, AboutUs, Contact, WishlistItem, Cart, CartItem, Order, OrderItem, TeamMember, ProductFeedback, ProductHelpRequest, Inventory, RelatedProduct, AIHelpChatMessage
 
 
 class CustomUserAdmin(UserAdmin):
@@ -55,6 +55,13 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+
+@admin.register(RegistrationOTP)
+class RegistrationOTPAdmin(admin.ModelAdmin):
+    list_display = ('email', 'otp_expires_at', 'last_sent_at', 'resend_count', 'verification_attempts')
+    search_fields = ('email', 'full_name')
+    readonly_fields = ('password_hash', 'otp_hash', 'created_at')
 
 
 class ProductAdmin(admin.ModelAdmin):

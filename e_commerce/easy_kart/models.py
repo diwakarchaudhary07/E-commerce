@@ -7,6 +7,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -56,7 +57,7 @@ class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     is_email_verified = models.BooleanField(default=False)
-    email_otp_code = models.CharField(max_length=6, blank=True, null=True)
+    email_otp_code = models.CharField(max_length=128, blank=True, null=True)
     email_otp_expires_at = models.DateTimeField(null=True, blank=True)
     mobile_no = models.CharField(max_length=15)
     dob = models.DateField(null=True, blank=True)
@@ -71,16 +72,11 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def generate_email_otp(self):
-        existing_codes = set(
-            self.__class__.objects.exclude(pk=self.pk).values_list('email_otp_code', flat=True)
-        )
         otp_code = f"{secrets.randbelow(900000) + 100000:06d}"
-        while otp_code in existing_codes:
-            otp_code = f"{secrets.randbelow(900000) + 100000:06d}"
-        self.email_otp_code = otp_code
-        self.email_otp_expires_at = timezone.now() + timedelta(minutes=10)
+        self.email_otp_code = make_password(otp_code)
+        self.email_otp_expires_at = timezone.now() + timedelta(minutes=5)
         self.save(update_fields=['email_otp_code', 'email_otp_expires_at'])
-        return self.email_otp_code
+        return otp_code
 
     def clear_email_otp(self):
         self.email_otp_code = None
@@ -98,13 +94,65 @@ class CustomUser(AbstractUser):
         normalized_code = ''.join(str(code or '').split())
         if len(normalized_code) != 6 or not normalized_code.isdigit():
             return False
-        if hmac.compare_digest(self.email_otp_code, normalized_code):
+        if check_password(normalized_code, self.email_otp_code):
             self.clear_email_otp()
             return True
         return False
 
     def __str__(self):
         return self.email
+
+
+class RegistrationOTP(models.Model):
+    """Short-lived registration data kept separate until email verification."""
+    email = models.EmailField(unique=True)
+    full_name = models.CharField(max_length=255)
+    password_hash = models.CharField(max_length=128)
+    otp_hash = models.CharField(max_length=128)
+    otp_expires_at = models.DateTimeField()
+    last_sent_at = models.DateTimeField()
+    resend_window_started_at = models.DateTimeField()
+    resend_count = models.PositiveSmallIntegerField(default=0)
+    verification_attempts = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    OTP_LIFETIME = timedelta(minutes=5)
+    RESEND_COOLDOWN = timedelta(minutes=1)
+    RESEND_WINDOW = timedelta(hours=1)
+    MAX_RESENDS_PER_WINDOW = 5
+    MAX_VERIFICATION_ATTEMPTS = 5
+
+    @staticmethod
+    def new_otp():
+        return f"{secrets.randbelow(900000) + 100000:06d}"
+
+    def set_otp(self, otp_code, sent_at=None, increment_resend=False):
+        sent_at = sent_at or timezone.now()
+        self.otp_hash = make_password(otp_code)
+        self.otp_expires_at = sent_at + self.OTP_LIFETIME
+        self.last_sent_at = sent_at
+        if increment_resend:
+            self.resend_count += 1
+
+    def can_resend(self, now=None):
+        now = now or timezone.now()
+        if now - self.resend_window_started_at >= self.RESEND_WINDOW:
+            return True
+        return (
+            now - self.last_sent_at >= self.RESEND_COOLDOWN
+            and self.resend_count < self.MAX_RESENDS_PER_WINDOW
+        )
+
+    def verify_otp(self, otp_code, now=None):
+        now = now or timezone.now()
+        if now >= self.otp_expires_at:
+            return 'expired'
+        if self.verification_attempts >= self.MAX_VERIFICATION_ATTEMPTS:
+            return 'invalid'
+        self.verification_attempts += 1
+        if check_password(''.join(str(otp_code or '').split()), self.otp_hash):
+            return 'valid'
+        return 'invalid'
 
 
 class Profile(models.Model):
