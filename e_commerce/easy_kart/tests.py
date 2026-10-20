@@ -3,6 +3,7 @@ import hmac
 import json
 from unittest.mock import patch
 
+from django.contrib.admin.models import DELETION, LogEntry
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.core import mail
@@ -17,6 +18,46 @@ from .email_utils import (
     send_welcome_email,
 )
 from .views import _verify_razorpay_signature
+
+
+class CustomUserAdminDeletionTests(TestCase):
+    def test_bulk_delete_logs_deletion_for_custom_user(self):
+        admin_user = CustomUser.objects.create_superuser(
+            email='admin-delete@example.com',
+            password='StrongPass123!',
+            full_name='Admin User',
+            mobile_no='9876543210',
+            address='Admin Address',
+        )
+        target_user = CustomUser.objects.create_user(
+            email='delete-target@example.com',
+            password='StrongPass123!',
+            full_name='Delete Target',
+            mobile_no='9876543211',
+            address='Target Address',
+        )
+        target_user_id = target_user.pk
+        self.client.force_login(admin_user)
+
+        response = self.client.post(
+            reverse('admin:easy_kart_customuser_changelist'),
+            {
+                'action': 'delete_selected',
+                '_selected_action': [str(target_user_id)],
+                'index': '0',
+                'post': 'yes',
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(CustomUser.objects.filter(pk=target_user_id).exists())
+        self.assertTrue(
+            LogEntry.objects.filter(
+                user=admin_user,
+                object_id=str(target_user_id),
+                action_flag=DELETION,
+            ).exists()
+        )
 
 
 class RazorpaySignatureTests(SimpleTestCase):
